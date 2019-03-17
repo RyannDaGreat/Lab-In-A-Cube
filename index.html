@@ -1,0 +1,145 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>
+<style>
+	*
+	{
+		margin:0
+	}
+</style>
+<div>
+</div>
+<script>
+	var renderer = new THREE.WebGLRenderer()
+	renderer.setSize(window.innerWidth, window.innerHeight)
+	renderer.setPixelRatio(window.devicePixelRatio)
+	document.body.appendChild(renderer.domElement)
+
+	var scene = new THREE.Scene()
+
+    var camera = new THREE.PerspectiveCamera(75,10,1,999999)
+    camera.fov=75
+	camera.position.z = 1000
+
+	items={}
+	function addBoxItem(ID)
+	{
+		const geometry = new THREE.BoxGeometry(700, 700, 700, 10, 10, 10);
+		const material = new THREE.MeshBasicMaterial({color: 0xfffff, wireframe: true});
+		const cube = new THREE.Mesh(geometry, material);
+		scene.add(cube);
+	    const item= {
+            onmousedown:()=>{item.z-=100;console.log("Clicked ID = "+ID)},
+            onmouseup:()=>{item.x-=100;console.log("Clicked ID = "+ID)},
+	        ID:ID,
+		    threeObject:cube,
+            get x(){return cube.position.x;},
+            get y(){return cube.position.y;},
+            get z(){return cube.position.z;},
+            set x(value){cube.position.x=value},
+            set y(value){cube.position.y=value},
+            set z(value){cube.position.z=value},
+	    }
+	    cube.userData.item=item
+		items[ID]=item
+	}
+
+    addBoxItem("Churro")
+
+	function addLightItem(ID)
+	{
+        const light = new THREE.PointLight( 0xff0000, 1, 100 )
+        light.position.set( 50, 50, 50 )
+        scene.add( light );
+        const item= {
+            ID:ID,
+	        threeObject:light,
+	        get x(){return light.position.x;},
+            get y(){return light.position.y;},
+            get z(){return light.position.z;},
+            get intensity(){return light.intensity;},
+            set x(value){light.position.x=value},
+            set y(value){light.position.y=value},
+            set z(value){light.position.z=value},
+            set intensity(value){light.position.intensity=value},
+        }
+        light.userData.item=item
+		items[ID]=item
+	}
+
+    const raycaster = new THREE.Raycaster();
+    function mousedown(event)//Override default window click action
+    {
+        const mouse = new THREE.Vector2()
+        mouse.x =   ( event.clientX / window.innerWidth  ) * 2 - 1
+        mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1
+        raycaster.setFromCamera(mouse, camera)
+        const intersects = raycaster.intersectObjects(scene.children, true)
+        if(intersects.length > 0)
+        {
+	        threeObject=intersects[0].object
+	        console.log(threeObject)
+            const onClick=threeObject.userData.item.onmousedown()
+	        if(onClick)onClick()
+	        // alert()
+        }
+    }
+    renderer.domElement.addEventListener("mousedown", mousedown, true);
+
+    function mouseup(event)//Override default window click action
+    {
+        const mouse = new THREE.Vector2()
+        mouse.x =   ( event.clientX / window.innerWidth  ) * 2 - 1
+        mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1
+        raycaster.setFromCamera(mouse, camera)
+        const intersects = raycaster.intersectObjects(scene.children, true)
+        if(intersects.length > 0)
+        {
+	        threeObject=intersects[0].object
+	        console.log(threeObject)
+            const onClick=threeObject.userData.item.onmouseup()
+	        if(onClick)onClick()
+	        // alert()
+        }
+    }
+    renderer.domElement.addEventListener("mouseup",mouseup, true);
+
+	function render()
+	{
+        requestAnimationFrame(render);
+        camera.updateProjectionMatrix();//Lets you update camera FOV and aspect ratio
+		camera.aspect=window.innerWidth/window.innerHeight;
+        renderer.setSize(window.innerWidth, window.innerHeight);
+		renderer.render(scene, camera);
+	}
+	render()
+
+    function applyDelta(x,d)//Apply d to x and make d the recipt. Mutates both x and d and returns nothing.
+    {
+        console.assert(Object.getPrototypeOf(x)===Object.prototype)
+        for(const [key,val] of Object.entries(d))
+        {
+            if(key in x)
+            {
+                if(val === undefined)
+                {
+                    d[key]=x[key]//For our receipt...
+                    delete x[key]
+                }
+                else if(Object.getPrototypeOf(val) === Object.prototype)
+                {
+                    applyDelta(x[key], val)
+                }
+                else
+                {
+                    d[key] = x[key]
+                    x[key] = val
+                }
+            }
+            else if(val!==undefined)
+            {
+                x[key] = val
+                d[key] = undefined
+            }
+        }
+    }
+
+</script>
