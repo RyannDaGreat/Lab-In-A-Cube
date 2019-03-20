@@ -1,7 +1,4 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>
-<script src="./djson.js"></script>
-<script src="./r.jsx"></script>
-<script src="./Experiments.js"></script>
 <style>
 	*
 	{
@@ -22,66 +19,27 @@
 	camera.fov=75
 	camera.position.z = 1000
 
-	items=djson_parse(`
-scene
-	transitions
-		charley	charley
-			delta
-				charley
-					transform
-						position
-							x 0
-			time 3
-		charley	chungus
-			time 3
-			delta
-				charley
-					transform
-						position
-							x 100
-							y 200
-							z -2000
-				chungus
-					transform
-						rotation
-							x 90
-						position
-							x 500
-							y 0
-							z -500
-		chungus	charley
-			time 1
-			delta
-				charley	transform	position
-					x -100
-					y -200
-					z -1000
-				chungus
-					transform
-						position
-							x 0
-							y 300
-							z 0
-						rotation
-							x 90
-`)
-		//This is yucky. I shouldn't have to pass the name through a parameter...but I can't think of a cleaner way yet. Same problem as any item in an object tree knowing its path.
+	items={scene:{transitions:{charley:{charley:{delta:{charley:{x:0}},time:3},chungus:{time:3,delta:{charley:{x:100,y:200,z:-2000},chungus:{x:500,y:0,z:-500}}}},chungus:{charley:{time:1,delta:{charley:{x:-100,y:-200,z:-1000},chungus:{x:0,y:300,z:0}}}}}}}//This is yucky. I shouldn't have to pass the name through a parameter...but I can't think of a cleaner way yet. Same problem as any item in an object tree knowing its path.
 	// deltas={}
 
 	function boxItem(ID)
 	{
 		const geometry = new THREE.BoxGeometry(700, 700, 700, 10, 10, 10);
 		const materials ={
-			basic:new THREE.MeshBasicMaterial({color: 0xfffff, wireframe: true }),//color.r/g/b, wireframe, 
-			phong:new THREE.MeshPhongMaterial(),//color.r/g/b
-			standard:new THREE.MeshStandardMaterial(),
+			basic:new THREE.MeshBasicMaterial({color: 0xfffff, wireframe: true }),
+			phong:new THREE.MeshPhongMaterial(),
 		} 
-		let material='standard'
+		let material='basic'
 		const cube = new THREE.Mesh(geometry, materials[material]);
 		scene.add(cube);
 		const item= {
-			// ...cube,
 			ID:ID,
+					get x(){return cube.position.x},
+					get y(){return cube.position.y},
+					get z(){return cube.position.z},
+					set x(value){cube.position.x=value},
+					set y(value){cube.position.y=value},
+					set z(value){cube.position.z=value},
 			transform:
 			{
 				position:
@@ -99,9 +57,9 @@ scene
 					get x(){return cube.rotation.x/Math.PI*180},
 					get y(){return cube.rotation.y/Math.PI*180},
 					get z(){return cube.rotation.z/Math.PI*180},
-					set x(value){cube.rotation.x=value*Math.PI/180},
-					set y(value){cube.rotation.y=value*Math.PI/180},
-					set z(value){cube.rotation.z=value*Math.PI/180},
+					set x(value){cube.rotation.x=value/Math.PI*180},
+					set y(value){cube.rotation.y=value/Math.PI*180},
+					set z(value){cube.rotation.z=value/Math.PI*180},
 				},
 				scale:
 				{
@@ -116,8 +74,7 @@ scene
 			material:
 			{
 				get mode(){return material},
-				set mode(mode){material=mode;cube.material=materials[mode]},
-				modes:materials,
+				set mode(mode){material=mode;cube.material=materials[mode]}
 			},
 
 		}
@@ -127,7 +84,7 @@ scene
 
 	function lightItem(ID)
 	{
-		const light = new THREE.PointLight(0xffffff,1,100)
+		const light = new THREE.PointLight(0xff0000,1,100)
 		light.position.set( 50, 50, 50 )
 		scene.add(light)
 		const item= {
@@ -136,11 +93,11 @@ scene
 			get x(){return light.position.x;},
 			get y(){return light.position.y;},
 			get z(){return light.position.z;},
+			get intensity(){return light.intensity;},
 			set x(value){light.position.x=value},
 			set y(value){light.position.y=value},
 			set z(value){light.position.z=value},
-			get intensity(){return light.intensity;},
-			set intensity(value){light.intensity=value},
+			set intensity(value){light.position.intensity=value},
 		}
 		light.userData.item=item
 		return item
@@ -237,43 +194,17 @@ scene
 	//     tween.time=0
 	//     tween.delta={ID:item}
 	// }
-
 	items['chungus']=boxItem('chungus')
-	items['light']=lightItem('light')
 	items['charley']=boxItem('charley')
-	// tween.delta={chungus:{x:0,y:0,z:0},charley:{x:0,y:0,z:0}}
-	// tween.time=5
-	// tween.delta={chungus:{z:-2000,x:-500,material:{mode:'phong'}},charley:{x:500,y:0,z:-1000}}
+	tween.delta={chungus:{x:0,y:0,z:0},charley:{x:0,y:0,z:0}}
+	tween.time=5
+	tween.delta={chungus:{z:-2000,x:-500},charley:{x:500,y:0,z:-1000}}
 
 	function requestTween(delta,time=0)
 	{
 		tween.time=time
 		tween.delta=delta
 	}
-
-	requestTween(djson_parse(`
-chungus	transform	position
-	x 0
-	y 0
-	z 0
-charley	transform	position
-	x 0
-	y 0
-	z 0
-charley	material
-	mode phong
-`),0)
-
-		requestTween(djson_parse(`
-chungus	transform	position
-	x 0
-	y -500
-	z -2000
-charley	transform	position
-	x 500
-	y 0
-	z -1000
-`),5)
 
 	function blend(x,y,alpha)
 	{
