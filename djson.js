@@ -1,9 +1,9 @@
 //DJSON Warnings:
 //	Don't use blank lines! It can be dangerous. If you use a COMPLETELY blank line (no whitespace), it will erase the rest of the current scope until the next unindented entry (this is because a blank line can be interpereted as a key called "". So, if you use another blank line later on, it will erase the previous value, and it will look as though values have been deleted.) They can be fine when written by a machine, but they're dangerous to try writing by hand (watch out for duplicate value warnings! Those are why thigns get overwritten)
 //	We can make warnings about duplicate values
+
 function get_indent_level(line,key={'\t':4})
 {
-	console.assert(arguments.length==arguments.callee.length,'')
 	let out=0
 	for(const char of line)
 		if(char in key)

@@ -1,3 +1,14 @@
+function is_object(x)
+{
+	return Boolean(x&&Object.getPrototypeOf(x)===Object.prototype)
+}
+function are_objects(...variables)
+{
+	for(const variable of variables)
+		if(!is_object(variable))
+			return false
+	return true
+}
 function bad_sleep(seconds)
 {
 	//Burn CPU for seconds
@@ -35,20 +46,67 @@ function charInString(char,string)
 		set.push(char)
 	return set.has(char)
 }
+function currentFunctionName() 
+{
+	try
+	{
+		throw new Error()
+	}
+	catch(e)
+	{
+		try
+		{
+			return e.stack.split('at ')[3].split(' ')[0]
+		}
+		catch(e)
+		{
+			return ''
+		}
+	}
+}
 const assert={
 	rightArgumentLength(arguments,expectedNumberOfArguments=undefined)
 	{
 		if(expectedNumberOfArguments===undefined)
 			expectedNumberOfArguments=arguments.callee.length
 		const actualNumberOfArguments=arguments.length
-		function(arguments) {console.assert(actualNumberOfArguments===expectedNumberOfArguments,'Wrong number of arguments in function '+JSON.stringify(arguments.callee.name)+' (got '+actualNumberOfArguments+' but was expecting '+expectedNumberOfArguments+')')
+		console.assert(actualNumberOfArguments===expectedNumberOfArguments,'Wrong number of arguments in function '+JSON.stringify(arguments.callee.name)+' (got '+actualNumberOfArguments+' but was expecting '+expectedNumberOfArguments+')')
 	},
 	isPrototypeOf(variable,type)
 	{
+		assert.rightArgumentLength(arguments)
 		console.assert(variable!==undefined,'assertDefinedType: variable is undefined, and therefore does not have a prototype')
 		console.assert(variable!==null     ,'assertDefinedType: variable is null, and therefore does not have a prototype'     )
 		if(type!=undefined)
 			console.assert(Object.getPrototypeOf(variable)==type.prototype,'assertDefinedType: variable has wrong prototype')
+	},
+	defined(variable)
+	{
+		assert.rightArgumentLength(arguments)
+		console.assert(variable!==undefined,'Caught undefined variable!')
+	},
+
+	isPureObject(variable)
+	{
+		assert.rightArgumentLength(arguments)
+		assert.isPrototypeOf(variable,Object)
+	},
+	arePureObjects(...variables)
+	{
+		assert.rightArgumentLength(arguments)
+		assert.isPrototypeOf(variable,Object)
+		for(variable of variables)
+			assert.isPureObject(variable)
+	},
+	isPureArray(variable)
+	{
+		assert.rightArgumentLength(arguments)
+	},
+	arePureArrays(...variables)
+	{
+		assert.rightArgumentLength(arguments)
+		for(variable of variables)
+			assert.isPureArray(variable)
 	},
 }
 function removeDuplicateCharacters(string)

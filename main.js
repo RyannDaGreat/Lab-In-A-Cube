@@ -1,18 +1,4 @@
-<script src="./three.js"></script>
-<script src="./djson.js"></script>
-<script src="./r.jsx"></script>
-<script src="./Experiments.js"></script>
 
-<style>
-	*
-	{
-		margin:0
-	}
-</style>
-<div>
-</div>
-<!-- <script src="./main.js"></script>
- --><script>
 	var renderer = new THREE.WebGLRenderer()
 	renderer.setSize(window.innerWidth, window.innerHeight)
 	renderer.setPixelRatio(window.devicePixelRatio)
@@ -371,4 +357,3 @@ charley	transform	position
 		}
 	}
 
-</script>
