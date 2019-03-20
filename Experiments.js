@@ -1,33 +1,37 @@
 const gloves={
-	transmitter:function(objects,path=[])
+	broadcaster:function(objects,path=[])
 	{
-		assert.isPureArray(objects)
-		assert.isPureArray(objects)
+		//Will broadcast any deltas to all objects in objects.
+		//	Objects can be an array, or it could be a normal object
+		//	where the object's values are the things we wish to
+		//	broadcast to. 
+		//Note that this means you can subscribe/unsubscribe new
+		//	objects to this broadcaster, 
+		//Also note that this communication is one-way. You can
+		//	never get the leaf values of any object in objects
+		//	via this glove; you can only set them
+		//EXAMPLE:
+		//	A={};B={};C=gloves.broadcaster([A,B]);C.a.b.c=5;console.log(A.a.b.c,B.a.b.c)
 		assert.rightArgumentLength(arguments)
 		const handler={
-			get(target,key)
+			get(_,key)
 			{
-				return arguments.callee(target,[...path,key])
+				return gloves.broadcaster(objects,[...path,key])
 			},
-			set(target,key,value)
+			set(_,key,value)
 			{
-				for(object in objects)
+				for(object of objects)
 				{
-					try
-					{
-						keyPath.pave(object,path)
-						keyPath.set(object,[...path,key],value)
-					}
-					catch
-					{
-						console.warn("transmitter failed to set path "+path+" to value "+value)
-					}
+					keyPath.pave(object,path)//Ensure a path exists for us to write to...
+					keyPath.set(object,[...path,key],value)//...then write to it 
+					//(WARNING: this might burst into flames if there's some Object.freeze
+					//	shenanagins going on in any of the objects etc)
 				}
 			}
 		}
+		return new Proxy(Object.create(null),handler)
 	},
 }
-
 
 function is_object(x)
 {
@@ -56,7 +60,7 @@ function sortKeys(object)
 	}
 }
 
-var keyPath={
+const keyPath={
 	exists(object,path)
 	{
 		assert.rightArgumentLength(arguments)
@@ -92,9 +96,8 @@ var keyPath={
 		for(const key of path)
 		{
 			const value=object[key]
-			object=keyPath.exists(value,key)?value:{[key]:{}}
+			object=object[key]=keyPath.exists(value,[key])?value:{}
 		}
-		return object
 	},
 	set(object,path,value)
 	{
@@ -102,13 +105,11 @@ var keyPath={
 		//Specify path as a list of keys: see getPath's description for explanation
 		assert.rightArgumentLength(arguments)
 		console.assert(path!=null&&Object.getPrototypeOf(path)===Array.prototype)
-		console.assert(keyPath.exists(path))
+		console.assert(keyPath.valid(object,path))
+		path=[...path]
+		path_end=path.pop()
 		for(const key of path)
-		{
-			if(!(key in path))
-				console.warn('getPath: key '+JSON.stringify(key)+' is a dead-end, and will return undefined!')
 			object=object[key]
-		}
-		return object
+		object[path_end]=value
 	},
 }

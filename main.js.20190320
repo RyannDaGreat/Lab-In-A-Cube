@@ -15,27 +15,29 @@ camera.position.z = 1000
 
 const items={}
 
-function load_geometry(name,url)
+
+function load_geometry(url,name)
 {
 	var object
 	function loadModel()
 	{
-		console.log(object)
-		geometries[name]=object.children[0].geometry
+		// scene.add( object )
+
+		geometries[name]=object
 	}
 	function callback( obj )
 	{
-		object = obj//Maybe eliminate maybe not....I think loadingmanager might come in handy....when we want to load all the textures etc
+		object = obj
 	}
+	// var url='https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/models/obj/ninja/ninjaHead_Low.obj'
 	var loader = new THREE.OBJLoader(new THREE.LoadingManager(loadModel)).load(url, callback, ()=>{}, ()=>{})
 }
 
 const geometries={
 	box: new THREE.BoxGeometry(700, 700, 700, 10, 10, 10),
 	box2: new THREE.BoxGeometry(300, 300, 300, 10, 10, 10),
+	
 }
-
-load_geometry('ninja','https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/models/obj/ninja/ninjaHead_Low.obj')
 
 
 function boxItem(ID)
@@ -48,7 +50,6 @@ function boxItem(ID)
 	let geometry='box'
 	let material='standard'
 	let mesh=new THREE.Mesh(geometries[geometry], materials[material])
-	scene.add(mesh)
 	const item= {
 		ID:ID,
 		transform:

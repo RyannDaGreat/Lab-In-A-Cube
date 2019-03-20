@@ -65,12 +65,18 @@ function currentFunctionName()
 	}
 }
 const assert={
-	rightArgumentLength(arguments,expectedNumberOfArguments=undefined)
+	rightArgumentLength(arguments)
 	{
-		if(expectedNumberOfArguments===undefined)
-			expectedNumberOfArguments=arguments.callee.length
-		const actualNumberOfArguments=arguments.length
-		console.assert(actualNumberOfArguments===expectedNumberOfArguments,'Wrong number of arguments in function '+JSON.stringify(arguments.callee.name)+' (got '+actualNumberOfArguments+' but was expecting '+expectedNumberOfArguments+')')
+		try
+		{
+			const actualNumberOfArguments=arguments.length
+			const minimumNumberOfArguments=arguments.callee.length
+			console.assert(actualNumberOfArguments>=minimumNumberOfArguments,'Wrong number of arguments in function '+JSON.stringify(arguments.callee.name)+' (got '+actualNumberOfArguments+' but was expecting at least '+minimumNumberOfArguments+' arguments)')
+		}
+		catch
+		{
+			console.warn("Failed to use rightArgumentLength. Probably because chrome is being a beastly piece of garbage and turning on strict mode without my consent afaik.")
+		}
 	},
 	isPrototypeOf(variable,type)
 	{
@@ -125,5 +131,51 @@ function withoutKey(object,key)
 {
 	out={...object}
 	delete out[key]
+	return out
+}
+function split_on_first_space(string)
+{
+	return string.split(/ (.*)/,2)
+}
+function remove_empty_lines(string)
+{
+	return split_lines(string).filter(x=>x.trim()).join('\n')
+}
+function nested_path(path,value)
+{
+	//EXAMPLE: nested_path([4,3,2,1],0) ==== {4:{3:{2:{1:0}}}}
+	//EXAMPLE: nested_path([],)
+	console.assert(path&&Object.getPrototypeOf(path)===Array.prototype,'Path must be a list of keys')
+	let out=value
+	for(key of [...path].reverse())
+		out={[key]:out}
+	return out
+}
+function multiply_string(string,number)
+{
+	let out=''
+	while(number--)
+		out+=string
+	return out
+}
+function is_object(x)
+{
+	return Boolean(x&&Object.getPrototypeOf(x)===Object.prototype)
+}
+function are_objects(...variables)
+{
+	for(const variable of variables)
+		if(!is_object(variable))
+			return false
+	return true
+}
+function get_indent_level(line,key={'\t':4})
+{
+	let out=0
+	for(const char of line)
+		if(char in key)
+			out+=key[char]
+		else
+			break
 	return out
 }
