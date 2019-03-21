@@ -80,6 +80,7 @@ const assert={
 	},
 	isPrototypeOf(variable,type)
 	{
+		//This function REALLY NEEDS to be renamed...
 		assert.rightArgumentLength(arguments)
 		console.assert(variable!==undefined,'assertDefinedType: variable is undefined, and therefore does not have a prototype')
 		console.assert(variable!==null     ,'assertDefinedType: variable is null, and therefore does not have a prototype'     )
@@ -178,4 +179,13 @@ function get_indent_level(line,key={'\t':4})
 		else
 			break
 	return out
+}
+function blend(x,y,alpha)
+{
+	return (1-alpha)*x+alpha*y
+}
+function gtoc()
+{
+	//Return _remainintTime in seconds since 1970
+	return new Date().getTime()/1000
 }

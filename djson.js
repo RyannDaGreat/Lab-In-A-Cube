@@ -2,24 +2,6 @@
 //	Don't use blank lines! It can be dangerous. If you use a COMPLETELY blank line (no whitespace), it will erase the rest of the current scope until the next unindented entry (this is because a blank line can be interpereted as a key called "". So, if you use another blank line later on, it will erase the previous value, and it will look as though values have been deleted.) They can be fine when written by a machine, but they're dangerous to try writing by hand (watch out for duplicate value warnings! Those are why thigns get overwritten)
 //	We can make warnings about duplicate values
 
-function get_indent_level(line,key={'\t':4})
-{
-	let out=0
-	for(const char of line)
-		if(char in key)
-			out+=key[char]
-		else
-			break
-	return out
-}
-function split_on_first_space(string)
-{
-	return string.split(/ (.*)/,2)
-}
-function remove_empty_lines(string)
-{
-	return split_lines(string).filter(x=>x.trim()).join('\n')
-}
 function applyDjsonDelta(o,d)//A simpler variant of applyDelta that lets you rewrite deltas, making djson potentially very readable if written by hand
 {
 	for(const key in d)
@@ -27,16 +9,6 @@ function applyDjsonDelta(o,d)//A simpler variant of applyDelta that lets you rew
 			arguments.callee(o[key],d[key])
 		else
 			o[key] = d[key]
-}
-function nested_path(path,value)
-{
-	//EXAMPLE: nested_path([4,3,2,1],0) ==== {4:{3:{2:{1:0}}}}
-	//EXAMPLE: nested_path([],)
-	console.assert(path&&Object.getPrototypeOf(path)===Array.prototype,'Path must be a list of keys')
-	let out=value
-	for(key of [...path].reverse())
-		out={[key]:out}
-	return out
 }
 
 function djson_parse_leaf(leaf)
@@ -53,6 +25,23 @@ function djson_parse_leaf(leaf)
 		return leaf
 	}
 }
+function djson_parse_handwritten(string)
+{
+	//Removes trailing whitespace and empty lines (that just have whitespace) It's really just to help when we're actually writing them
+	console.assert(arguments.length==1,'djson_parse_handwritten takes exactly one argument')
+	if(typeof lines==='string')
+		lines=lines.split('\n')
+	assert.isPureArray(lines)
+	const out=[]
+	for(let line of lines)
+	{
+		assert.isPrototypeOf(line,String)
+		line=line.trimRight()
+		if(line)
+			out.push(line)
+	}
+	return djson_parse(out)
+}
 function djson_parse(lines,level=-1,leaf_parser=djson_parse_leaf)
 {
 	if(typeof lines==='string')
@@ -68,7 +57,7 @@ function djson_parse(lines,level=-1,leaf_parser=djson_parse_leaf)
 			break
 		}
 		const trimmed=line.trimLeft()
-		const [key,value]=split_on_first_space(trimmed)//Sometimes value will be undefined
+		let [key,value]=split_on_first_space(trimmed)//Sometimes value will be undefined
 
 		const isLeaf=Boolean(value!==undefined)
 
@@ -81,24 +70,6 @@ function djson_parse(lines,level=-1,leaf_parser=djson_parse_leaf)
 		applyDjsonDelta(out,nested_path(key.trim().split(/\t+/),isLeaf?leaf_parser(value):djson_parse(lines,line_level)))
 	}
 	return out
-}
-function multiply_string(string,number)
-{
-	let out=''
-	while(number--)
-		out+=string
-	return out
-}
-function is_object(x)
-{
-	return Boolean(x&&Object.getPrototypeOf(x)===Object.prototype)
-}
-function are_objects(...variables)
-{
-	for(const variable of variables)
-		if(!is_object(variable))
-			return false
-	return true
 }
 function djson_stringify(object,level=0,out=[])
 {
@@ -128,6 +99,16 @@ function djson_stringify(object,level=0,out=[])
 	}
 	return out.join('\n')
 }
+
+
+
+
+
+
+
+
+
+
 function test_parse_djson(djson)
 {
 	djson=djson||`test

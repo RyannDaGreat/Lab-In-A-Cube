@@ -1,8 +1,7 @@
-
-        /**
+/**
  * @author mrdoob / http://mrdoob.com/
  */
-THREE.OBJLoader = ( function () {
+ THREE.OBJLoader = ( function () {
 	// o object_name | g group_name
 	var object_pattern = /^[og]\s*(.+)?/;
 	// mtllib file_reference
@@ -277,32 +276,32 @@ THREE.OBJLoader = ( function () {
 					var data = line.split( /\s+/ );
 					switch ( data[ 0 ] ) {
 						case 'v':
-							state.vertices.push(
-								parseFloat( data[ 1 ] ),
-								parseFloat( data[ 2 ] ),
-								parseFloat( data[ 3 ] )
+						state.vertices.push(
+							parseFloat( data[ 1 ] ),
+							parseFloat( data[ 2 ] ),
+							parseFloat( data[ 3 ] )
 							);
-							if ( data.length === 8 ) {
-								state.colors.push(
-									parseFloat( data[ 4 ] ),
-									parseFloat( data[ 5 ] ),
-									parseFloat( data[ 6 ] )
+						if ( data.length === 8 ) {
+							state.colors.push(
+								parseFloat( data[ 4 ] ),
+								parseFloat( data[ 5 ] ),
+								parseFloat( data[ 6 ] )
 								);
-							}
-							break;
+						}
+						break;
 						case 'vn':
-							state.normals.push(
-								parseFloat( data[ 1 ] ),
-								parseFloat( data[ 2 ] ),
-								parseFloat( data[ 3 ] )
+						state.normals.push(
+							parseFloat( data[ 1 ] ),
+							parseFloat( data[ 2 ] ),
+							parseFloat( data[ 3 ] )
 							);
-							break;
+						break;
 						case 'vt':
-							state.uvs.push(
-								parseFloat( data[ 1 ] ),
-								parseFloat( data[ 2 ] )
+						state.uvs.push(
+							parseFloat( data[ 1 ] ),
+							parseFloat( data[ 2 ] )
 							);
-							break;
+						break;
 					}
 				} else if ( lineFirstChar === 'f' ) {
 					var lineData = line.substr( 1 ).trim();
@@ -325,7 +324,7 @@ THREE.OBJLoader = ( function () {
 							v1[ 0 ], v2[ 0 ], v3[ 0 ],
 							v1[ 1 ], v2[ 1 ], v3[ 1 ],
 							v1[ 2 ], v2[ 2 ], v3[ 2 ]
-						);
+							);
 					}
 				} else if ( lineFirstChar === 'l' ) {
 					var lineParts = line.substring( 1 ).trim().split( " " );
@@ -378,10 +377,10 @@ THREE.OBJLoader = ( function () {
 					 * surfaces, smoothing groups are either turned on or off; there is no difference between values greater
 					 * than 0."
 					 */
-					if ( result.length > 1 ) {
-						var value = result[ 1 ].trim().toLowerCase();
-						state.object.smooth = ( value !== '0' && value !== 'off' );
-					} else {
+					 if ( result.length > 1 ) {
+					 	var value = result[ 1 ].trim().toLowerCase();
+					 	state.object.smooth = ( value !== '0' && value !== 'off' );
+					 } else {
 						// ZBrush can produce "s" lines #11707
 						state.object.smooth = true;
 					}
@@ -488,4 +487,3 @@ THREE.OBJLoader = ( function () {
 	};
 	return OBJLoader;
 } )();
-        
