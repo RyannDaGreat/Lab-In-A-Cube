@@ -1,5 +1,4 @@
-const config=djson.parse(`
-preview	json true	numbers false
+preview	json falkse	numbers true	mode sublime
 
 textures
 	dog ./Assets/dog.jpg
@@ -19,15 +18,20 @@ deltas	initial
 	charley	transform	rotation	x  40	y   39	z  -2000
 	charley	material	mode phong
 	charley	geometry box2
-	scene	transitions
-		drag	charley	charley	time 3	delta griddify
-		drag	charley	chungus	time 3	delta chingle_chan
-		drag	chungus	charley	time 1	delta glimmery
-		drag	chungus	chungus	time 2	delta spinback
-deltas	griddify
+	scene	transitions	drag
+		charley	charley	time 3	delta	mode simple	modes	simple griddify
+		charley	chungus	time 3	delta	mode simple	modes	simple chingle_chan
+		chungus	charley	time 1	delta	mode simple	modes	simple glimmery
+		chungus	chungus	time 2	delta	mode simple	modes	simple spinback
+deltas	
 	charley	transform	position	x 0
 	charley	transform	rotation	x 45
 	charley	material	mode basic
+	scene	transitions	drag
+		charley	charley	delta	mode off
+		charley	chungus	delta	mode off
+		chungus	charley	delta	mode off
+		chungus	chungus	delta	mode off
 deltas	glimmery
 	charley	transform	position	x -100	y -200	z -1000
 	chungus	transform	position	x    0	y  300	z  -2000
@@ -38,16 +42,12 @@ deltas	chingle_chan
 	charley	transform	position	x  500	y   0	z   -500
 deltas	spinback
 	chungus	transform	rotation	x 39	y 100	z 399
-`)
-
-for(const [geometryName,geometryURL] of Object.entries(config.geometries))
-	load_geometry(geometryName,geometryURL)//Load all the geometries
-
-for(const [Name,URL] of Object.entries(config.textures))
-	load_texture(Name,URL)
-
-for(const [itemName,itemType] of Object.entries(config.items))
-	items[itemName]=modules[itemType](itemName)//Load all the items
-
-requestTween(config.deltas.initial,0)
-
+	
+types
+	deltas	*	scene	drag
+	deltas	*	scene	drag	*: items
+	deltas	*	scene	drag	*	*: items
+	deltas	*	scene	drag	*	*	time: number
+	deltas	*	scene	drag	*	*	mode: deltas * scene drag * * modes
+	deltas	*	scene	drag	*	*	modes	simple: deltas
+	// How to say that we have an item of a specific type, then verify whats inside it?

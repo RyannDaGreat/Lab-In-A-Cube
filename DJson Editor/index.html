@@ -1,0 +1,428 @@
+<!-- This is a really hacky realtime-editor for djson files that I threw together in an hour -->
+<!-- It can be VERY useful though -->
+<head>
+	<meta charset="UTF-8">
+</head>
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/showdown/1.8.6/showdown.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.40.2/codemirror.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.40.2/mode/markdown/markdown.min.js'></script>
+<script src="https://codemirror.net/keymap/vim.js"></script>
+<script src="https://codemirror.net/keymap/sublime.js"></script>
+<script src="https://codemirror.net/addon/search/search.js"></script>
+<script src="https://codemirror.net/addon/search/searchcursor.js"></script>
+<script src="https://codemirror.net/addon/search/jump-to-line.js"></script>
+
+<script src="../r.js"></script>
+<script src="../assert.js"></script>
+<script src="../djson.js"></script>
+<script src="../deltas.js"></script>
+<script src="../gloves.js"></script>
+<script src="../keyPath.js"></script>
+<script src="../proxies.js"></script>
+<link href="https://fonts.googleapis.com/css?family=PT+Mono" rel="stylesheet">
+<link href="https://codemirror.net/addon/dialog/dialog.css" rel="stylesheet">
+
+<style>
+
+	body 
+	{
+    /* position: fixed; */
+    /* overflow: hidden; */
+      overscroll-behavior-y: none;
+      overscroll-behavior-x: none;
+
+}
+	pre {
+		background: white;
+		color:black;
+		/* padding: 10px 16px; */
+		border-radius: 2px;
+		border-top: 4px solid #00aeef;
+		/* -moz-box-shadow: inset 0 0 10px #000; */
+		/* box-shadow: inset 0 0 10px #000; */
+}
+*{
+		 tab-size:      4;
+		 font-family: 'PT Mono', monospace;
+
+}
+body
+{
+		filter:invert(1);
+}
+/* pre .span {
+	display: block;
+		line-height: 1.5rem;
+		counter-increment: line;
+}
+pre .span:before {
+			
+			content: counter(line);
+			display: inline-block;
+			border-right: 1px solid #ddd;
+			padding: 0 .5em;
+			margin-right: .5em;
+			color: #888
+
+} */
+	div{
+		color:#101000 ;
+		background-color: white;
+	}
+	.cm-tab {
+				 background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAMCAYAAAAkuj5RAAAAAXNSR0IArs4c6QAAAGFJREFUSMft1LsRQFAQheHPowAKoACx3IgEKtaEHujDjORSgWTH/ZOdnZOcM/sgk/kFFWY0qV8foQwS4MKBCS3qR6ixBJvElOobYAtivseIE120FaowJPN75GMu8j/LfMwNjh4HUpwg4LUAAAAASUVORK5CYII=);
+				 background-position: right;
+				 background-repeat: no-repeat;
+			}
+</style>
+
+
+
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.40.2/codemirror.css">
+
+<script id="defaulttext" type="text">
+# Markdown Editor
+
+A Simple Markdown Editor With Automatic Preview
+
+- - - 
+	
+# Markdown Sample
+
+## Header 2
+
+### Header 3
+
+- list
+- list
+- list
+	
+**Bold**
+	
+_italics_
+
+	
+		Code Block
+		 
+	
+</script>
+
+<!-- <div id="toolbar" style="height:0px"> -->
+<!-- </div> -->
+<div id="container">
+		<div id="editor">
+				<textarea id="editorTextArea">
+		</textarea>
+		</div>
+		<div id="splitbar">
+		</div>
+		<div id="preview">
+		</div>
+</div>
+<style>
+html,
+body {
+
+		padding: 0;
+		margin: 0;
+		height: 100%;
+
+}
+
+#toolbar {
+/* 
+		box-sizing: border-box;
+		position: fixed;
+		width: 100%;
+		height: 30px;
+		background-color: #fff;
+
+		border-bottom: 1px solid black;
+		z-index: 1000; */
+}
+
+#container {
+
+		box-sizing: border-box;
+		position: fixed;
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		padding: 0;
+		top: 0px;
+}
+
+#editor {
+
+		box-sizing: border-box;
+		width: 49.5%;
+		float: left;
+		height: 100%;
+		margin: 0;
+		padding: 0;
+
+		/* box-shadow: 1px 1px 10px #000;*/
+		border-right: double black;
+
+		z-index: 999;
+
+}
+
+#splitbar {
+
+		box-sizing: border-box;
+		padding: 0;
+		width: 10px;
+		height: 100%;
+		float: left;
+
+		cursor: w-resize;
+
+		margin: 0;
+
+		/* background-color: #f00; */
+		color: green;
+
+		z-index: -1;
+
+}
+
+#preview {
+
+		box-sizing: border-box;
+		/* padding: 1em; */
+		width: 49.5%;
+		height: 100%;
+		float: left;
+
+		margin: 0;
+		overflow-y: scroll;
+
+		z-index: -1;
+
+}
+</style>
+<script>
+	var config={linenumbers:true,json:false}
+function Process(string) {
+	// string=string.replace(/    /g,'\t')
+	parsed=djson.parse(string)
+	if(parsed.preview)
+		config=parsed.preview
+	if(config.json)
+			string=JSON.stringify(parsed,null,4)
+		else
+		 string=djson.stringify(parsed)
+		return string
+}
+
+
+/*
+	TODO:
+		- Needs Refactoring
+	
+*/
+
+			colors={
+				purple:'string',
+				leafKey:'string',
+				blue:'comment',
+				cyan:'tag',
+				strike:'strikethrough',
+			}
+
+let bunky=false
+CodeMirror.defineMode('simplemode', function () {
+	return {
+		token: function (stream, state) 
+		{
+			if(bunky)
+			{
+				stream.match(/[^\t]*/,true)
+				bunky=false
+				return colors.blue
+			}
+			stream.match(/\t*/)
+			if(stream.match(/[^\t ]*[ ][^\t]*/,false))
+			{
+				stream.match(/[^\t ]* /,true)
+				if(!stream.eol())
+					bunky=true
+				return colors.leafKey
+			}
+			if(stream.match(/[ ][^\t]*/,true))
+			{
+				return colors.blue
+			}
+			if(stream.match(/ /,true))
+			{
+				return colors.blue
+			}
+			if(stream.match(/[^\t]* /))
+			{
+				return
+			}
+			if(stream.match(/[\t]*[^\t ]*[\t]*/))
+			{
+				// [colors.blue,colors.purple]=[colors.purple,colors.blue]
+				return colors.cyan
+			}
+			// stream.eat(/[\t]*/,false)
+			// stream.next()
+
+			return//Uncolored
+
+		}
+	}
+})
+
+
+var PREVIEW = document.getElementById('preview')
+
+var converter = new showdown.Converter()
+
+/* Set Default Text */
+document.getElementById("preview")
+		.innerHTML = converter.makeHtml(
+				// document.getElementById("defaulttext").innerHTML
+				`<pre>Welcome to the DJSON (Delta JSON) Editor!
+Your progress is always saved in localStorage, so if you reload the page you should be fine.
+To preview your DJSON as a JSON file, set that in the 'preview' settings (example shown below).
+You can make this somewhere in your djson:
+
+preview
+	json false
+	json true
+	numbers true
+	numbers false
+	mode vim
+	mode sublime
+	mode default
+
+</pre>`
+
+		)
+
+document.getElementById("editorTextArea")
+		.innerHTML =localStorage.getItem('user')||""
+
+
+
+
+/* Create Editor */
+
+
+var initialconfig=localStorage.getItem('user')
+console.log(initialconfig)
+var initialconfig=djson.parse(initialconfig||"").preview;//<---- sloppy code here. No need for this variable
+var keymap='default'
+console.log(initialconfig)
+if(initialconfig && initialconfig.mode in {vim:{},sublime:{}})
+	keymap=initialconfig.mode 
+
+var editor = CodeMirror.fromTextArea(editorTextArea, {
+
+		lineNumbers: true,
+		indentWithTabs:true,
+		indentUnit:4,
+		undoDepth:10000,
+		mode:'simplemode',
+		autofocus:true,
+		keyMap:keymap,
+})
+
+editor.setSize("100%", "100%")
+
+editor.on("change", (cm, change) => {
+
+		console.log(cm)  
+		// console.log(change)
+		const value=cm.getValue()
+		cm.options.lineWrapping=Boolean(config.wrap)
+		if('mode' in config)
+			if(config.mode in {vim:{},sublime:{}})
+				cm.options.keyMap=config.mode
+			else
+				cm.options.keyMap='default'
+		if(config.mode==='vim')
+			cm.options.vimMode=true
+		else
+			cm.options.vimMode=false
+
+
+		// cm.options.indentUnit=cm.options.tabSize=config.tab||4
+		var str=Process(value) 
+		localStorage.setItem('user', value);
+		if(config.numbers)str=numbered_lines_string(str,i=>i+'\t')
+		PREVIEW.innerHTML ="<pre>" + str+ "</pre>"
+
+})
+
+/*
+	Simple Split Pane Implementation
+*/
+preview_div = document.getElementById("editor")
+editor_div = document.getElementById("preview")
+
+split = document.getElementById("splitbar")
+
+split.onmousedown = function(event) {
+
+		var t = event.target
+
+		var xCord = event.clientX
+		var xPercent = xCord / window.innerWidth
+
+		t.ondragstart = function() {
+				return false;
+		};
+
+		moveAt(xPercent)
+
+		function moveAt(xPercent) {
+
+				var p = (xPercent * 100).toFixed(2)
+
+				if (p < 5) { p = 5 }
+				if (p > 95) { p = 95 }
+
+				editor_div.style.width = (100 - p - 1) + "%"
+				preview_div.style.width = p + "%"
+
+				console.log(p)
+
+		}
+
+		function onMouseMove(event) {
+
+				var xCord = event.clientX
+				// var yCord = event.clienty
+
+				var xPercent = xCord / window.innerWidth
+				// var yPercent = yCord / window.innerHeight
+
+				moveAt(xPercent)
+
+		}
+
+		document.addEventListener('mousemove', onMouseMove)
+
+		console.log(t)
+
+		t.onmouseup = function() {
+				document.removeEventListener('mousemove', onMouseMove)
+				document.removeEventListener('mouseup', onMouseMove)
+				t.onmouseup = null;
+		}
+
+		// Added InCase The Handle Get Orphaned
+		document.addEventListener('mouseup', () => {
+
+				document.removeEventListener('mouseup', onMouseMove)
+				document.removeEventListener('mousemove', onMouseMove)
+		})
+
+
+}
+</script>

@@ -2,3 +2,5 @@ TODO
 
 Error Messages:
 	- When a geometry fails to load
+
+Texture Loading

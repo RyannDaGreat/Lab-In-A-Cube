@@ -128,6 +128,10 @@ function multiply_string(string,number)
 		out+=string
 	return out
 }
+function is_defined(x)
+{
+	return x!==undefined
+}
 function is_object(x)
 {
 	return Boolean(x&&Object.getPrototypeOf(x)===Object.prototype)
@@ -138,6 +142,32 @@ function are_objects(...variables)
 		if(!is_object(variable))
 			return false
 	return true
+}
+function numbered_lines_string(string,numberToPrefix=i=>i+'\t')
+{
+	//This function is meant for printing out code, with line-numbers on the far left.
+	//EXAMPLE:
+	//	CODE:
+	//		console.log(numbered_lines_string('line one\nline two\nline three'))
+	//	OUTPUT:
+	//		1	line one
+	//		2	line two
+	//		3	line three
+	//Note: This function follows the typical text-editor convention that line-numbers start at 1, not 0
+	//	(Think of it this way, when's the last time you ever saw a syntax error at line 0? Never...)
+	console.assert(typeof string==='string')
+	return Object.entries(string.split('\n')).map((([i,e])=>numberToPrefix(Number(i)+1)+e)).join('\n')
+}
+function singleton(get)
+{
+	//Makes a singleton out of a simple ()=>value getter function
+	let singleton
+	return function()
+	{
+		if(singleton===undefined)
+			singleton=get()
+		return singleton
+	}
 }
 function get_indent_level(line,key={'\t':4})
 {

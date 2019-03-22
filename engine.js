@@ -12,15 +12,29 @@ camera.position.z = 1000
 //This is yucky. I shouldn't have to pass the name through a parameter...but I can't think of a cleaner way yet. Same problem as any item in an object tree knowing its path.
 // deltas={}
 
-const items={}
+const items={
+	// scene:
+	// {
+	// 	set background(value)
+	// 	{
+	// 		scene.background=cubeMaps[value]||null
+	// 	}
+	// }
+}
 
 function load_geometry(name,url)
 {
 	var object
 	function loadModel()
 	{
-		console.log(object)
-		geometries[name]=object.children[0].geometry
+		try
+		{
+			geometries[name]=object.children[0].geometry
+		}
+		catch
+		{
+			console.error("load_geometry error: failed to load "+JSON.stringify(url))
+		}
 	}
 	function callback( obj )
 	{
@@ -29,8 +43,32 @@ function load_geometry(name,url)
 	var loader = new THREE.OBJLoader(new THREE.LoadingManager(loadModel)).load(url, callback, ()=>{}, ()=>{})
 }
 
+function load_texture(name,url)
+{
+	var texture = new THREE.TextureLoader().load(url );
+	textures[name]=texture
+}
+
+function load_cube_map(name,url_prefix,px,nx,py,ny,pz,nz)
+{
+	cubeMaps[name] = new THREE.CubeTextureLoader()
+		.setPath( url_prefix )
+		.load( [
+			px,
+			nx,
+			py,
+			ny,
+			pz,
+			nz
+		] );
+}
+
+const textures={default:null}
+
+const cubeMaps={default:null}
+
 const geometries={
-	box: new THREE.BoxGeometry(700, 700, 700, 10, 10, 10),
+	box:  new THREE.BoxGeometry(700, 700, 700, 10, 10, 10),
 	box2: new THREE.BoxGeometry(300, 300, 300, 10, 10, 10),
 }
 
@@ -100,6 +138,7 @@ const modules={
 		} 
 		let geometry='box'
 		let material='standard'
+		let texture='default'
 		let mesh=new THREE.Mesh(geometries[geometry], materials[material])
 		scene.add(mesh)
 		const item= {
@@ -108,7 +147,10 @@ const modules={
 			get material(){return{
 				get mode(){return material},
 				set mode(mode){material=mode;mesh.material=materials[mode]},
+				modes:materials,
 			}},
+			get texture(){return texture},
+			set texture(value){texture=value;mesh.material.map=textures[texture]||textures.default},
 			get geometry(){return geometry},
 			set geometry(value)
 			{
@@ -129,12 +171,7 @@ const modules={
 		const item= {
 			ID:ID,
 			threeObject:light,
-			get x(){return light.position.x;},
-			get y(){return light.position.y;},
-			get z(){return light.position.z;},
-			set x(value){light.position.x=value},
-			set y(value){light.position.y=value},
-			set z(value){light.position.z=value},
+			position:attributes.position(light),
 			get intensity(){return light.intensity;},
 			set intensity(value){light.intensity=value},
 		}
@@ -179,10 +216,16 @@ renderer.domElement.addEventListener("mouseup", mouseup, true);
 
 function triggerDragTransition(mousedownItem,mouseupItem)
 {
-	console.log("TRIGGER: "+mousedownItem.ID+" TO "+mouseupItem.ID)
-	const transition = items.scene.transitions.drag[mousedownItem.ID][mouseupItem.ID]
-	requestTween(config.deltas[transition.delta],transition.time )
-	// requestTween(transition.delta,transition.time)
+	try
+	{
+		const transition = items.scene.transitions.drag[mousedownItem.ID][mouseupItem.ID]
+		requestTween(config.deltas[transition.delta],transition.time )
+		console.log("triggerDragTransition: "+mousedownItem.ID+" TO "+mouseupItem.ID)
+	}
+	catch(KeyError)
+	{
+		console.error("triggerDragTransition error: No transition from "+mousedownItem.ID+" TO "+mouseupItem.ID+" exists")
+	}
 }
 
 const tween={
@@ -242,5 +285,7 @@ function render()
 	camera.aspect=window.innerWidth/window.innerHeight
 	renderer.setSize(window.innerWidth, window.innerHeight)
 	renderer.render(scene, camera)
+	// controls.update()
 }
 render()
+

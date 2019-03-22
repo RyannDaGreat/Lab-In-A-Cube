@@ -42,7 +42,6 @@ function applyDelta(o,d,f=(o,d)=>[d,o])
 	}
 }
 
-
 function blendedDeltas(x,y,alpha)
 {
 	//Pure function: no mutations

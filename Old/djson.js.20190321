@@ -49,10 +49,18 @@ const djson={
 				lines.unshift(line)//Put it back again
 				break
 			}
+			const trimmed=line.trimLeft()
+			let [key,value]=split_on_first_space(trimmed)//Sometimes value will be undefined
 
-			///////////////////////////////////////////////////////////////////
-
+			const isLeaf=Boolean(value!==undefined)
 			const current_line_number=originalNumberOfLines-(lines.length)
+
+			if(false && key==='')              console.warn('djson.parse warning at line '+current_line_number+': key==="", which means you have a blank line somewherere')
+			if(false && key in out)            console.warn('djson.parse warning at line '+current_line_number+': key is not unique! key==='+JSON.stringify(key))
+			if(value&&value!==value.trimLeft())console.warn('djson.parse warning at line '+current_line_number+': value starts with whitespace, which means you might have tried using spaces as indents: value==='+JSON.stringify(value))
+			if(isLeaf&&!value)                 console.warn('djson.parse warning at line '+current_line_number+': value is empty! You must have had some line ending with key followed by a single space before the end of the line')
+			console.assert(is_object(out))
+
 			function applyDjsonDelta(o,d)//A simpler variant of applyDelta that lets you rewrite deltas, making djson potentially very readable if written by hand
 			{
 				for(const key in d)
@@ -65,43 +73,7 @@ const djson={
 					}
 			}
 
-			const trimmed=line.replace(/^\t*/,'')//Remove all tabs at the beginning of the line
-			const entries=trimmed.split(/\t+/)//Split at every contiguous cluster of tabs
-
-			const path=[]//This gets added to...
-
-			for(const entry of entries)
-			{
-				console.assert(!entry.includes('\t'),'This is impossible unless djson.parse is broken.')
-				if(entry.includes(' '))
-				{
-					const [key,value]=split_on_first_space(entry)
-					if(false)if(value&&value!==value.trimLeft())console.warn('djson.parse warning at line '+current_line_number+': value starts with whitespace, which means you might have tried using spaces as indents: value==='+JSON.stringify(value))
-					if(!value)                         console.warn('djson.parse warning at line '+current_line_number+': value is empty! You must have had some line ending with key followed by a single space before the end of the line')
-					applyDjsonDelta(out,nested_path(path,{[key]:leaf_parser(value)}))
-				}
-				else
-				{
-					path.push(entry)//Burrow deeper down the rabbit hole...
-				}
-			}
-
-			applyDjsonDelta(out,nested_path(path,djson.parse(lines,line_level)))
-
-
-			// [key,values]=entries
-
-
-
-
-
-
-			// const isLeaf=Boolean(entries.length>=1)
-
-			// if(false && key==='')              console.warn('djson.parse warning at line '+current_line_number+': key==="", which means you have a blank line somewherere')
-			// if(false && key in out)            console.warn('djson.parse warning at line '+current_line_number+': key is not unique! key==='+JSON.stringify(key))
-			// console.assert(is_object(out))
-
+			applyDjsonDelta(out,nested_path(key.trim().split(/\t+/),isLeaf?leaf_parser(value):djson.parse(lines,line_level)))
 		}
 		return out
 	},
@@ -117,8 +89,7 @@ const djson={
 			}
 			else
 			{
-				console.assert(key                ,'djson keys cannot be empty strings')
-				console.assert(!key.includes(' ') ,'djson keys cannot contain spaces')
+				console.assert(!key.includes(' '),'djson keys cannot contain spaces')
 				console.assert(!key.includes('\t'),'djson keys cannot contain tabs')
 				console.assert(!key.includes('\n'),'djson keys cannot contain newlines')
 				if(typeof value!=='string')
@@ -213,4 +184,4 @@ deltaTest aposd
 		console.assert(stringified===stringified2)
 	},
 }
-// djson.test()
+djson.test()
