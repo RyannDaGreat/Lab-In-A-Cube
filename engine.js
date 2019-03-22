@@ -34,6 +34,62 @@ const geometries={
 	box2: new THREE.BoxGeometry(300, 300, 300, 10, 10, 10),
 }
 
+const attributes={
+	position(threeObject)
+	{
+		return{
+			get x(){return threeObject.position.x},
+			get y(){return threeObject.position.y},
+			get z(){return threeObject.position.z},
+			set x(value){threeObject.position.x=value},
+			set y(value){threeObject.position.y=value},
+			set z(value){threeObject.position.z=value},
+		}
+	},
+	rotation(threeObject)
+	{
+		return{
+			get x(){return threeObject.rotation.x/Math.PI*180},
+			get y(){return threeObject.rotation.y/Math.PI*180},
+			get z(){return threeObject.rotation.z/Math.PI*180},
+			set x(value){threeObject.rotation.x=value*Math.PI/180},
+			set y(value){threeObject.rotation.y=value*Math.PI/180},
+			set z(value){threeObject.rotation.z=value*Math.PI/180},
+		}
+	},
+	scale(threeObject)
+	{
+		const scale={
+			overall:1,
+			x:1,y:1,z:1,
+		}
+		return{
+			get x(){return scale.x},
+			get y(){return scale.y},
+			get z(){return scale.z},
+			set x(value){scale.x=value;threeObject.scale.x=scale.x*scale.overall},
+			set y(value){scale.y=value;threeObject.scale.y=scale.y*scale.overall},
+			set z(value){scale.z=value;threeObject.scale.z=scale.z*scale.overall},
+			set overall(value)
+			{
+				scale.overall=value
+				threeObject.scale.x=scale.x*scale.overall
+				threeObject.scale.y=scale.y*scale.overall
+				threeObject.scale.z=scale.z*scale.overall
+			},
+			get overall(){return scale.overall},
+		}
+	},
+	transform(threeObject)
+	{
+		return{
+			position:attributes.position(threeObject),
+			rotation:attributes.rotation(threeObject),
+			scale:attributes.scale(threeObject),
+		}
+	}
+}
+
 const modules={
 	boxItem(ID)
 	{
@@ -46,47 +102,9 @@ const modules={
 		let material='standard'
 		let mesh=new THREE.Mesh(geometries[geometry], materials[material])
 		scene.add(mesh)
-		let scale={
-			overall:1,
-			x:1,y:1,z:1,
-		}
 		const item= {
 			get ID(){return ID},
-			get transform(){return{
-				get position(){return{
-					get x(){return mesh.position.x},
-					get y(){return mesh.position.y},
-					get z(){return mesh.position.z},
-					set x(value){mesh.position.x=value},
-					set y(value){mesh.position.y=value},
-					set z(value){mesh.position.z=value},
-				}},
-				get rotation(){return{
-					//Should be able to have deg and rad inputs unless this is raw
-					get x(){return mesh.rotation.x/Math.PI*180},
-					get y(){return mesh.rotation.y/Math.PI*180},
-					get z(){return mesh.rotation.z/Math.PI*180},
-					set x(value){mesh.rotation.x=value*Math.PI/180},
-					set y(value){mesh.rotation.y=value*Math.PI/180},
-					set z(value){mesh.rotation.z=value*Math.PI/180},
-				}},
-				get scale(){return{
-					get x(){return scale.x},
-					get y(){return scale.y},
-					get z(){return scale.z},
-					set x(value){scale.x=value;mesh.scale.x=scale.x*scale.overall},
-					set y(value){scale.y=value;mesh.scale.y=scale.y*scale.overall},
-					set z(value){scale.z=value;mesh.scale.z=scale.z*scale.overall},
-					set overall(value)
-					{
-						scale.overall=value
-						mesh.scale.x=scale.x*scale.overall
-						mesh.scale.y=scale.y*scale.overall
-						mesh.scale.z=scale.z*scale.overall
-					},
-					get overall(){return scale.overall},
-				}},
-			}},
+			transform:attributes.transform(mesh),
 			get material(){return{
 				get mode(){return material},
 				set mode(mode){material=mode;mesh.material=materials[mode]},

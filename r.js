@@ -17,7 +17,8 @@ function sortKeys(object)
 			sortKeys(object[key])
 		}
 	}
-}function is_object(x)
+}
+function is_object(x)
 {
 	assert.rightArgumentLength(arguments)
 	return Boolean(x&&Object.getPrototypeOf(x)===Object.prototype)
@@ -83,78 +84,6 @@ function currentFunctionName()
 			return ''
 		}
 	}
-}
-const assert={
-	rightArgumentLength(arguments)
-	{
-		try
-		{
-			const actualNumberOfArguments=arguments.length
-			const minimumNumberOfArguments=arguments.callee.length
-			console.assert(actualNumberOfArguments>=minimumNumberOfArguments,'Wrong number of arguments in function '+JSON.stringify(arguments.callee.name)+' (got '+actualNumberOfArguments+' but was expecting at least '+minimumNumberOfArguments+' arguments)')
-		}
-		catch
-		{
-			console.warn("Failed to use rightArgumentLength. Probably because chrome is being a beastly piece of garbage and turning on strict mode without my consent afaik.")
-		}
-	},
-	isPrototypeOf(variable,type)
-	{
-		//This function REALLY NEEDS to be renamed...
-		assert.rightArgumentLength(arguments)
-		console.assert(variable!==undefined,'assertDefinedType: variable is undefined, and therefore does not have a prototype')
-		console.assert(variable!==null     ,'assertDefinedType: variable is null, and therefore does not have a prototype'     )
-		if(type!=undefined)
-			console.assert(Object.getPrototypeOf(variable)==type.prototype,'assertDefinedType: variable has wrong prototype')
-	},
-	defined(variable)
-	{
-		assert.rightArgumentLength(arguments)
-		console.assert(variable!==undefined,'Caught undefined variable!')
-	},
-
-	isPureObject(variable)
-	{
-		assert.rightArgumentLength(arguments)
-		assert.isPrototypeOf(variable,Object)
-	},
-	arePureObjects(...variables)
-	{
-		assert.rightArgumentLength(arguments)
-		assert.isPrototypeOf(variable,Object)
-		for(variable of variables)
-			assert.isPureObject(variable)
-	},
-	isPureArray(variable)
-	{
-		assert.rightArgumentLength(arguments)
-	},
-	arePureArrays(...variables)
-	{
-		assert.rightArgumentLength(arguments)
-		for(variable of variables)
-			assert.isPureArray(variable)
-	},
-}
-
-const proxies={
-	filterEnumerables(object,filter)
-	{
-		//There will either be less or equal number of enumerables on the result
-		console.assert(Object.getPrototypeOf(object)===Object.prototype)
-		const handler={
-			ownKeys(target)
-			{
-				return Object.keys(target).filter(filter)
-			}
-		}
-		return new Proxy(object,handler)
-	},
-	whitelistEnumerables(object,...whitelist)
-	{
-		const set=new Set(whitelist)
-		return filterEnumerables(object,Set.prototype.has.bind(set))
-	},
 }
 function removeDuplicateCharacters(string)
 {

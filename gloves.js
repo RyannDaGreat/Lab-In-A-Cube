@@ -13,6 +13,8 @@ const gloves={
 		//EXAMPLE:
 		//	A={};B={};C=gloves.broadcaster([A,B]);C.a.b.c=5;console.log(A.a.b.c,B.a.b.c)
 		assert.rightArgumentLength(arguments)
+		assert.isPureArray(objects)
+		assert.isPureArray(path)
 		const handler={
 			get(_,key)
 			{
