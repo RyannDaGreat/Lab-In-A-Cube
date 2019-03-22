@@ -1,12 +1,11 @@
-
-var renderer = new THREE.WebGLRenderer()
+const renderer = new THREE.WebGLRenderer()
 renderer.setSize(window.innerWidth, window.innerHeight)
 renderer.setPixelRatio(window.devicePixelRatio)
 document.body.appendChild(renderer.domElement)
 
-var scene = new THREE.Scene()
+const scene = new THREE.Scene()
 
-var camera = new THREE.PerspectiveCamera(75,10,1,999999)
+const camera = new THREE.PerspectiveCamera(75,10,1,999999)
 camera.fov=75
 camera.position.z = 1000
 
@@ -34,9 +33,6 @@ const geometries={
 	box: new THREE.BoxGeometry(700, 700, 700, 10, 10, 10),
 	box2: new THREE.BoxGeometry(300, 300, 300, 10, 10, 10),
 }
-
-load_geometry('ninja','https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/models/obj/ninja/ninjaHead_Low.obj')
-load_geometry('dog','./dog.obj')
 
 const modules={
 	boxItem(ID)
@@ -88,7 +84,7 @@ const modules={
 						mesh.scale.y=scale.y*scale.overall
 						mesh.scale.z=scale.z*scale.overall
 					},
-					get overall(){return overall_scale},
+					get overall(){return scale.overall},
 				}},
 			}},
 			get material(){return{
@@ -147,7 +143,7 @@ function getClickedItem(event)//Give it a mouse event
 	}
 }
 
-var mousedownItem
+let mousedownItem
 function mousedown(event)
 {
 	mousedownItem=getClickedItem(event)
@@ -158,26 +154,20 @@ function mouseup(event)
 {
 	const mouseupItem=getClickedItem(event)
 	if(mouseupItem && mousedownItem)
-		triggerTransition(mousedownItem,mouseupItem)
+		triggerDragTransition(mousedownItem,mouseupItem)
 	mousedownItem=undefined
 }
 renderer.domElement.addEventListener("mouseup", mouseup, true);
 
-function triggerTransition(mousedownItem,mouseupItem)
+function triggerDragTransition(mousedownItem,mouseupItem)
 {
 	console.log("TRIGGER: "+mousedownItem.ID+" TO "+mouseupItem.ID)
-	const transition = items.scene.transitions[mousedownItem.ID][mouseupItem.ID]
-	// applyDelta(items, deltas[transition.deltaID], )
-	requestTween(transition.delta,transition.time)
+	const transition = items.scene.transitions.drag[mousedownItem.ID][mouseupItem.ID]
+	requestTween(config.deltas[transition.delta],transition.time )
+	// requestTween(transition.delta,transition.time)
 }
 
-function gtoc()
-{
-	//Return _remainintTime in seconds since 1970
-	return new Date().getTime()/1000
-}
-
-var tween={
+const tween={
 	_initialDelta:{},//The initial _initialDelta of the _targetDelta
 	_targetDelta:{},
 	_deadline:0,//The gtoc() in which we'll have finished our tween
@@ -215,50 +205,15 @@ var tween={
 	},
 }
 
+function print_current_state()
+{
+	console.log(djson.stringify(tween.delta))
+}
+
 function requestTween(delta,time=0)
 {
 	tween.time=time
 	tween.delta=delta
-}
-
-
-function blend(x,y,alpha)
-{
-	return (1-alpha)*x+alpha*y
-}
-function blendedDeltas(x,y,alpha)
-{
-	//Pure function: no mutations
-	//EXAMPLE:
-	// let a={a:0,b:{c:1,d:2},W:false}
-	// let b={a:1,b:{c:2,d:3},W:true}
-	// blendedDeltas(a,b,.2) ===== {a:0.2,b:{c:1.2000000000000002,d:2.2},W:true}
-	x=copiedDelta(x)
-	function blended(o,d)
-	{
-		if(Object.getPrototypeOf(o)===Number.prototype&&
-			Object.getPrototypeOf(d)===Number.prototype  )
-			return [blend(o,d,alpha),d]
-		return [d,d]
-	}
-	applyDelta(x,y,blended)
-	return x
-}
-
-function soakDelta(o,d)
-{
-	//This just mutates 'd', in the same way a normal applyDelta would.
-	//Returns nothing, just like applyDelta.
-	//In other words, the only difference between soakDelta and applyDelta is that soakDelta doesn't mutate 'o'.
-	applyDelta(o,d,(o,d)=>[o,o])
-}
-function pourDelta(o,d)
-{
-	//Opposite of soakDelta
-	//This just mutates 'o', in the same way a normal applyDelta would.
-	//Returns nothing, just like applyDelta.
-	//In other words, the only difference between pourDelta and applyDelta is that pourDelta doesn't mutate 'd'.
-	applyDelta(o,d,(o,d)=>[d,d])
 }
 
 function render()
@@ -271,48 +226,3 @@ function render()
 	renderer.render(scene, camera)
 }
 render()
-
-function copiedDelta(d)
-{
-	//Copies an object tree
-	if(!d||Object.getPrototypeOf(d)!==Object.prototype)
-		return d
-	const out={}
-	for(const [key,val] of Object.entries(d))
-		out[key]=copiedDelta(val)
-	return out
-}
-
-function applyDelta(o,d,f=(o,d)=>[d,o])
-{
-	//Apply _targetDelta 'd' to object 'o' and make d the receipt.
-	//Mutates both o and d and returns nothing.
-	console.assert(Object.getPrototypeOf(d)===Object.prototype)//All deltas are object trees
-	if(o===undefined)
-		return
-	for(const [key,val] of Object.entries(d))
-	{
-		if(key in o)
-		{
-			if(val === undefined)
-			{
-				d[key]=o[key]//For our receipt...
-				delete o[key]
-			}
-			else if(Object.getPrototypeOf(val) === Object.prototype)
-			{
-				applyDelta(o[key],val,f)
-			}
-			else
-			{
-				[o[key],d[key]] = f(o[key],val)//Added this function to enable things like blending etc
-			}
-		}
-		else if(val!==undefined)
-		{
-			o[key] = val
-			d[key] = undefined
-		}
-	}
-}
-
