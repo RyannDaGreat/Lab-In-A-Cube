@@ -1,7 +1,6 @@
 //DJSON Warnings:
 //	Don't use blank lines! It can be dangerous. If you use a COMPLETELY blank line (no whitespace), it will erase the rest of the current scope until the next unindented entry (this is because a blank line can be interpereted as a key called "". So, if you use another blank line later on, it will erase the previous value, and it will look as though values have been deleted.) They can be fine when written by a machine, but they're dangerous to try writing by hand (watch out for duplicate value warnings! Those are why thigns get overwritten)
 //	We can make warnings about duplicate values
-
 const djson={
 	parse_leaf(leaf)
 	{
@@ -53,8 +52,8 @@ const djson={
 
 			const isLeaf=Boolean(value!==undefined)
 
-			if(key==='')                       console.warn('djson warning: key==="", which means you have a blank line somewherere')
-			if(key in out)                     console.warn('djson warning: key is not unique! key==='+JSON.stringify(key))
+			if(false && key==='')                       console.warn('djson warning: key==="", which means you have a blank line somewherere')
+			if(false && key in out)                     console.warn('djson warning: key is not unique! key==='+JSON.stringify(key))
 			if(value&&value!==value.trimLeft())console.warn('djson warning: value starts with whitespace, which means you might have tried using spaces as indents: value==='+JSON.stringify(value))
 			if(isLeaf&&!value)                 console.warn('djson warning: value is empty! You must have had some line ending with key followed by a single space before the end of the line')
 			console.assert(is_object(out))
@@ -100,9 +99,9 @@ const djson={
 		}
 		return out.join('\n')
 	},
-	function test(djson)
+	test(_djson)
 	{
-		djson=djson||`test
+		_djson=_djson||`test
 1 
 	2
 	3
@@ -164,8 +163,8 @@ deltaTest
 	Blah 5
 	Blem 9
 	`
-		console.log("ORIGINAL:\n"+djson)
-		const object=djson.parse(djson)
+		console.log("ORIGINAL:\n"+_djson)
+		const object=djson.parse(_djson)
 		console.log("DJSON PARSED:\n"+JSON.stringify(object))
 
 		const stringified=djson.stringify(object)
@@ -178,4 +177,4 @@ deltaTest
 		console.assert(stringified===stringified2)
 	},
 }
-djson.test()
+// djson.test()

@@ -1,5 +1,25 @@
-function is_object(x)
+function sortKeys(object)
 {
+	//Recursively reorder the keys alphabetically
+	//Intended for use on json-like objects
+	//Originally written to normalize djson files' object representations
+	//EXAMPLE: sortKeys({3:0,2:0,1:0}) ==== {1:0,2:0,3:0}   (order isn't supposed to matter, but it seems that it IS generally preserved)
+	assert.rightArgumentLength(arguments)
+	if(is_object(object))
+	{
+		const keys=Object.keys(object)
+		keys.sort()
+		for(const key of keys)
+		{
+			const value=object[key]
+			delete object[key]
+			object[key]=value//Place key on the bottom
+			sortKeys(object[key])
+		}
+	}
+}function is_object(x)
+{
+	assert.rightArgumentLength(arguments)
 	return Boolean(x&&Object.getPrototypeOf(x)===Object.prototype)
 }
 function are_objects(...variables)
