@@ -179,8 +179,19 @@ function get_indent_level(line,key={'\t':4})
 			break
 	return out
 }
-function blend(x,y,alpha)
+function clamp(x,a,b)
 {
+	//Clamp x between a and b (doesn't matter if a>b or b<a)
+	if(x<Math.min(a,b))
+		return Math.min(a,b)
+	if(x>Math.max(a,b))
+		return Math.max(a,b)
+	return x
+}
+function blend(x,y,alpha,clamped=false)
+{
+	//If clamp is turned on, then we restrict alpha to reasonable values (between 0 and 1 inclusively)
+	alpha=clamp(alpha,0,1)
 	return (1-alpha)*x+alpha*y
 }
 function gtoc()

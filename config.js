@@ -1,43 +1,311 @@
 const config=djson.parse(`
-preview	json true	numbers false
 
+
+
+
+
+
+
+
+
+
+
+
+preview	json falsek	numbers falses
 textures
 	dog ./Assets/dog.jpg
+	weird ./Assets/weird.jpg
+	blank ./Assets/blank.png
 geometries
-	ninja https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/models/obj/ninja/ninjaHead_Low.obj
 	dog ./Assets/dog.obj
 items
-	light lightItem
-	chungus boxItem
-	charley boxItem
+	light1 lightItem	light2 lightItem	light3 lightItem	light4 lightItem
+	light5 lightItem	light6 lightItem	light7 lightItem	light8 lightItem
+	dog boxItem
+	box boxItem
 deltas	initial
-	chungus	transform	position	x -1000	y    0	z -2000
-	chungus	texture dog
-	chungus	geometry dog
-	chungus	transform	scale	overall 20
-	charley	transform	position	x 1000	y    0	z -2000
-	charley	transform	rotation	x  40	y   39	z  -2000
-	charley	material	mode phong
-	charley	geometry box2
+	light1	intensity 0.1	transform	position	x -10000	y -10000	z -10000
+	light2	intensity 0.1	transform	position	x -10000	y -10000	z  10000
+	light3	intensity 0.1	transform	position	x -10000	y  10000	z -10000
+	light4	intensity 0.1	transform	position	x -10000	y  10000	z  10000
+	light5	intensity 0.1	transform	position	x  10000	y -10000	z -10000
+	light6	intensity 0.1	transform	position	x  10000	y -10000	z  10000
+	light7	intensity 0.1	transform	position	x  10000	y  10000	z -10000
+	light8	intensity 0.1	transform	position	x  10000	y  10000	z  10000
+	box	texture blank	material	mode standard	modes	standard	color	r 1	g 1	b 1
+	dog
+		texture dog	geometry dog
+		transform
+			position	x -500	y  0	z -500
+			rotation	x  0	y  0	z  0
+			scale		x  1	y  1	z  1	overall 10
+	box	transform
+			position	x 500	y  0	z -500
+			rotation	x  0	y  0	z  0
+			scale		x  1	y  1	z  1	overall .3
 	scene	transitions
-		drag	charley	charley	time 3	delta griddify
-		drag	charley	chungus	time 3	delta chingle_chan
-		drag	chungus	charley	time 1	delta glimmery
-		drag	chungus	chungus	time 2	delta spinback
-deltas	griddify
-	charley	transform	position	x 0
-	charley	transform	rotation	x 45
-	charley	material	mode basic
-deltas	glimmery
-	charley	transform	position	x -100	y -200	z -1000
-	chungus	transform	position	x    0	y  300	z  -2000
-	chungus	transform	rotation	x   90
-deltas	chingle_chan
-	charley	transform	position	x  100	y 200	z -20000
-	charley	transform	rotation	x 3534
-	charley	transform	position	x  500	y   0	z   -500
-deltas	spinback
-	chungus	transform	rotation	x 39	y 100	z 399
+		drag	dog	dog	time 1	delta pour_0
+		auto null
+deltas	pour_0
+	dog	transform	position	y 200
+	scene	transitions	auto	delta pour_1	time 1
+deltas	pour_1
+	dog	transform	position	x 500
+	dog	transform	rotation	x 180
+	scene	transitions	auto	delta pour_2
+deltas	pour_2
+	dog	transform	rotation	z 180
+	scene	transitions	auto	delta pour_3
+deltas	pour_3
+	// Wait a few seconds
+	dog	transform	scale	y 50
+	scene	transitions	auto	delta pour_4
+	box
+		material	mode basic
+		transform	scale	x 10
+	box	transform	rotation	x 360
+deltas	pour_4
+	dog	transform	rotation	z 0	x 360
+	dog	transform	scale	y 10
+	box
+		material	mode standard
+		transform	scale	x 1
+	scene	transitions	auto	delta pour_5
+deltas	pour_5
+	dog	transform	position	x -500
+	box	texture weird	material	modes	standard	color	r 0	g 1	b 0
+	scene	transitions	auto	delta initial
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 `)
 
 for(const [geometryName,geometryURL] of Object.entries(config.geometries))

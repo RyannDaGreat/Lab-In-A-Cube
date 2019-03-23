@@ -49,19 +49,19 @@ function load_texture(name,url)
 	textures[name]=texture
 }
 
-function load_cube_map(name,url_prefix,px,nx,py,ny,pz,nz)
-{
-	cubeMaps[name] = new THREE.CubeTextureLoader()
-		.setPath( url_prefix )
-		.load( [
-			px,
-			nx,
-			py,
-			ny,
-			pz,
-			nz
-		] );
-}
+// function load_cube_map(name,url_prefix,px,nx,py,ny,pz,nz)
+// {
+// 	cubeMaps[name] = new THREE.CubeTextureLoader()
+// 		.setPath( url_prefix )
+// 		.load( [
+// 			px,
+// 			nx,
+// 			py,
+// 			ny,
+// 			pz,
+// 			nz
+// 		] );
+// }
 
 const textures={default:null}
 
@@ -120,10 +120,13 @@ const attributes={
 	},
 	transform(threeObject)
 	{
+		const position=attributes.position(threeObject)
+		const rotation=attributes.rotation(threeObject)
+		const scale   =attributes.scale   (threeObject)
 		return{
-			position:attributes.position(threeObject),
-			rotation:attributes.rotation(threeObject),
-			scale:attributes.scale(threeObject),
+			get position(){return position},
+			get rotation(){return rotation},
+			get scale(){return scale},
 		}
 	}
 }
@@ -135,6 +138,8 @@ const modules={
 			basic:new THREE.MeshBasicMaterial({color: 0xfffff, wireframe: true }),//color.r/g/b, wireframe, 
 			phong:new THREE.MeshPhongMaterial(),//color.r/g/b
 			standard:new THREE.MeshStandardMaterial(),
+
+							
 		} 
 		let geometry='box'
 		let material='standard'
@@ -237,10 +242,10 @@ const tween={
 	{
 		const length = tween._length
 		if(length === 0) return 1//We don't want division-by-zero errors when _length is 0
-			const time = tween._remainingTime
+			const time = tween.time
 		return 1 - (time / length)
 	},
-	get _remainingTime()
+	get time()
 	{
 		//Remaining _remainintTime
 		return Math.max(0, tween._deadline - gtoc())
@@ -273,19 +278,29 @@ function print_current_state()
 
 function requestTween(delta,time=0)
 {
+	//Tweens will be denied if we are in the middle of a transition
+	if(tween.time){console.log("Blocked Transition");return}//Don't allow more than one tween at a time
 	tween.time=time
 	tween.delta=delta
 }
+
+
+const blocked_deltas=new Set
 
 function render()
 {
 	applyDelta(items,tween.delta)
 	requestAnimationFrame(render)
+	if(!tween.time && items.scene.transitions.auto)
+	{
+		let auto=tween.delta.scene.transitions.auto//DONT USE items.scene.transitions.auto (this is updated every frame and overwritten; null can't delete this auto so you shouldn't use it. It causes lags and delays when you try to make it work with if/else statements etc)
+		if(auto)//auto doesn't always exist (set it to null to delete it)
+			requestTween(config.deltas[auto.delta],auto.time)
+	}
 	camera.updateProjectionMatrix()//Lets you update camera FOV and aspect ratio
 	camera.aspect=window.innerWidth/window.innerHeight
 	renderer.setSize(window.innerWidth, window.innerHeight)
 	renderer.render(scene, camera)
-	// controls.update()
 }
 render()
 

@@ -16,4 +16,15 @@ const proxies={
 		const set=new Set(whitelist)
 		return filterEnumerables(object,Set.prototype.has.bind(set))
 	},
+	typeAdder(object,f=(key,value)=>value)
+	{
+		console.assert(Object.getPrototypeOf(object)===Object.prototype)
+		const handler={
+			set(target,key,value)
+			{
+				target[key]=f(key,value)
+			}
+		}
+		return new Proxy(object,handler)
+	},
 }
