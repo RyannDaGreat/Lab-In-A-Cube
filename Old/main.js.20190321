@@ -167,7 +167,7 @@ function triggerTransition(mousedownItem,mouseupItem)
 {
 	console.log("TRIGGER: "+mousedownItem.ID+" TO "+mouseupItem.ID)
 	const transition = items.scene.transitions[mousedownItem.ID][mouseupItem.ID]
-	// applyDelta(items, deltas[transition.deltaID], )
+	// deltas.apply(items, deltas[transition.deltaID], )
 	requestTween(transition.delta,transition.time)
 }
 
@@ -202,12 +202,12 @@ var tween={
 	},
 	get delta()
 	{
-		return blendedDeltas(tween._initialDelta,tween._targetDelta,tween._alpha)
+		return deltas.blended(tween._initialDelta,tween._targetDelta,tween._alpha)
 	},
 	set delta(delta)
 	{
 		// pourDelta(tween._initialDelta,delta)
-		tween._initialDelta=blendedDeltas(blendedDeltas(tween._initialDelta,tween._targetDelta,1),delta,0)
+		tween._initialDelta=deltas.blended(deltas.blended(tween._initialDelta,tween._targetDelta,1),delta,0)
 		tween._targetDelta=delta
 		tween.delta//BEcause its a bit glitchy....idk why. This fixes it.
 		tween.delta
@@ -226,14 +226,14 @@ function blend(x,y,alpha)
 {
 	return (1-alpha)*x+alpha*y
 }
-function blendedDeltas(x,y,alpha)
+function deltas.blended(x,y,alpha)
 {
 	//Pure function: no mutations
 	//EXAMPLE:
 	// let a={a:0,b:{c:1,d:2},W:false}
 	// let b={a:1,b:{c:2,d:3},W:true}
-	// blendedDeltas(a,b,.2) ===== {a:0.2,b:{c:1.2000000000000002,d:2.2},W:true}
-	x=copiedDelta(x)
+	// deltas.blended(a,b,.2) ===== {a:0.2,b:{c:1.2000000000000002,d:2.2},W:true}
+	x=deltas.copied(x)
 	function blended(o,d)
 	{
 		if(Object.getPrototypeOf(o)===Number.prototype&&
@@ -241,29 +241,29 @@ function blendedDeltas(x,y,alpha)
 			return [blend(o,d,alpha),d]
 		return [d,d]
 	}
-	applyDelta(x,y,blended)
+	deltas.apply(x,y,blended)
 	return x
 }
 
-function soakDelta(o,d)
+function deltas.soak(o,d)
 {
-	//This just mutates 'd', in the same way a normal applyDelta would.
-	//Returns nothing, just like applyDelta.
-	//In other words, the only difference between soakDelta and applyDelta is that soakDelta doesn't mutate 'o'.
-	applyDelta(o,d,(o,d)=>[o,o])
+	//This just mutates 'd', in the same way a normal deltas.apply would.
+	//Returns nothing, just like deltas.apply.
+	//In other words, the only difference between deltas.soak and deltas.apply is that deltas.soak doesn't mutate 'o'.
+	deltas.apply(o,d,(o,d)=>[o,o])
 }
 function pourDelta(o,d)
 {
-	//Opposite of soakDelta
-	//This just mutates 'o', in the same way a normal applyDelta would.
-	//Returns nothing, just like applyDelta.
-	//In other words, the only difference between pourDelta and applyDelta is that pourDelta doesn't mutate 'd'.
-	applyDelta(o,d,(o,d)=>[d,d])
+	//Opposite of deltas.soak
+	//This just mutates 'o', in the same way a normal deltas.apply would.
+	//Returns nothing, just like deltas.apply.
+	//In other words, the only difference between pourDelta and deltas.apply is that pourDelta doesn't mutate 'd'.
+	deltas.apply(o,d,(o,d)=>[d,d])
 }
 
 function render()
 {
-	applyDelta(items,tween.delta)
+	deltas.apply(items,tween.delta)
 	requestAnimationFrame(render)
 	camera.updateProjectionMatrix()//Lets you update camera FOV and aspect ratio
 	camera.aspect=window.innerWidth/window.innerHeight
@@ -272,18 +272,18 @@ function render()
 }
 render()
 
-function copiedDelta(d)
+function deltas.copied(d)
 {
 	//Copies an object tree
 	if(!d||Object.getPrototypeOf(d)!==Object.prototype)
 		return d
 	const out={}
 	for(const [key,val] of Object.entries(d))
-		out[key]=copiedDelta(val)
+		out[key]=deltas.copied(val)
 	return out
 }
 
-function applyDelta(o,d,f=(o,d)=>[d,o])
+function deltas.apply(o,d,f=(o,d)=>[d,o])
 {
 	//Apply _targetDelta 'd' to object 'o' and make d the receipt.
 	//Mutates both o and d and returns nothing.
@@ -301,7 +301,7 @@ function applyDelta(o,d,f=(o,d)=>[d,o])
 			}
 			else if(Object.getPrototypeOf(val) === Object.prototype)
 			{
-				applyDelta(o[key],val,f)
+				deltas.apply(o[key],val,f)
 			}
 			else
 			{

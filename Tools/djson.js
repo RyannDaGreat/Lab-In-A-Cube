@@ -53,7 +53,7 @@ const djson={
 			///////////////////////////////////////////////////////////////////
 
 			const current_line_number=originalNumberOfLines-(lines.length)
-			function applyDjsonDelta(o,d)//A simpler variant of applyDelta that lets you rewrite deltas, making djson potentially very readable if written by hand
+			function applyDjsonDelta(o,d)//A simpler variant of deltas.apply that lets you rewrite deltas, making djson potentially very readable if written by hand
 			{
 				for(const key in d)
 					if(are_objects(o,d[key]) && key in o)

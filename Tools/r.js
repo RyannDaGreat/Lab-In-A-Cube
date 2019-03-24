@@ -1,3 +1,23 @@
+//All generalizable functions that don't really fit anywhere else, but that I'd like to reuse for other projects in the future...
+function getRequest(url,callback=console.log)
+{
+	var Http = new XMLHttpRequest()
+	Http.open("GET", url)
+	Http.send()
+	Http.onreadystatechange=(e)=>
+	{
+		console.assert(Http.status===200,"r.js getRequest error: code "+Http.status+" (should be 200) on url "+repr(url))
+		callback(Http.responseText)
+	}
+}
+function print(x)
+{
+	console.log(x)//What can I say? I really miss python...console.log is ugly.
+}
+function repr(x)
+{
+	return JSON.stringify(x)
+}
 function sortKeys(object)
 {
 	//Recursively reorder the keys alphabetically
@@ -187,6 +207,10 @@ function clamp(x,a,b)
 	if(x>Math.max(a,b))
 		return Math.max(a,b)
 	return x
+}
+function smoothAlpha(x)
+{
+	return (3*x-x*x*x)/2//https://www.desmos.com/calculator/pfaw67cutk
 }
 function blend(x,y,alpha,clamped=false)
 {

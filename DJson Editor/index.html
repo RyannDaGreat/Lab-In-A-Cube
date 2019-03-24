@@ -4,27 +4,34 @@
 	<meta charset="UTF-8">
 </head>
 
-<script src='https://cdnjs.cloudflare.com/ajax/libs/showdown/1.8.6/showdown.min.js'></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.40.2/codemirror.min.js'></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.40.2/mode/markdown/markdown.min.js'></script>
-<script src="https://codemirror.net/keymap/vim.js"></script>
-<script src="https://codemirror.net/keymap/sublime.js"></script>
-<script src="https://codemirror.net/addon/search/search.js"></script>
-<script src="https://codemirror.net/addon/search/searchcursor.js"></script>
-<script src="https://codemirror.net/addon/search/jump-to-line.js"></script>
+<script src="./downloaded/showdown.min.js"></script>
+<script src="./downloaded/codemirror.min.js"></script>
+<script src="./downloaded/markdown.min.js"></script>
+<script src="./downloaded/vim.js"></script>
+<script src="./downloaded/sublime.js"></script>
+<script src="./downloaded/search.js"></script>
+<script src="./downloaded/searchcursor.js"></script>
+<script src="./downloaded/jump-to-line.js"></script>
 
-<script src="../r.js"></script>
-<script src="../assert.js"></script>
-<script src="../djson.js"></script>
-<script src="../deltas.js"></script>
-<script src="../gloves.js"></script>
-<script src="../keyPath.js"></script>
-<script src="../proxies.js"></script>
-<link href="https://fonts.googleapis.com/css?family=PT+Mono" rel="stylesheet">
-<link href="https://codemirror.net/addon/dialog/dialog.css" rel="stylesheet">
+<script src="../Tools/r.js"></script>
+<script src="../Tools/assert.js"></script>
+<script src="../Tools/djson.js"></script>
+<script src="../Tools/deltas.js"></script>
+<script src="../Tools/gloves.js"></script>
+<script src="../Tools/keyPath.js"></script>
+<script src="../Tools/proxies.js"></script>
+
+<link href="./downloaded/dialog.css" rel="stylesheet">
 
 <style>
+@font-face {
+  font-family: 'PT Mono';
+  font-style: normal;
+  font-weight: 400;
+  src: local('PT Mono'), local('PTMono-Regular'), url(ptmono.ttf) format('truetype');
+}
 
+*{padding:0;margin:0;}
 	body 
 	{
     /* position: fixed; */
@@ -45,6 +52,7 @@
 *{
 		 tab-size:      4;
 		 font-family: 'PT Mono', monospace;
+		 font-size: 8pt;
 
 }
 body
