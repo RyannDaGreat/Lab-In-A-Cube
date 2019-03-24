@@ -14,3 +14,8 @@ Add optional smoothing
 Add sky/better lighting
 Add beakers with variable fluid levels
 Add GUI
+Make editor NOT dissapear when we zoom in too much (why does it do that??)
+Toggle Visibility
+Make a stack of deltas so we can edit in realtime for real
+Make macros
+Persistent Undo in editor

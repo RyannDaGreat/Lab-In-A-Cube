@@ -76,8 +76,8 @@ const djson={
 				if(entry.includes(' '))
 				{
 					const [key,value]=split_on_first_space(entry)
-					if(false)if(value&&value!==value.trimLeft())console.warn('djson.parse warning at line '+current_line_number+': value starts with whitespace, which means you might have tried using spaces as indents: value==='+JSON.stringify(value))
-					if(!value)                         console.warn('djson.parse warning at line '+current_line_number+': value is empty! You must have had some line ending with key followed by a single space before the end of the line')
+					// if(false)if(value&&value!==value.trimLeft())console.warn('djson.parse warning at line '+current_line_number+': value starts with whitespace, which means you might have tried using spaces as indents: value==='+JSON.stringify(value))
+					// if(!value)                         console.warn('djson.parse warning at line '+current_line_number+': value is empty! You must have had some line ending with key followed by a single space before the end of the line')
 					applyDjsonDelta(out,nested_path(path,{[key]:leaf_parser(value)}))
 				}
 				else
@@ -117,7 +117,7 @@ const djson={
 			}
 			else
 			{
-				console.assert(key                ,'djson keys cannot be empty strings')
+				// console.assert(key                ,'djson keys cannot be empty strings')
 				console.assert(!key.includes(' ') ,'djson keys cannot contain spaces')
 				console.assert(!key.includes('\t'),'djson keys cannot contain tabs')
 				console.assert(!key.includes('\n'),'djson keys cannot contain newlines')

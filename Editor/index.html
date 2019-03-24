@@ -126,7 +126,6 @@ _italics_
     </div>
     <div id='previewcontainer'>
         <div id="preview" style='overflow:scroll;'>
-        	<div id='oaisdoaijsdaoisjd'></div>
             <div id='previewtext' style='height:50%;overflow:scroll;'>
             </div>
             <div id='previewiframe'style='height:50%' >
@@ -237,13 +236,39 @@ function Process(string) {
 	parsed=djson.parse(string)
 	if(parsed.preview)
 		config=parsed.preview
-	console.log("config is "+JSON.stringify(parsed,null,4))
-	console.log(config)
-	if(config.type==='json')
-			string=JSON.stringify(parsed,null,4)
+	//console.log("config is "+JSON.stringify(parsed,null,4))
+	//console.log(config)
+	try
+	{
+		if('height' in config)
+		{
+			let h=config.height
+			if(typeof JSON.parse(h) =='number')
+			{
+
+				h=JSON.parse(h)
+				h=clamp(h,0,100)
+				document.getElementById('previewiframe').style.height=config.height+'%'
+				document.getElementById('previewtext').style.height=(100-config.height)+'%'
+			}
+		}
 		else
-		 string=djson.stringify(parsed)
-		return string
+		{
+			document.getElementById('previewiframe').style.height='50%'
+			document.getElementById('previewtext').style.height='50%'
+		}
+	}
+	catch
+	{
+		document.getElementById('previewiframe').style.height='50%'
+		document.getElementById('previewtext').style.height='50%'
+	}
+	if(config.type==='json')
+
+		string=config.min?JSON.stringify(parsed):JSON.stringify(parsed,null,4)
+	else
+		string=djson.stringify(parsed)
+	return string
 }
 
 
@@ -251,25 +276,25 @@ function Process(string) {
 	TODO:
 		- Needs Refactoring
 	
-*/
+		*/
 
-			colors={
-				purple:'string',
-				leafKey:'string',
-				blue:'comment',
-				cyan:'tag',
-				strike:'strikethrough',
-			}
+		colors={
+			purple:'string',
+			leafKey:'string',
+			blue:'comment',
+			cyan:'tag',
+			strike:'strikethrough',
+		}
 
-let bunky=false
-CodeMirror.defineMode('simplemode', function () {
-	return {
-		token: function (stream, state) 
-		{
-			if(bunky)
-			{
-				stream.match(/[^\t]*/,true)
-				bunky=false
+		let bunky=false
+		CodeMirror.defineMode('simplemode', function () {
+			return {
+				token: function (stream, state) 
+				{
+					if(bunky)
+					{
+						stream.match(/[^\t]*/,true)
+						bunky=false
 				return colors.blue
 			}
 			stream.match(/\t*/)
@@ -318,16 +343,19 @@ document.getElementById("previewtext")
 				`<pre>Welcome to the DJSON (Delta JSON) Editor!
 Your progress is always saved in localStorage, so if you reload the page you should be fine.
 To preview your DJSON as a JSON file, set that in the 'preview' settings (example shown below).
-You can make this somewhere in your djson:
+You can make this somewhere in your djson: 
 
 preview
 	type json
 	type djson
+	min true
+	min false		(whether to minify if we're looking at a JSON)
 	numbers true
 	numbers false
 	mode vim
 	mode sublime
 	mode default
+	height 75		(Specify the height percent of the game preview pane)
 
 </pre>`
 
@@ -343,19 +371,19 @@ document.getElementById("editorTextArea")
 
 
 var initialconfig=localStorage.getItem('config')
-console.log(initialconfig)
+//console.log(initialconfig)
 var initialconfig=djson.parse(initialconfig||"").preview;//<---- sloppy code here. No need for this variable
 var keymap='default'
-console.log(initialconfig)
+//console.log(initialconfig)
 if(initialconfig && initialconfig.mode in {vim:{},sublime:{}})
 	keymap=initialconfig.mode 
-
+function refreshGame(){document.getElementById('previewiframe').innerHTML=`<iframe id='iframeid' style='filter:invert(1);' src="../index.html" width="100%" height="100%"></iframe>`}
 var editor = CodeMirror.fromTextArea(editorTextArea, {
 
 		      extraKeys: {
-            // "Ctrl-R": ()=>{},
+            "Ctrl-R": refreshGame,
             "Ctrl-S": ()=>{},
-            // "Cmd-R": ()=>{},
+            "Cmd-R": refreshGame,
             "Cmd-S": ()=>{},
       },lineNumbers: true,
 		indentWithTabs:true,
@@ -370,10 +398,32 @@ editor.setSize("100%", "100%")
 
 let iframeSingleton=undefined
 
+let loadedHistory=false
+let ed=undefined
 editor.on("change", (cm, change) => {
+		// console.log(JSON.stringify(cm.doc.history),null,4)
+		// if(loadedHistory)
+		// 	localHistory.setItem('config_history',JSON.stringify(cm.doc.history))
+		// else
+		// {
+		// 	localHistory=true
+		// 	let config_history=localStorage.getItem('config_history')
+		// 	if(config_history)
+		// 	{
+		// 			console.warn("aspodk aspdok aspokd    poaksd pasokd apok   asdo    ")
+		// 		let parsed=JSON.parse(config_history)
+		// 		if(parsed)
+		// 		{
+		// 			console.warn("ASOIJDAOISDJPOAISJDPOAIJSDOPIAJIOSD")
+		// 			cm.doc.history=parsed
+		// 		}
+		// 	}
+		// }
 
-		console.log(cm)  
-		// console.log(change)
+		ed=cm
+
+		console.log(cm.doc.history)
+		//console.log(change)
 		const value=cm.getValue()
 		cm.options.lineWrapping=Boolean(config.wrap)
 		if('mode' in config)
@@ -427,7 +477,7 @@ split.onmousedown = function(event) {
 				editor_div.style.width = (100 - p - 1) + "%"
 				preview_div.style.width = p + "%"
 
-				console.log(p)
+				//console.log(p)
 
 		}
 
@@ -445,7 +495,7 @@ split.onmousedown = function(event) {
 
 		document.addEventListener('mousemove', onMouseMove)
 
-		console.log(t)
+		//console.log(t)
 
 		t.onmouseup = function() {
 				document.removeEventListener('mousemove', onMouseMove)

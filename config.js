@@ -9,15 +9,7 @@ function load_config(url)
 
 // load_config('demo.djson')
 
-
-const config=djson.parse(`
-
-
-
-
-
-
-
+let defaultConfig=`
 
 preview	json falsek	numbers falses
 textures
@@ -85,24 +77,24 @@ deltas	pour_5
 	scene	transitions	auto	delta initial
 
 
+	`
 
+function loadConfigFromLocalStorage()
+{
+	let storedItem=localStorage.getItem('config')
+	if(!storedItem)
+	{
+		console.warn("Failed to load 'config' from localstorage")
+		localStorage.setItem('config',defaultConfig)//Write new config file if none currently exists...
+		storedItem=defaultConfig
+	}
+	config=djson.parse(storedItem)
+}
+let config
+loadConfigFromLocalStorage()
+console.log(JSON.stringify(config))
+setInterval(loadConfigFromLocalStorage, 100)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	`)
 
 for(const [geometryName,geometryURL] of Object.entries(config.geometries))
 	load_geometry(geometryName,geometryURL)//Load all the geometries
