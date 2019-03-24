@@ -1,3 +1,7 @@
+function initialize()
+{
+	
+}
 const renderer = new THREE.WebGLRenderer()
 renderer.setSize(window.innerWidth, window.innerHeight)
 renderer.setPixelRatio(window.devicePixelRatio)
@@ -13,56 +17,7 @@ camera.position.z = 1000
 //This is yucky. I shouldn't have to pass the name through a parameter...but I can't think of a cleaner way yet. Same problem as any item in an object tree knowing its path.
 // deltas={}
 
-const items={
-	// scene:
-	// {
-	// 	set background(value)
-	// 	{
-	// 		scene.background=cubeMaps[value]||null
-	// 	}
-	// }
-}
-
-function load_geometry(name,url)
-{
-	var object
-	function loadModel()
-	{
-		try
-		{
-			geometries[name]=object.children[0].geometry
-		}
-		catch
-		{
-			console.error("load_geometry error: failed to load "+JSON.stringify(url))
-		}
-	}
-	function callback( obj )
-	{
-		object = obj//Maybe eliminate maybe not....I think loadingmanager might come in handy....when we want to load all the textures etc
-	}
-	var loader = new THREE.OBJLoader(new THREE.LoadingManager(loadModel)).load(url, callback, ()=>{}, ()=>{})
-}
-
-function load_texture(name,url)
-{
-	var texture = new THREE.TextureLoader().load(url );
-	textures[name]=texture
-}
-
-// function load_cube_map(name,url_prefix,px,nx,py,ny,pz,nz)
-// {
-// 	cubeMaps[name] = new THREE.CubeTextureLoader()
-// 		.setPath( url_prefix )
-// 		.load( [
-// 			px,
-// 			nx,
-// 			py,
-// 			ny,
-// 			pz,
-// 			nz
-// 		] );
-// }
+const items={}
 
 const textures={default:null}
 
@@ -70,12 +25,11 @@ const cubeMaps={default:null}
 
 const geometries={
 	box:  new THREE.BoxGeometry(700, 700, 700, 10, 10, 10),
-	box2: new THREE.BoxGeometry(300, 300, 300, 10, 10, 10),
 }
 
-const raycaster = new THREE.Raycaster();
 function getClickedItem(event)//Give it a mouse event
 {
+	const raycaster = new THREE.Raycaster();
 	//Return clicked item, else return undefined
 	const mouse = new THREE.Vector2()
 	mouse.x =  (event.clientX/window.innerWidth )*2-1

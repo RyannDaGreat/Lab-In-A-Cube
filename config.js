@@ -108,12 +108,9 @@ for(const [geometryName,geometryURL] of Object.entries(config.geometries))
 	load_geometry(geometryName,geometryURL)//Load all the geometries
 
 for(const [Name,URL] of Object.entries(config.textures))
-	load_texture(Name,URL)
+	load_texture(Name,URL)//Load all the textures
 
 for(const [itemName,itemType] of Object.entries(config.items))
 	items[itemName]=modules[itemType](itemName)//Load all the items
 
 requestTween(config.deltas.initial,0)
-
-
-console.log(localStorage.getItem('user'))

@@ -52,7 +52,7 @@
 *{
 		 tab-size:      4;
 		 font-family: 'PT Mono', monospace;
-		 font-size: 8pt;
+		 font-size: 10pt;
 
 }
 body
@@ -74,6 +74,7 @@ pre .span:before {
 			color: #888
 
 } */
+
 	div{
 		color:#101000 ;
 		background-color: white;
@@ -84,8 +85,6 @@ pre .span:before {
 				 background-repeat: no-repeat;
 			}
 </style>
-
-
 
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.40.2/codemirror.css">
 
@@ -119,14 +118,22 @@ _italics_
 <!-- <div id="toolbar" style="height:0px"> -->
 <!-- </div> -->
 <div id="container">
-		<div id="editor">
-				<textarea id="editorTextArea">
+    <div id="editor">
+        <textarea id="editorTextArea">
 		</textarea>
-		</div>
-		<div id="splitbar">
-		</div>
-		<div id="preview">
-		</div>
+    </div>
+    <div id="splitbar">
+    </div>
+    <div id='previewcontainer'>
+        <div id="preview" style='overflow:scroll;'>
+        	<div id='oaisdoaijsdaoisjd'></div>
+            <div id='previewtext' style='height:50%;overflow:scroll;'>
+            </div>
+            <div id='previewiframe'style='height:50%' >
+                <iframe id='iframeid' style='filter:invert(1);' src="../index.html" width="100%" height="100%"></iframe>
+            </div>
+        </div>
+    </div>
 </div>
 <style>
 html,
@@ -176,6 +183,18 @@ body {
 		z-index: 999;
 
 }
+iframe{
+	outline: 2px solid red ;
+	outline-offset: -2px;
+	margin: 0;
+	border: none;
+	padding: 0;
+	height: 100%;
+	width: 100%;
+}
+#splitbar:hover { 
+  background-color: yellow;
+}
 
 #splitbar {
 
@@ -218,7 +237,9 @@ function Process(string) {
 	parsed=djson.parse(string)
 	if(parsed.preview)
 		config=parsed.preview
-	if(config.json)
+	console.log("config is "+JSON.stringify(parsed,null,4))
+	console.log(config)
+	if(config.type==='json')
 			string=JSON.stringify(parsed,null,4)
 		else
 		 string=djson.stringify(parsed)
@@ -291,7 +312,7 @@ var PREVIEW = document.getElementById('preview')
 var converter = new showdown.Converter()
 
 /* Set Default Text */
-document.getElementById("preview")
+document.getElementById("previewtext")
 		.innerHTML = converter.makeHtml(
 				// document.getElementById("defaulttext").innerHTML
 				`<pre>Welcome to the DJSON (Delta JSON) Editor!
@@ -300,8 +321,8 @@ To preview your DJSON as a JSON file, set that in the 'preview' settings (exampl
 You can make this somewhere in your djson:
 
 preview
-	json false
-	json true
+	type json
+	type djson
 	numbers true
 	numbers false
 	mode vim
@@ -313,7 +334,7 @@ preview
 		)
 
 document.getElementById("editorTextArea")
-		.innerHTML =localStorage.getItem('user')||""
+		.innerHTML =localStorage.getItem('config')||""
 
 
 
@@ -321,7 +342,7 @@ document.getElementById("editorTextArea")
 /* Create Editor */
 
 
-var initialconfig=localStorage.getItem('user')
+var initialconfig=localStorage.getItem('config')
 console.log(initialconfig)
 var initialconfig=djson.parse(initialconfig||"").preview;//<---- sloppy code here. No need for this variable
 var keymap='default'
@@ -331,7 +352,12 @@ if(initialconfig && initialconfig.mode in {vim:{},sublime:{}})
 
 var editor = CodeMirror.fromTextArea(editorTextArea, {
 
-		lineNumbers: true,
+		      extraKeys: {
+            // "Ctrl-R": ()=>{},
+            "Ctrl-S": ()=>{},
+            // "Cmd-R": ()=>{},
+            "Cmd-S": ()=>{},
+      },lineNumbers: true,
 		indentWithTabs:true,
 		indentUnit:4,
 		undoDepth:10000,
@@ -341,6 +367,8 @@ var editor = CodeMirror.fromTextArea(editorTextArea, {
 })
 
 editor.setSize("100%", "100%")
+
+let iframeSingleton=undefined
 
 editor.on("change", (cm, change) => {
 
@@ -361,10 +389,11 @@ editor.on("change", (cm, change) => {
 
 		// cm.options.indentUnit=cm.options.tabSize=config.tab||4
 		var str=Process(value) 
-		localStorage.setItem('user', value);
+		localStorage.setItem('config', value);
 		if(config.numbers)str=numbered_lines_string(str,i=>i+'\t')
-		PREVIEW.innerHTML ="<pre>" + str+ "</pre>"
+		document.getElementById('previewtext').innerHTML ="<pre>" + str+ "</pre>"
 
+		// cm.options.indentUnit=cm.options.tabSize=config.tab||4
 })
 
 /*
