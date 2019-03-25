@@ -43,6 +43,11 @@ const deltas={//Idk if it's safe to call this deltas...
 			}
 		}
 	},
+	contains(o,d)
+	{
+		//Return whether d is in o
+		//This is the critical function for conditions
+	},
 	blended(x,y,alpha,threshold=0)
 	{
 		console.assert(arguments.length>=3,'deltas.blended error: wrong number of arguments')

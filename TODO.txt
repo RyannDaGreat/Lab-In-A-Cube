@@ -2,6 +2,18 @@ Notes:
 	*In general, my function names work like this: If it's a verb, it probably mutates something (which is more efficient generally). Examples: copy, apply. Else, it probably is a pure function that returns something Example: copied, blended etc. If it's 
 	*Javascript is REALLY annoying. It doesn't even check to make sure I gave functions the right number of arguments. I have been trying to mitigate mysterious 'undefined' errors that I spent hours debugging just to find out I forgot to put an assertion like "console.assert(arguments.length===2,'Wrong number of arguments.')" into one of my functions. Keep this in mind. (IDE's can help with this somewhat with autocompletion though)
 	*In the djson, 'deltas' in transitions are space-separated strings of (possibly multiple) deltas composed together. this will also be how the state's delta stack will be represented. This is beautiful because of the djson rule that prohibits any whitespace in key names, but allows it in value names. (AKA no deltaID's can possibly have spaces or tabs in them. We also assume that no deltaID's have empty strings, but I haven't acually added a check for that as of March25/2019)
+	*Inheritance of deltas is a thing. One delta can inherit from multiple others, but these others have to have some defined order to them (because order matters). Circular inheritance SHOULD be possible, because of the finite nature of deltas. But right now, as of March25/2019, this will cause an infinite loop (which should later be fixed).
+	*A composition of deltas is one applied after the other to create new deltas (they're associative)
+	*Delta inheritance chains: Important conjecture: Any compotision of deltas of length N, chosen from a set of P possible deltas, can be represented as a composition of deltas with length less than P. (For example, take composition ABA which is equal to BA. Only the last one of each matters). This is important in understanding the function getDeltaInheritanceChain
+	*The LAST delta in an inheritance chain always gets applied last, so it's never overwritten etc...this might seem slightly counterintuitive at first, but it's actually not.
+
+
+DELTAS CONTAIN:
+	INHERITANCE
+	SIMPLE CONDITIONS: two arguments: a deltaID, and an (optional) deltaID. 
+	These are metadata for when the condition is evaluated.
+	BUT WAIT: WOULD CONDITIONS MESS UP PROPERTIES OF DELTAS, AND IF SO WOULD IT MATTER??
+
 
 
 
