@@ -63,6 +63,7 @@ const sounds={}
 
 function getClickedItem(event)//Give it a mouse event
 {
+	assert.rightArgumentLength(arguments)
 	const raycaster = new THREE.Raycaster();
 	//Return clicked item, else return undefined
 	const mouse = new THREE.Vector2()
@@ -97,13 +98,15 @@ renderer.domElement.addEventListener("mouseup", mouseup, true);
 
 function triggerDragTransition(mousedownItem,mouseupItem)
 {
-	try
+	console.assert(arguments.length===2,'Wrong number of arguments.')
+	let cursor=items.scene.transitions.drag
+	if(mousedownItem.ID in cursor && mouseupItem.ID in cursor[mousedownItem.ID])
 	{
 		const transition = items.scene.transitions.drag[mousedownItem.ID][mouseupItem.ID]
-		requestTween(config.deltas[transition.delta],transition.time )
+		requestTween(deltaComposition(transition.delta),transition.time )
 		console.log("triggerDragTransition: "+mousedownItem.ID+" TO "+mouseupItem.ID)
 	}
-	catch(KeyError)
+	else
 	{
 		console.error("triggerDragTransition error: No transition from "+mousedownItem.ID+" TO "+mouseupItem.ID+" exists")
 	}
@@ -147,14 +150,38 @@ const tween={
 	},
 }
 
+function deltaComposition(deltaIdsSeparatedBySpaces)
+{
+	//Takes a space-separated string of deltaID's and returns the composition of all of those deltas as a delta object
+	console.assert(arguments.length==1,'Wrong number of arguments.')
+	assert.isPrototypeOf(deltaIdsSeparatedBySpaces,String)
+	console.assert(!deltaIdsSeparatedBySpaces.includes('\t'),'deltaComposition error: Dont feed tabs into deltaComposition! Your string: '+repr(deltaIdsSeparatedBySpaces))
+	console.assert(!deltaIdsSeparatedBySpaces.includes('\n'),'deltaComposition error: Dont feed more than one line into deltaComposition! Your string: '+repr(deltaIdsSeparatedBySpaces))
+	//
+	const deltaIds=deltaIdsSeparatedBySpaces.trim().split(/\ +/)//We split by spaces, because there is a rule that no deltaID can contain spaces (because no djson keys can contain whitespace). We forget the 'edge case' where we have a deltaID that is an empty string, because that's not allowed either (which is why we use .trim() and split by any number of spaces at a time, AKA /\ +/ instead of just /\ /)
+	assert.isPureArray(deltaIds)
+	const out={}
+	for(const deltaID of deltaIds)
+		if(deltaID in config.deltas)
+		{
+			console.assert(typeof config.deltas[deltaID] === 'object','deltaComposition error: '+'typeof config.deltas['+deltaID+'] === '+typeof config.deltas[deltaID]+'\n(All entries in config.deltas should be objects! Not numbers, not strings, etc. Check the djson and make sure no spaces are attached to delta '+deltaID)
+			deltas.pour(out,config.deltas[deltaID])
+		}
+		else
+			console.error('deltaComposition error: deltaID='+repr(deltaID)+' is not the name of a delta!\nInfo:\ndeltaIdsSeparatedBySpaces = '+repr(deltaIdsSeparatedBySpaces)+'\nObject.keys(config.deltas).join(\' \')) = '+repr(Object.keys(config.deltas).join(' '))+'\nThe show MUST go on, so this function will just skip '+repr(deltaID)+'...please fix this in the config.')
+	return out
+}
+
 function print_current_state()
 {
+	console.assert(arguments.length===0,'Wrong number of arguments.')
 	console.log(djson.stringify(tween.delta))
 }
 
 function requestTween(delta,time=0)
 {
 	//Tweens will be denied if we are in the middle of a transition
+	console.assert(arguments.length>=1,'Wrong number of arguments.')
 	if(delta.sound && typeof delta.sound==='string')
 	{
 		new Audio(delta.sound).play()

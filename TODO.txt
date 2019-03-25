@@ -1,5 +1,7 @@
 Notes:
-	In general, my function names work like this: If it's a verb, it probably mutates something (which is more efficient generally). Examples: copy, apply. Else, it probably is a pure function that returns something Example: copied, blended etc. If it's 
+	*In general, my function names work like this: If it's a verb, it probably mutates something (which is more efficient generally). Examples: copy, apply. Else, it probably is a pure function that returns something Example: copied, blended etc. If it's 
+	*Javascript is REALLY annoying. It doesn't even check to make sure I gave functions the right number of arguments. I have been trying to mitigate mysterious 'undefined' errors that I spent hours debugging just to find out I forgot to put an assertion like "console.assert(arguments.length===2,'Wrong number of arguments.')" into one of my functions. Keep this in mind. (IDE's can help with this somewhat with autocompletion though)
+	*In the djson, 'deltas' in transitions are space-separated strings of (possibly multiple) deltas composed together. this will also be how the state's delta stack will be represented. This is beautiful because of the djson rule that prohibits any whitespace in key names, but allows it in value names. (AKA no deltaID's can possibly have spaces or tabs in them. We also assume that no deltaID's have empty strings, but I haven't acually added a check for that as of March25/2019)
 
 
 
@@ -22,4 +24,7 @@ Persistent Undo in editor
 Let camera move around
 Add .. to djson	(and deltas to djson's without reformatting) (and better djson formatting)
 
-*** WHY THE HELL DOES THIS BREAK ON SAFARI AND FIREFOX BUT WORK ON CHROME?!?!?
+
+
+*** WHY THE HELL DOES THIS BREAK ON SAFARI AND FIREFOX BUT WORK ON CHROME?!?!? Answer: There was no localstorage config there.
+

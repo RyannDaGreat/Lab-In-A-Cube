@@ -1,6 +1,7 @@
 const deltas={//Idk if it's safe to call this deltas...
 	copied(d)
 	{
+		console.assert(arguments.length==1,'deltas.copied error: wrong number of arguments')
 		//Copies an object tree
 		if(!d||Object.getPrototypeOf(d)!==Object.prototype)
 			return d
@@ -11,9 +12,10 @@ const deltas={//Idk if it's safe to call this deltas...
 	},
 	apply(o,d,f=(o,d)=>[d,o],none=null)
 	{
+		console.assert(arguments.length>=2,'deltas.apply error: wrong number of arguments')
 		//Apply _targetDelta 'd' to object 'o' and make d the receipt.
 		//Mutates both o and d and returns nothing.
-		console.assert(Object.getPrototypeOf(d)===Object.prototype)//All deltas are object trees
+		assert.isPureObject(d)//All deltas are object trees
 		if(o===none)
 			return
 		for(const [key,val] of Object.entries(d))
@@ -43,6 +45,7 @@ const deltas={//Idk if it's safe to call this deltas...
 	},
 	blended(x,y,alpha,threshold=0)
 	{
+		console.assert(arguments.length>=3,'deltas.blended error: wrong number of arguments')
 		alpha=smoothAlpha(alpha)
 		// alpha=smoothAlpha(smoothAlpha(alpha))
 		//Pure function: no mutations
@@ -65,6 +68,7 @@ const deltas={//Idk if it's safe to call this deltas...
 	},
 	composed(deltaArray)
 	{
+		console.assert(arguments.length==1,'deltas.composed error: wrong number of arguments')
 		//Pure function: sums a list of deltas together, essentially creating the equivalent of multiple 
 		//If efficiency is an issue, this function might be cached later (somehow we'd have to hash the deltas)
 		assert.isPureArray(deltaArray)
@@ -75,6 +79,7 @@ const deltas={//Idk if it's safe to call this deltas...
 	},
 	soak(o,d)
 	{
+		console.assert(arguments.length==2,'deltas.soak error: wrong number of arguments')
 		//This just mutates 'd', in the same way a normal deltas.apply would.
 		//Returns nothing, just like deltas.apply.
 		//The visualization is that we 'soak' the delta shape 'd' in the object 'o', to get a delta that would make something more like 'o'
@@ -84,6 +89,7 @@ const deltas={//Idk if it's safe to call this deltas...
 	},
 	pour(o,d)
 	{
+		console.assert(arguments.length==2,'deltas.pour error: wrong number of arguments')
 		//Opposite of deltas.soak
 		//This just mutates 'o', in the same way a normal deltas.apply would.
 		//Returns nothing, just like deltas.apply.
