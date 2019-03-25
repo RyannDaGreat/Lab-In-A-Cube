@@ -6,6 +6,14 @@ Notes:
 	*A composition of deltas is one applied after the other to create new deltas (they're associative)
 	*Delta inheritance chains: Important conjecture: Any compotision of deltas of length N, chosen from a set of P possible deltas, can be represented as a composition of deltas with length less than P. (For example, take composition ABA which is equal to BA. Only the last one of each matters). This is important in understanding the function getDeltaInheritanceChain
 	*The LAST delta in an inheritance chain always gets applied last, so it's never overwritten etc...this might seem slightly counterintuitive at first, but it's actually not.
+	*'Comments' can be made in djson, just line any other language (except that these 'comments' actually affect the data. It's just that in practice, my program won't actually read them. You can use '//' as a key, then any non-tabbed single line comment after it.)
+	*I added mouse-over transitions. I would reccomend never setting the time too high on them though, because async transitions aren't a thing right now.
+	*In JSON's, .3 is an invalid number. In DJSON, it is. (Also, -.5 is invalid JSON but valid DJSON)
+
+RESERVED:
+	Deltas:
+		initial
+		on_exit
 
 
 DELTAS CONTAIN:
@@ -21,6 +29,11 @@ TODO
 
 Error Messages:
 	- When a geometry fails to load
+
+
+2D GUI
+Flask Liquid
+Conditions
 
 Texture Loading
 Add sounds

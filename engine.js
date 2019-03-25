@@ -65,14 +65,24 @@ const geometries={
 
 const sounds={}
 
-function getClickedItem(event)//Give it a mouse event
+let mouse_x,mouse_y,mouse_in_renderer=false//THese are updated periodically.
+function updateMousePosition(event)
 {
+	mouse_in_renderer=true
+	mouse_x =  (event.clientX/window.innerWidth )*2-1
+	mouse_y = -(event.clientY/window.innerHeight)*2+1
+}
+function getItemUnderCursor()//Give it a mouse event
+{
+	console.assert(arguments.length===0,'Wrong number of arguments.')
+	if(!mouse_in_renderer)
+		return undefined
 	assert.rightArgumentLength(arguments)
 	const raycaster = new THREE.Raycaster();
 	//Return clicked item, else return undefined
 	const mouse = new THREE.Vector2()
-	mouse.x =  (event.clientX/window.innerWidth )*2-1
-	mouse.y = -(event.clientY/window.innerHeight)*2+1
+	mouse.x=mouse_x
+	mouse.y=mouse_y
 	raycaster.setFromCamera(mouse, camera)
 	const intersects = raycaster.intersectObjects(scene.children, true)
 	if(intersects.length > 0)
@@ -87,18 +97,65 @@ function getClickedItem(event)//Give it a mouse event
 let mousedownItem
 function mousedown(event)
 {
-	mousedownItem=getClickedItem(event)
+	updateMousePosition(event)
+	mousedownItem=getItemUnderCursor()
 }
-renderer.domElement.addEventListener("mousedown", mousedown, true)
 
 function mouseup(event)
 {
-	const mouseupItem=getClickedItem(event)
+	updateMousePosition(event)
+	const mouseupItem=getItemUnderCursor()
 	if(mouseupItem && mousedownItem)
 		triggerDragTransition(mousedownItem,mouseupItem)
 	mousedownItem=undefined
 }
-renderer.domElement.addEventListener("mouseup", mouseup, true);
+renderer.domElement.addEventListener("mousedown", mousedown, true)
+renderer.domElement.addEventListener("mouseup", mouseup, true)
+renderer.domElement.addEventListener("mouseout",   function(){mouse_in_renderer=false}, true)
+renderer.domElement.addEventListener("mouseleave", function(){mouse_in_renderer=false}, true)
+renderer.domElement.addEventListener("mousemove", updateMousePosition, true)
+
+
+function triggerEnterTransition(enterItemID)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	if(enterItemID===undefined)
+		return
+	//A transition triggered by mousing over something
+	let cursor=items.scene.transitions.enter
+	if(cursor && enterItemID in cursor)
+	{
+		const transition = items.scene.transitions.enter[enterItemID]
+		// requestTweenByID(transition.delta,transition.time)//Force the entry transition
+		requestTween(getDeltaByID(transition.delta),transition.time,true)
+		console.log("triggerEnterTransition: "+enterItemID)
+	}
+	else
+	{
+		console.error("triggerEnterTransition error: No transition from "+enterItemID+" exists")
+	}
+}
+
+function triggerLeaveTransition(leaveItemID)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	if(leaveItemID===undefined)
+		return
+	//A transition triggered by mousing over something
+	let cursor=items.scene.transitions.leave
+	if(cursor && leaveItemID in cursor)
+	{
+		const transition = items.scene.transitions.leave[leaveItemID]
+		requestTween(getDeltaByID(transition.delta),transition.time,true)
+		// requestTweenByID(transition.delta,transition.time)
+		console.log("triggerLeaveTransition: "+leaveItemID)
+	}
+	else
+	{
+		console.error("triggerLeaveTransition error: No transition from "+leaveItemID+" exists")
+	}
+}
+
 
 function triggerDragTransition(mousedownItem,mouseupItem)
 {
@@ -107,7 +164,8 @@ function triggerDragTransition(mousedownItem,mouseupItem)
 	if(mousedownItem.ID in cursor && mouseupItem.ID in cursor[mousedownItem.ID])
 	{
 		const transition = items.scene.transitions.drag[mousedownItem.ID][mouseupItem.ID]
-		requestTween(getDeltaByID(transition.delta),transition.time )
+		// requestTween(getDeltaByID(transition.delta),transition.time )
+		requestTweenByID(transition.delta,transition.time)
 		console.log("triggerDragTransition: "+mousedownItem.ID+" TO "+mouseupItem.ID)
 	}
 	else
@@ -115,6 +173,7 @@ function triggerDragTransition(mousedownItem,mouseupItem)
 		console.error("triggerDragTransition error: No transition from "+mousedownItem.ID+" TO "+mouseupItem.ID+" exists")
 	}
 }
+
 
 const tween={
 	_initialDelta:{},//The initial _initialDelta of the _targetDelta
@@ -153,7 +212,6 @@ const tween={
 		tween.delta
 	},
 }
-
 
 function getDeltaInheritanceChainString(rootDeltaID)
 {
@@ -273,23 +331,59 @@ function print_current_state()
 	console.log(djson.stringify(tween.delta))
 }
 
-function requestTween(delta,time=0)
+function requestTweenByID(deltaID,time=0,force=false)
 {
+	console.assert(arguments.length>=1,'Wrong number of arguments.')
+	if(!deltaContainedInState(deltaID,{}))
+	{
+		console.log('requestTweenByID: deltaID = '+repr(deltaID)+' and time = '+repr(time))
+		requestTween(getDeltaByID(deltaID),time,force)
+	}
+	else
+	{
+		console.log('requestTweenByID: Skipping tween '+repr(deltaID)+' because it would have no effect (the gamestate contains it allready)')
+	}
+}
+
+function requestTween(delta,time=0,force=false)
+{
+	//if force is true, it will override the transition blocker
 	//Tweens will be denied if we are in the middle of a transition
 	console.assert(arguments.length>=1,'Wrong number of arguments.')
 	if(delta.sound && typeof delta.sound==='string')
 	{
 		new Audio(delta.sound).play()
 	}
-	if(tween.time){console.log("Blocked Transition (another transition is still tweening)");return}//Don't allow more than one tween at a time
+	if(tween.time&&!force){console.log("Blocked Transition (another transition is still tweening)");return}//Don't allow more than one tween at a time
 	tween.time=time
 	tween.delta=delta
 }
 
 const blocked_deltas=new Set
 
+
+let itemIDUnderCursor//Can be undefined if there is no item under the cursor
+function updateItemIDUnderCursor()
+{
+	if(!tween.time)
+	{
+		//We shouldn't be processing this data while we're tweening
+		const currentItemUnderCursor=getItemUnderCursor()
+		console.assert(currentItemUnderCursor===undefined || 'ID' in currentItemUnderCursor,'Whoops, some internal error here if youre reading this...ID should ALWAYS be a parameter of every item beacuse thats how it knows what it is. (How it knows which key in "items" to find itself)')
+		const currentItemIDUnderCursor=currentItemUnderCursor&&currentItemUnderCursor.ID//If the item is undefined, make the ID undefined. Else, set it to the item's ID.
+		console.assert(currentItemIDUnderCursor===undefined || typeof currentItemIDUnderCursor ==='string','Oops...if youre reading this you need to figure out why ID; (a RESERVED parameter) was allowed to be turned into a non-string')
+		if(itemIDUnderCursor!==currentItemIDUnderCursor)
+		{
+			console.log('Item ID under cursor changed from '+itemIDUnderCursor+' to '+currentItemIDUnderCursor)
+			triggerLeaveTransition(itemIDUnderCursor)
+			triggerEnterTransition(currentItemIDUnderCursor)
+		}
+		itemIDUnderCursor=currentItemIDUnderCursor
+	}
+}
 function render()
 {
+	updateItemIDUnderCursor()
 	const currentState=tween.delta
 	deltas.pour(items,currentState)
 	requestAnimationFrame(render)
@@ -299,26 +393,15 @@ function render()
 		{
 			let auto=currentState.scene.transitions.auto//DONT USE items.scene.transitions.auto (this is updated every frame and overwritten; null can't delete this auto so you shouldn't use it. It causes lags and delays when you try to make it work with if/else statements etc)
 			const autodeltaid=auto.delta
-			console.log('Requesting auto-tween: auto.delta = '+repr(autodeltaid)+' and auto.time = '+repr(auto.time))
-			const autodelta=config.deltas[auto.delta]//getDeltaByID(auto.delta)
+			const autodelta=getDeltaByID(auto.delta)//config.deltas[auto.delta]
 			// deltaContainedInState(auto.delta,{})
 			if(!deltaContainedInState(auto.delta,{}))
-				requestTween(autodelta,auto.time)
-			else
-				console.log('Tween skipped ('+auto.delta+')')
+			{
+				console.log('Requesting auto-tween: auto.delta = '+repr(autodeltaid)+' and auto.time = '+repr(auto.time))
+				requestTween(autodelta,auto.time,true)
+			}
 		}
 	}
-	// if(!tween.time)
-	// {
-	// 	let auto=tween.delta.scene.transitions.auto//DONT USE items.scene.transitions.auto (this is updated every frame and overwritten; null can't delete this auto so you shouldn't use it. It causes lags and delays when you try to make it work with if/else statements etc)
-	// 	if(auto)//auto doesn't always exist (set it to null to delete it)
-	// 	{
-	// 		console.log(config.deltas[auto.delta])
-	// 		requestTween(getDeltaByID(auto.delta),auto.time)
-	// 		console.log(config.deltas[auto.delta])
-	// 		// getDeltaInheritanceChainString(auto.delta)
-	// 	}
-	// }
 	camera.updateProjectionMatrix()//Lets you update camera FOV and aspect ratio
 	camera.aspect=window.innerWidth/window.innerHeight
 	renderer.setSize(window.innerWidth, window.innerHeight)

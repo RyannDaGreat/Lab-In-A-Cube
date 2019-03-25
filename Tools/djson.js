@@ -10,11 +10,10 @@ const djson={
 		try
 		{
 			return JSON.parse(leaf)
-		}
-		catch
-		{ 
-			return leaf
-		}
+		}catch{}
+		if(leaf.match(/^\ *\-?.\d+\ *$/))//A number like .234 isn't valid JSON number but is valid JS number
+			return Number(leaf)
+		return leaf
 	},
 	parse_handwritten(lines)
 	{
