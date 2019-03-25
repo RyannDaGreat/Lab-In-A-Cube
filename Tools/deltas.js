@@ -1,4 +1,5 @@
 const deltas={//Idk if it's safe to call this deltas...
+	none:null,
 	copied(d)
 	{
 		console.assert(arguments.length==1,'deltas.copied error: wrong number of arguments')
@@ -10,19 +11,19 @@ const deltas={//Idk if it's safe to call this deltas...
 			out[key]=deltas.copied(val)
 		return out
 	},
-	apply(o,d,f=(o,d)=>[d,o],none=null)
+	apply(o,d,f=(o,d)=>[d,o])
 	{
 		console.assert(arguments.length>=2,'deltas.apply error: wrong number of arguments')
 		//Apply _targetDelta 'd' to object 'o' and make d the receipt.
 		//Mutates both o and d and returns nothing.
 		assert.isPureObject(d)//All deltas are object trees
-		if(o===none)
+		if(o===deltas.none)
 			return
 		for(const [key,val] of Object.entries(d))
 		{
 			if(key in o)
 			{
-				if(val === none)
+				if(val === deltas.none)
 				{
 					d[key]=o[key]//For our receipt...
 					delete o[key]
@@ -36,17 +37,48 @@ const deltas={//Idk if it's safe to call this deltas...
 					[o[key],d[key]] = f(o[key],val)//Added this to enable things like blending etc
 				}
 			}
-			else if(val!==none)
+			else if(val!==deltas.none)
 			{
 				o[key] = val
-				d[key] = none
+				d[key] = deltas.none
 			}
 		}
 	},
 	contains(o,d)
 	{
-		//Return whether d is in o
-		//This is the critical function for conditions
+		//Return whether d is in o (also returns true if they're completely equal)
+		//This is the most important function for conditions
+		console.assert(arguments.length==2,'deltas.contains error: wrong number of arguments')
+		assert.isPureObject(d)//All deltas are object trees
+		// let out=true
+		// function f(o,d)
+		// {
+		// 	if(o!==d)
+		// 		out=false
+		// 	return [o,d]
+		// }
+		// deltas.apply(o,d,f)//No mutations should occur
+
+		let out=true
+		function f(o,d)//This is like applyDelta, except it doesn't actually apply anything. Instead, in every place that we would have had to made a change, we instead set out to false
+		{
+			if(o===deltas.none)
+				if(d!==deltas.none)
+					out=false
+			for(const [key,val] of Object.entries(d))
+				if(key in o)
+					if(val === deltas.none && key in o)//This means it should have been deleted
+						out=false
+					else if(Object.getPrototypeOf(val) === Object.prototype && typeof o[key]==='object')//Explanation for "typeof o[key]==='object'" : Because if "typeof x==='object'", then "y in x" probably won't throw an error (this handles the case where we replace a primitive with an object)
+						f(o[key],val)
+					else if(o[key]!==val)//If a value would have changed
+						out=false
+					else;//So we don't need brackets
+				else if(val!==deltas.none)
+					out=false//If a value would have been added
+		}
+		f(o,d)
+		return out
 	},
 	blended(x,y,alpha,threshold=0)
 	{

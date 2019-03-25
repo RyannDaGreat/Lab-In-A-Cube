@@ -10,7 +10,7 @@ Notes:
 
 DELTAS CONTAIN:
 	INHERITANCE
-	SIMPLE CONDITIONS: two arguments: a deltaID, and an (optional) deltaID. 
+	SIMPLE CONDITIONS: two arguments: a deltaID, and an (optional) deltaID. If the first one is contained within current state, then: if there's a second argument, return that deltaID instead. Else, just return an empty delta {} (without doing any inheritance). NOTE: we must keep track of branches that failed, because if we bounce back and fourth between a few deltas that have failed we would like to return {} instead. This handles the case of a possible loop between deltas A and B, where A is told to go to B and B is told to go to A because of some impossible-to-meet condition. 
 	These are metadata for when the condition is evaluated.
 	BUT WAIT: WOULD CONDITIONS MESS UP PROPERTIES OF DELTAS, AND IF SO WOULD IT MATTER??
 
@@ -29,7 +29,7 @@ Add sky/better lighting
 Add beakers with variable fluid levels
 Add GUI
 Make editor NOT dissapear when we zoom in too much (why does it do that??)
-Toggle Visibility
+Toggle Visibility -- objects that aren't visible should let raytracing pass through
 Make a stack of deltas so we can edit in realtime for real
 Make macros
 Persistent Undo in editor

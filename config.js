@@ -191,4 +191,5 @@ for(const [itemName,itemType] of Object.entries(config.items))
 for(const [soundName,soundURL] of Object.entries(config.sounds))
 	sounds[soundName]=new Audio(soundURL)//Load all the sounds
 
-requestTween(config.deltas.initial,0)
+// requestTween(config.deltas.initial,0)
+requestTween(getDeltaByID('initial'))

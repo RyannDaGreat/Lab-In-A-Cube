@@ -17,6 +17,10 @@ camera.fov=75
 // deltas={}
 
 const items={
+	//Reserved item names:
+	get sound(){},
+	get inherit(){},
+	get condition(){},
 	camera:
 	{
 		transform:attributes.transform(camera),
@@ -157,6 +161,8 @@ function getDeltaInheritanceChainString(rootDeltaID)
 	//This function has been tested (not for edge cases yet though) seems to work perfectly (got it on the first try) 
 	//TODO: This function is needed to handle circular delta inheritance. 
 	//This function should DEFINITELY be cached...but right now it's NOT. In fact, even the result of this chain should be cached...getDeltaByID should be cached. But that's premature optimization for now...
+
+	const deltaContainedInState_Cache={}//NOT SURE WHAT TO DO WITH THIS YET BUT I HAVE TO GO TO CLASS...WE WANT RECURSIVE CONDITIONS....
 	console.assert(arguments.length==1,'Wrong number of arguments.')
 	const out=[]
 	function helper(deltaID)
@@ -179,6 +185,21 @@ function getDeltaInheritanceChainString(rootDeltaID)
 	}
 	helper(rootDeltaID)
 	return out.join(' ')
+}
+
+function deltaContainedInState(deltaID,deltaContainedInState_Cache)
+{
+	console.assert(arguments.length==2,'Wrong number of arguments.')
+	assert.isPureObject(deltaContainedInState_Cache)
+	assert.isString(deltaID)
+	console.assert(deltaExistsInConfig(deltaID),'deltaContainedInState error: deltaID = '+repr(deltaID)+' is not in config')
+	if(deltaID in deltaContainedInState_Cache)//This NEEDS to exist in order for this function to avoid circular loops
+		return deltaContainedInState_Cache[deltaID]
+	const currentState=tween.delta
+	return deltaContainedInState_Cache[deltaID]=deltas.contains(currentState,getDeltaByID(deltaID,deltaContainedInState_Cache))
+
+	//This is the foundation of all conditions. The question: Is this delta contained in the current state?
+	//This function can be cached with respect to the simplified state-stack of deltas
 }
 
 function deltaExistsInConfig(deltaID)
@@ -210,8 +231,9 @@ function getDeltaByID(deltaID)
 	//Unlike getRawDeltaFromConfigByID, this function takes into account deltas' inheritance chains, and any other preprocessing that may have to be done (if I add more things in the future)
 	//THIS FUNCTION SHOULD BE CACHED (a task for another day if its too slow).
 	//	But right now it isn't, because in the Editor, we can change the config without reloading the whole page...and that would mean I would have to hook config's changes into clearing the cache.
-	console.assert(arguments.length==1,'Wrong number of arguments.')
-	return deltaRawCompositionFromIdsString(getDeltaInheritanceChainString(deltaID))
+	console.assert(arguments.length>=1,'Wrong number of arguments.')
+	let out=deltaRawCompositionFromIdsString(getDeltaInheritanceChainString(deltaID))
+	return out
 }
 
 function getArrayOfDeltaIDsFromString(deltaIdsSeparatedBySpaces)
@@ -270,7 +292,7 @@ function render()
 	{
 		let auto=tween.delta.scene.transitions.auto//DONT USE items.scene.transitions.auto (this is updated every frame and overwritten; null can't delete this auto so you shouldn't use it. It causes lags and delays when you try to make it work with if/else statements etc)
 		if(auto)//auto doesn't always exist (set it to null to delete it)
-			requestTween(config.deltas[auto.delta],auto.time)
+			requestTween(getDeltaByID(auto.delta),auto.time)
 	}
 	camera.updateProjectionMatrix()//Lets you update camera FOV and aspect ratio
 	camera.aspect=window.innerWidth/window.innerHeight
@@ -278,8 +300,4 @@ function render()
 	renderer.render(scene, camera)
 }
 render()
-
-requestTween(getDeltaByID(config.deltas,initial),0)
-
-
 

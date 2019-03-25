@@ -49,4 +49,8 @@ const assert={
 		for(variable of variables)
 			assert.isPureArray(variable)
 	},
+	isString(variable)
+	{
+		assert.isPrototypeOf(variable,String)
+	}
 }
