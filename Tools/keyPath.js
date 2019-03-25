@@ -3,12 +3,14 @@ const keyPath={
 	exists(object,path)
 	{
 		assert.rightArgumentLength(arguments)
+		assert.isPureArray(path)
 		return Boolean(keyPath.valid(object,path)&&(keyPath.get(object,path)!=null))//Note: x!=null implies x!==undefined&&x!==null
 	},
 	valid(object,path)
 	{
 		//Returns true, even if the end result is null or undefined. Returns false if accessing would give an error.
 		assert.rightArgumentLength(arguments)
+		assert.isPureArray(path)
 		for(const key of path)
 		{
 			if(object===null||object===undefined)
@@ -22,6 +24,7 @@ const keyPath={
 		//Specify path as a list of keys
 		//Example: getPath({a:{b:{c:0}}},['a','b','c'])===0
 		assert.rightArgumentLength(arguments)
+		assert.isPureArray(path)
 		console.assert(path!=null&&Object.getPrototypeOf(path)===Array.prototype)
 		console.assert(keyPath.valid(object,path),'getKeyFromPath error: path '+JSON.stringify(path)+' does not exist in object '+JSON.stringify(object))
 		for(const key of path)
@@ -31,6 +34,7 @@ const keyPath={
 	pave(object,path)
 	{
 		assert.rightArgumentLength(arguments)
+		assert.isPureArray(path)
 		//NOTE: NOT PURE! Mutates object! Returns nothing.
 		for(const key of path)
 		{
@@ -43,6 +47,7 @@ const keyPath={
 		//NOTE: NOT PURE! Mutates object!
 		//Specify path as a list of keys: see getPath's description for explanation
 		assert.rightArgumentLength(arguments)
+		assert.isPureArray(path)
 		console.assert(path!=null&&Object.getPrototypeOf(path)===Array.prototype)
 		console.assert(keyPath.valid(object,path))
 		path=[...path]

@@ -189,13 +189,15 @@ function getDeltaInheritanceChainString(rootDeltaID)
 
 function deltaContainedInState(deltaID,deltaContainedInState_Cache)
 {
+
+	const currentState=tween.delta
+	return deltas.contains(currentState,getDeltaByID(deltaID,deltaContainedInState_Cache))
 	console.assert(arguments.length==2,'Wrong number of arguments.')
 	assert.isPureObject(deltaContainedInState_Cache)
 	assert.isString(deltaID)
 	console.assert(deltaExistsInConfig(deltaID),'deltaContainedInState error: deltaID = '+repr(deltaID)+' is not in config')
 	if(deltaID in deltaContainedInState_Cache)//This NEEDS to exist in order for this function to avoid circular loops
 		return deltaContainedInState_Cache[deltaID]
-	const currentState=tween.delta
 	return deltaContainedInState_Cache[deltaID]=deltas.contains(currentState,getDeltaByID(deltaID,deltaContainedInState_Cache))
 
 	//This is the foundation of all conditions. The question: Is this delta contained in the current state?
@@ -233,6 +235,8 @@ function getDeltaByID(deltaID)
 	//	But right now it isn't, because in the Editor, we can change the config without reloading the whole page...and that would mean I would have to hook config's changes into clearing the cache.
 	console.assert(arguments.length>=1,'Wrong number of arguments.')
 	let out=deltaRawCompositionFromIdsString(getDeltaInheritanceChainString(deltaID))
+	// delete out.inherit//We don't want this variable hanging around when we compare the deltas to the state
+	// delete out.sound//We don't want this variable hanging around when we compare the deltas to the state
 	return out
 }
 
@@ -277,7 +281,7 @@ function requestTween(delta,time=0)
 	{
 		new Audio(delta.sound).play()
 	}
-	if(tween.time){console.log("Blocked Transition");return}//Don't allow more than one tween at a time
+	if(tween.time){console.log("Blocked Transition (another transition is still tweening)");return}//Don't allow more than one tween at a time
 	tween.time=time
 	tween.delta=delta
 }
@@ -286,14 +290,39 @@ const blocked_deltas=new Set
 
 function render()
 {
-	deltas.apply(items,tween.delta)
+	const currentState=tween.delta
+	deltas.pour(items,currentState)
 	requestAnimationFrame(render)
-	if(!tween.time)
-	{
-		let auto=tween.delta.scene.transitions.auto//DONT USE items.scene.transitions.auto (this is updated every frame and overwritten; null can't delete this auto so you shouldn't use it. It causes lags and delays when you try to make it work with if/else statements etc)
-		if(auto)//auto doesn't always exist (set it to null to delete it)
-			requestTween(getDeltaByID(auto.delta),auto.time)
-	}
+	// if(!tween.time)
+	// {
+	// 	if(keyPath.exists(currentState,'scene transitions auto'.split(' ')))//auto doesn't always exist (set it to null to delete it)
+	// 	{
+	// 		let auto=currentState.scene.transitions.auto//DONT USE items.scene.transitions.auto (this is updated every frame and overwritten; null can't delete this auto so you shouldn't use it. It causes lags and delays when you try to make it work with if/else statements etc)
+	// 		const autodeltaid=auto.delta
+	// 		console.log('Requesting auto-tween: auto.delta = '+repr(autodeltaid)+' and auto.time = '+repr(auto.time))
+	// 		const autodelta=config.deltas[auto.delta]//getDeltaByID(auto.delta)
+	// 		// deltaContainedInState(auto.delta,{})
+	// 		if(!deltaContainedInState(auto.delta,{}))
+	// 			requestTween(autodelta,auto.time)
+	// 		// else
+	// 			console.log('Tween skipped ('+auto.delta+')')
+	// 	}
+	// }
+	// if(!tween.time)
+	// {
+	// 	let auto=tween.delta.scene.transitions.auto//DONT USE items.scene.transitions.auto (this is updated every frame and overwritten; null can't delete this auto so you shouldn't use it. It causes lags and delays when you try to make it work with if/else statements etc)
+	// 	console.log("WOIAWJEOAIJEPOIJWEOIJWEPOAJWEPAIOWE")
+	// 	console.log(config.deltas[auto.delta])
+	// 	// getDeltaByID(auto.delta)
+	// 	// getDeltaInheritanceChainString(auto.delta)
+	// 	// const x=getDeltaInheritanceChainString(auto.delta)
+	// 	// console.log(config.deltas[auto.delta])
+	// 	// deltaRawCompositionFromIdsString(x)
+	// 	// console.log(config.deltas[auto.delta])
+	// 	// getDeltaInheritanceChainString(auto.delta)
+	// 	if(auto)//auto doesn't always exist (set it to null to delete it)
+	// 		requestTween(config.deltas[auto.delta],auto.time)
+	// }
 	camera.updateProjectionMatrix()//Lets you update camera FOV and aspect ratio
 	camera.aspect=window.innerWidth/window.innerHeight
 	renderer.setSize(window.innerWidth, window.innerHeight)

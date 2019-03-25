@@ -122,7 +122,8 @@ const deltas={//Idk if it's safe to call this deltas...
 		//The visualization is that we 'soak' the delta shape 'd' in the object 'o', to get a delta that would make something more like 'o'
 		//when 'd' is applied to it
 		//In other words, the only difference between deltas.soak and deltas.apply is that deltas.soak doesn't mutate 'o'.
-		deltas.apply(o,d,(o,d)=>[o,o])
+		o=deltas.copied(o)
+		deltas.apply(o,d)
 	},
 	pour(o,d)
 	{
@@ -131,6 +132,7 @@ const deltas={//Idk if it's safe to call this deltas...
 		//This just mutates 'o', in the same way a normal deltas.apply would.
 		//Returns nothing, just like deltas.apply.
 		//In other words, the only difference between pour and deltas.apply is that pour doesn't mutate 'd'.
-		deltas.apply(o,d,(o,d)=>[d,d])
+		d=deltas.copied(d)
+		deltas.apply(o,d)
 	}
 }
