@@ -25,7 +25,7 @@ const deltas={//Idk if it's safe to call this deltas...
 					d[key]=o[key]//For our receipt...
 					delete o[key]
 				}
-				else if(Object.getPrototypeOf(val) === Object.prototype)
+				else if(Object.getPrototypeOf(val) === Object.prototype && typeof o[key]==='object')//Explanation for "typeof o[key]==='object'" : Because if "typeof x==='object'", then "y in x" probably won't throw an error (this handles the case where we replace a primitive with an object)
 				{
 					deltas.apply(o[key],val,f)
 				}
@@ -63,19 +63,31 @@ const deltas={//Idk if it's safe to call this deltas...
 		deltas.apply(x,y,blended)
 		return x
 	},
+	composed(deltaArray)
+	{
+		//Pure function: sums a list of deltas together, essentially creating the equivalent of multiple 
+		//If efficiency is an issue, this function might be cached later (somehow we'd have to hash the deltas)
+		assert.isPureArray(deltaArray)
+		const out={}
+		for(const delta of deltaArray)
+			deltas.pour(out,delta)
+		return out
+	},
 	soak(o,d)
 	{
 		//This just mutates 'd', in the same way a normal deltas.apply would.
 		//Returns nothing, just like deltas.apply.
+		//The visualization is that we 'soak' the delta shape 'd' in the object 'o', to get a delta that would make something more like 'o'
+		//when 'd' is applied to it
 		//In other words, the only difference between deltas.soak and deltas.apply is that deltas.soak doesn't mutate 'o'.
 		deltas.apply(o,d,(o,d)=>[o,o])
 	},
-	pourDelta(o,d)
+	pour(o,d)
 	{
 		//Opposite of deltas.soak
 		//This just mutates 'o', in the same way a normal deltas.apply would.
 		//Returns nothing, just like deltas.apply.
-		//In other words, the only difference between pourDelta and deltas.apply is that pourDelta doesn't mutate 'd'.
+		//In other words, the only difference between pour and deltas.apply is that pour doesn't mutate 'd'.
 		deltas.apply(o,d,(o,d)=>[d,d])
 	}
 }

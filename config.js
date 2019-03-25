@@ -11,11 +11,17 @@ function load_config(url)
 
 let defaultConfig=`
 
-preview	json falsek	numbers falses
+preview
+	height 90
+	mode sublime
+	numbers
+	type djson
 textures
 	dog ./Assets/dog.jpg
 	weird ./Assets/weird.jpg
 	blank ./Assets/blank.png
+sounds
+	bark ./Assets/Sounds/bark.mp3
 geometries
 	dog ./Assets/dog.obj
 items
@@ -23,7 +29,25 @@ items
 	light5 lightItem	light6 lightItem	light7 lightItem	light8 lightItem
 	dog boxItem
 	box boxItem
+	camx boxItem
+	camy boxItem
+	camz boxItem
+
 deltas	initial
+	scene	transitions	auto	time 0	delta main
+	box	texture blank	material	mode standard	modes	standard	color	r 1	g 1	b 1
+	dog	texture dog		material	mode standard	modes	standard	color	r 1	g 1	b 1
+	camera
+		transform
+			position	x 0	y 0	z 1000
+			rotation	x 0	y 0	z 0
+		camera	fov 100
+	camx	transform	scale	overall 0.1
+	camy	transform	scale	overall 0.1
+	camz	transform	scale	overall 0.1
+
+deltas	main
+	// All lights
 	light1	intensity 0.1	transform	position	x -10000	y -10000	z -10000
 	light2	intensity 0.1	transform	position	x -10000	y -10000	z  10000
 	light3	intensity 0.1	transform	position	x -10000	y  10000	z -10000
@@ -32,20 +56,74 @@ deltas	initial
 	light6	intensity 0.1	transform	position	x  10000	y -10000	z  10000
 	light7	intensity 0.1	transform	position	x  10000	y  10000	z -10000
 	light8	intensity 0.1	transform	position	x  10000	y  10000	z  10000
+	
+	// Scenery
+	scene	background	color	r 0.2	g 0.2	b 0.2
+	scene	ambience	intensity 0.8	color	r 1	g 1	b 1
+	
+	// Camera Transform
+	
+	// Initialize Items
 	box	texture blank	material	mode standard	modes	standard	color	r 1	g 1	b 1
 	dog
 		texture dog	geometry dog
 		transform
-			position	x -500	y  0	z -500
+			position	x -500	y  0	z  0
 			rotation	x  0	y  0	z  0
 			scale		x  1	y  1	z  1	overall 10
 	box	transform
-			position	x 500	y  0	z -500
+			position	x 500	y  0	z  0
 			rotation	x  0	y  0	z  0
 			scale		x  1	y  1	z  1	overall .3
+	
+	// Camera X
+	camx
+		material	mode standard	modes	standard	color	r 1	g 0	b 0
+		transform	position	y 600	z 100	x 100
+	scene	transitions	drag	camx	camx	time 1	delta camx
+	
+	// Camera Y
+	camy
+		material	mode standard	modes	standard	color	r 0	g 1	b 0
+		transform	position	y 500	z 0	x 0
+	scene	transitions	drag	camy	camy	time 1	delta camy
+	
+	// Camera Z
+	camz
+		material	mode standard	modes	standard	color	r 0	g 0	b 1
+		transform	position	y 400	z -100	x -100
+	scene	transitions	drag	camz	camz	time 1	delta camz
+	
+	// Transitions
 	scene	transitions
 		drag	dog	dog	time 1	delta pour_0
+		drag	box	box	time 1	delta main
+		//auto	delta main	time 1
 		auto null
+
+deltas	camx
+	camera	transform
+		position	x 1000	y    0	z    0
+		rotation	x    0	y   90	z    0
+	camx	transform	scale	overall 0.15
+	camy	transform	scale	overall 0.1
+	camz	transform	scale	overall 0.1
+deltas	camy
+	camera	transform
+		position	x    0	y 1000	z    0
+		rotation	x   -90	y    0	z    0
+	camx	transform	scale	overall 0.1
+	camy	transform	scale	overall 0.15
+	camz	transform	scale	overall 0.1
+deltas	camz
+	camera	transform
+		position	x    0	y    0	z 1000
+		rotation	x    0	y    0	z    0
+	camx	transform	scale	overall 0.1
+	camy	transform	scale	overall 0.1
+	camz	transform	scale	overall 0.15
+
+
 deltas	pour_0
 	dog	transform	position	y 200
 	scene	transitions	auto	delta pour_1	time 1
@@ -57,6 +135,7 @@ deltas	pour_2
 	dog	transform	rotation	z 180
 	scene	transitions	auto	delta pour_3
 deltas	pour_3
+	sound Assets/Sounds/Woof.mp3
 	// Wait a few seconds
 	dog	transform	scale	y 50
 	scene	transitions	auto	delta pour_4
@@ -74,7 +153,11 @@ deltas	pour_4
 deltas	pour_5
 	dog	transform	position	x -500
 	box	texture weird	material	modes	standard	color	r 0	g 1	b 0
-	scene	transitions	auto	delta initial
+	scene	transitions	auto	delta main
+
+
+
+
 
 
 	`
@@ -104,5 +187,8 @@ for(const [Name,URL] of Object.entries(config.textures))
 
 for(const [itemName,itemType] of Object.entries(config.items))
 	items[itemName]=modules[itemType](itemName)//Load all the items
+
+for(const [soundName,soundURL] of Object.entries(config.sounds))
+	sounds[soundName]=new Audio(soundURL)//Load all the sounds
 
 requestTween(config.deltas.initial,0)

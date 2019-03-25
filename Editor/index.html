@@ -263,11 +263,14 @@ function Process(string) {
 		document.getElementById('previewiframe').style.height='50%'
 		document.getElementById('previewtext').style.height='50%'
 	}
+	if(config.type==='none')
+		string='Preview type is set to none, so this area wont show a preview. This can make the editor run faster if you use a browser with a slower javascript engine. (I personally found Firefox to be slower than Safari slower than Chrome)'
 	if(config.type==='json')
 
 		string=config.min?JSON.stringify(parsed):JSON.stringify(parsed,null,4)
 	else
 		string=djson.stringify(parsed)
+
 	return string
 }
 
@@ -348,6 +351,7 @@ You can make this somewhere in your djson:
 preview
 	type json
 	type djson
+	type none
 	min true
 	min false		(whether to minify if we're looking at a JSON)
 	numbers true
@@ -422,7 +426,7 @@ editor.on("change", (cm, change) => {
 
 		ed=cm
 
-		console.log(cm.doc.history)
+		// console.log(cm.doc.history)
 		//console.log(change)
 		const value=cm.getValue()
 		cm.options.lineWrapping=Boolean(config.wrap)

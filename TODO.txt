@@ -19,3 +19,7 @@ Toggle Visibility
 Make a stack of deltas so we can edit in realtime for real
 Make macros
 Persistent Undo in editor
+Let camera move around
+Add .. to djson	(and deltas to djson's without reformatting) (and better djson formatting)
+
+*** WHY THE HELL DOES THIS BREAK ON SAFARI AND FIREFOX BUT WORK ON CHROME?!?!?

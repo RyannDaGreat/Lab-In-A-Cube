@@ -54,5 +54,16 @@ const attributes={
 			get rotation(){return rotation},
 			get scale(){return scale},
 		}
-	}
+	},
+	rgb(color)
+	{
+		return{
+			get r(){return color.r},
+			get g(){return color.g},
+			get b(){return color.b},
+			set r(value){color.r=value},
+			set g(value){color.g=value},
+			set b(value){color.b=value},
+		}
+	},
 }

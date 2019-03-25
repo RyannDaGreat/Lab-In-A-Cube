@@ -1,26 +1,54 @@
-function initialize()
-{
-	
-}
 const renderer = new THREE.WebGLRenderer()
 renderer.setSize(window.innerWidth, window.innerHeight)
 renderer.setPixelRatio(window.devicePixelRatio)
 document.body.appendChild(renderer.domElement)
 
 const scene = new THREE.Scene()
+scene.background=new THREE.Color(.1,.1,.1)
+
+const ambientLight=new THREE.AmbientLight( 0x404040 )
+scene.add(ambientLight)
 
 const camera = new THREE.PerspectiveCamera(75,10,1,999999)
 camera.fov=75
-camera.position.z = 1000
+// camera.position.z = 0
 
 //This is yucky. I shouldn't have to pass the name through a parameter...but I can't think of a cleaner way yet. Same problem as any item in an object tree knowing its path.
 // deltas={}
 
 const items={
-	camera:{
+	camera:
+	{
 		transform:attributes.transform(camera),
+		get fov()
+		{
+			return camera.fov
+		},
+		set fov(value)
+		{
+			camera.fov=value
+		}
 	},
-	scene:scene,
+	scene:
+	{
+		get scene(){return scene},
+		background:
+		{
+			color:attributes.rgb(scene.background),
+		},
+		ambience:
+		{
+			color:attributes.rgb(ambientLight.color),
+			get intensity()
+			{
+				return ambientLight.intensity
+			},
+			set intensity(value)
+			{
+				ambientLight.intensity=value
+			},
+		},
+	},
 }
 
 const textures={default:null}
@@ -30,6 +58,8 @@ const cubeMaps={default:null}
 const geometries={
 	box:  new THREE.BoxGeometry(700, 700, 700, 10, 10, 10),
 }
+
+const sounds={}
 
 function getClickedItem(event)//Give it a mouse event
 {
@@ -125,6 +155,10 @@ function print_current_state()
 function requestTween(delta,time=0)
 {
 	//Tweens will be denied if we are in the middle of a transition
+	if(delta.sound && typeof delta.sound==='string')
+	{
+		new Audio(delta.sound).play()
+	}
 	if(tween.time){console.log("Blocked Transition");return}//Don't allow more than one tween at a time
 	tween.time=time
 	tween.delta=delta
