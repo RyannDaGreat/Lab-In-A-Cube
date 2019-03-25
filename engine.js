@@ -293,35 +293,31 @@ function render()
 	const currentState=tween.delta
 	deltas.pour(items,currentState)
 	requestAnimationFrame(render)
-	// if(!tween.time)
-	// {
-	// 	if(keyPath.exists(currentState,'scene transitions auto'.split(' ')))//auto doesn't always exist (set it to null to delete it)
-	// 	{
-	// 		let auto=currentState.scene.transitions.auto//DONT USE items.scene.transitions.auto (this is updated every frame and overwritten; null can't delete this auto so you shouldn't use it. It causes lags and delays when you try to make it work with if/else statements etc)
-	// 		const autodeltaid=auto.delta
-	// 		console.log('Requesting auto-tween: auto.delta = '+repr(autodeltaid)+' and auto.time = '+repr(auto.time))
-	// 		const autodelta=config.deltas[auto.delta]//getDeltaByID(auto.delta)
-	// 		// deltaContainedInState(auto.delta,{})
-	// 		if(!deltaContainedInState(auto.delta,{}))
-	// 			requestTween(autodelta,auto.time)
-	// 		// else
-	// 			console.log('Tween skipped ('+auto.delta+')')
-	// 	}
-	// }
+	if(!tween.time)
+	{
+		if(keyPath.exists(currentState,'scene transitions auto'.split(' ')))//auto doesn't always exist (set it to null to delete it)
+		{
+			let auto=currentState.scene.transitions.auto//DONT USE items.scene.transitions.auto (this is updated every frame and overwritten; null can't delete this auto so you shouldn't use it. It causes lags and delays when you try to make it work with if/else statements etc)
+			const autodeltaid=auto.delta
+			console.log('Requesting auto-tween: auto.delta = '+repr(autodeltaid)+' and auto.time = '+repr(auto.time))
+			const autodelta=config.deltas[auto.delta]//getDeltaByID(auto.delta)
+			// deltaContainedInState(auto.delta,{})
+			if(!deltaContainedInState(auto.delta,{}))
+				requestTween(autodelta,auto.time)
+			else
+				console.log('Tween skipped ('+auto.delta+')')
+		}
+	}
 	// if(!tween.time)
 	// {
 	// 	let auto=tween.delta.scene.transitions.auto//DONT USE items.scene.transitions.auto (this is updated every frame and overwritten; null can't delete this auto so you shouldn't use it. It causes lags and delays when you try to make it work with if/else statements etc)
-	// 	console.log("WOIAWJEOAIJEPOIJWEOIJWEPOAJWEPAIOWE")
-	// 	console.log(config.deltas[auto.delta])
-	// 	// getDeltaByID(auto.delta)
-	// 	// getDeltaInheritanceChainString(auto.delta)
-	// 	// const x=getDeltaInheritanceChainString(auto.delta)
-	// 	// console.log(config.deltas[auto.delta])
-	// 	// deltaRawCompositionFromIdsString(x)
-	// 	// console.log(config.deltas[auto.delta])
-	// 	// getDeltaInheritanceChainString(auto.delta)
 	// 	if(auto)//auto doesn't always exist (set it to null to delete it)
-	// 		requestTween(config.deltas[auto.delta],auto.time)
+	// 	{
+	// 		console.log(config.deltas[auto.delta])
+	// 		requestTween(getDeltaByID(auto.delta),auto.time)
+	// 		console.log(config.deltas[auto.delta])
+	// 		// getDeltaInheritanceChainString(auto.delta)
+	// 	}
 	// }
 	camera.updateProjectionMatrix()//Lets you update camera FOV and aspect ratio
 	camera.aspect=window.innerWidth/window.innerHeight

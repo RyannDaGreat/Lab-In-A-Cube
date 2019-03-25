@@ -1,5 +1,8 @@
 const deltas={//Idk if it's safe to call this deltas...
-	none:null,
+	get none()
+	{
+		return null//Sometimes you might want to use undefined instead, or some Symbol. But it probably shouldn't change more than once per project...
+	},
 	copied(d)
 	{
 		console.assert(arguments.length==1,'deltas.copied error: wrong number of arguments')
@@ -123,7 +126,7 @@ const deltas={//Idk if it's safe to call this deltas...
 		//when 'd' is applied to it
 		//In other words, the only difference between deltas.soak and deltas.apply is that deltas.soak doesn't mutate 'o'.
 		o=deltas.copied(o)
-		deltas.apply(o,d)
+		deltas.apply(o,d)//Don't use a custom version of the 'f' parameter to do swaps; this forgets about setting things to deltas.none etc (this was a mistake I made before in the hopes of better efficiency. It was a mistake and this comment is here so you dont refactor it into the same mistake.)
 	},
 	pour(o,d)
 	{
