@@ -11,10 +11,10 @@ function load_config(url)
 
 let defaultConfig=`
 preview
-	height 80
+	height 50
 	mode sublime
 	numbers
-	type state
+	type state 
 textures
 	dog ./Assets/dog.jpg
 	weird ./Assets/weird.jpg
@@ -76,7 +76,7 @@ deltas
 		scene	transitions
 			enter	dog	delta clickDoggoText	time 0
 			drag	dog	dog	delta mainInitialCamera
-			auto	null
+			auto null
 		sound sadness
 			
 	clickDoggoText
@@ -163,7 +163,7 @@ deltas	main
 	overlay	text Welcome to Lab In a Cube!
 	overlay	size 40
 	
-	
+	scene	transitions	smooth 1
 	
 	// All lights
 	light1	intensity 0.1	transform	position	x -10000	y -10000	z -10000
@@ -250,7 +250,7 @@ deltas	camz
 
 deltas	pour_0
 	dog	transform	position	y 200
-	scene	transitions	auto	delta pour_1	time 1
+	scene	transitions	smooth 0	auto	delta pour_1	time 1
 	overlay	text OH MY GOD!	size 20
 deltas	pour_1
 	dog	transform	position	x 500
@@ -282,8 +282,10 @@ deltas	pour_4
 deltas	pour_5
 	dog	transform	position	x -500
 	box	texture weird	material	modes	standard	color	r 0	g 1	b 0
-	scene	transitions	auto	delta main
+	scene	transitions	smooth 1	auto	delta main
 	overlay	text 
+
+
 
 
 
@@ -317,20 +319,23 @@ if(weAreInAnIframe())
 	}
 
 
-for(const [geometryName,geometryURL] of Object.entries(config.geometries))
-	load_geometry(geometryName,geometryURL)//Load all the geometries
+if(config.geometries)
+	for(const [geometryName,geometryURL] of Object.entries(config.geometries))
+		load_geometry(geometryName,geometryURL)//Load all the geometries
 
-for(const [Name,URL] of Object.entries(config.textures))
-	load_texture(Name,URL)//Load all the textures
+if(config.textures)
+	for(const [Name,URL] of Object.entries(config.textures))
+		load_texture(Name,URL)//Load all the textures
 
-for(const [itemName,itemType] of Object.entries(config.items))
-	if(itemName in modules)
-		console.error('ERROR: Cannot add item with name '+repr(itemName)+' because that allready exists. No duplicates are allowed.')//This is a very important check to make sure that they don't get rid of things like 'scene' etc
-	else
-		items[itemName]=modules[itemType](itemName)//Load all the items
+if(config.items)
+	for(const [itemName,itemType] of Object.entries(config.items))
+		if(itemName in modules)
+			console.error('ERROR: Cannot add item with name '+repr(itemName)+' because that allready exists. No duplicates are allowed.')//This is a very important check to make sure that they don't get rid of things like 'scene' etc
+		else
+			items[itemName]=modules[itemType](itemName)//Load all the items
 
-for(const [soundName,soundURL] of Object.entries(config.sounds))
-	sounds[soundName]=new Audio(soundURL)//Load all the sounds
+if(config.sounds)
+	for(const [soundName,soundURL] of Object.entries(config.sounds))
+		sounds[soundName]=new Audio(soundURL)//Load all the sounds
 
-// requestTween(config.deltas.initial,0)
 requestTweenByID('initial')
