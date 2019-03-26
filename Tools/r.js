@@ -1,4 +1,8 @@
 //All generalizable functions that don't really fit anywhere else, but that I'd like to reuse for other projects in the future...
+function weAreInAnIframe()
+{
+	 return window.location !== window.parent.location 
+}
 function getRequest(url,callback=console.log)
 {
 	var Http = new XMLHttpRequest()

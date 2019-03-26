@@ -257,7 +257,10 @@ function loadConfigFromLocalStorage()
 let config
 loadConfigFromLocalStorage()
 console.log(JSON.stringify(config))
-setInterval(loadConfigFromLocalStorage, 100)
+if(weAreInAnIframe())
+	{
+		setInterval(loadConfigFromLocalStorage, 100)
+	}
 
 
 for(const [geometryName,geometryURL] of Object.entries(config.geometries))
