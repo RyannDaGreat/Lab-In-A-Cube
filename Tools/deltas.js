@@ -101,7 +101,7 @@ const deltas={//Idk if it's safe to call this deltas...
 			if(Object.getPrototypeOf(o)===Number.prototype&&
 				Object.getPrototypeOf(d)===Number.prototype  )
 				return [blend(o,d,alpha,true),d]
-			return [alpha>=1?d:o,d]
+			return [alpha>=threshold?d:o,d]
 		}
 		deltas.apply(x,y,blended)
 		return x

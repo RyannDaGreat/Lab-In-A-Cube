@@ -52,5 +52,9 @@ const assert={
 	isString(variable)
 	{
 		assert.isPrototypeOf(variable,String)
-	}
+	},
+	isNumber(variable)
+	{
+		assert.isPrototypeOf(variable,Number)
+	},
 }

@@ -86,14 +86,7 @@ const djson={
 			}
 
 			applyDjsonDelta(out,nested_path(path,djson.parse(lines,line_level)))
-
-
 			// [key,values]=entries
-
-
-
-
-
 
 			// const isLeaf=Boolean(entries.length>=1)
 
@@ -124,6 +117,10 @@ const djson={
 				{
 					//I disabled this warning becaue it's a fairly normal thing to happen and it got spammy: console.warn('Coersion warning: all djson values are strings, and typeof value==='+typeof value+' and String(value)==='+String(value)+' and key==='+key)
 					value=String(value)
+				}
+				else if(value.includes('\n') || value.includes('\t'))
+				{
+					value=JSON.stringify(value)
 				}
 				console.assert(!value.includes('\n'),'no djson values may contain more than one line')
 				// console.assert(!value.trim(),'djson values cannot be empty strings (for readability\'s sake')

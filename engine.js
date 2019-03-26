@@ -16,22 +16,44 @@ camera.fov=75
 //This is yucky. I shouldn't have to pass the name through a parameter...but I can't think of a cleaner way yet. Same problem as any item in an object tree knowing its path.
 // deltas={}
 
+engineModules={
+	//These modules cannot be instantiated from a djson file. There's only one of each of them. But we're using funcitons to keep some variables private.
+}
+
+const overlay=document.getElementById('overlay')
+
 const items={
 	//Reserved item names:
 	get sound(){},
 	get inherit(){},
 	get condition(){},
+	overlay:
+	{
+		get element()
+		{
+			return overlay
+		},
+		get text()
+		{
+			return overlay.innerText
+		},
+		set text(value)
+		{
+			overlay.innerText=value
+		},
+		set size(value)
+		{
+			//Set size in pixels
+			assert.isNumber(value)
+			console.assert(value>0,'Font sizes must be greater than 0pt')
+			overlay.style['fontSize']=value+'px'
+		},
+	},
 	camera:
 	{
 		transform:attributes.transform(camera),
-		get fov()
-		{
-			return camera.fov
-		},
-		set fov(value)
-		{
-			camera.fov=value
-		}
+		get fov(){return camera.fov},
+		set fov(value){camera.fov=value},
 	},
 	scene:
 	{
@@ -43,14 +65,8 @@ const items={
 		ambience:
 		{
 			color:attributes.rgb(ambientLight.color),
-			get intensity()
-			{
-				return ambientLight.intensity
-			},
-			set intensity(value)
-			{
-				ambientLight.intensity=value
-			},
+			get intensity(){return ambientLight.intensity},
+			set intensity(value){ambientLight.intensity=value},
 		},
 	},
 }
@@ -92,6 +108,8 @@ function getItemUnderCursor()//Give it a mouse event
 		console.assert(item!==undefined)
 		return item
 	}
+	return
+	return 'scene'//If we're not mousing over an object, we're definately mousing over the scene
 }
 
 let mousedownItem

@@ -186,7 +186,10 @@ for(const [Name,URL] of Object.entries(config.textures))
 	load_texture(Name,URL)//Load all the textures
 
 for(const [itemName,itemType] of Object.entries(config.items))
-	items[itemName]=modules[itemType](itemName)//Load all the items
+	if(itemName in modules)
+		console.error('ERROR: Cannot add item with name '+repr(itemName)+' because that allready exists. No duplicates are allowed.')//This is a very important check to make sure that they don't get rid of things like 'scene' etc
+	else
+		items[itemName]=modules[itemType](itemName)//Load all the items
 
 for(const [soundName,soundURL] of Object.entries(config.sounds))
 	sounds[soundName]=new Audio(soundURL)//Load all the sounds
