@@ -259,7 +259,6 @@ function getDeltaInheritanceChainString(rootDeltaID)
 		else
 			console.error('getDeltaInheritanceChainString error: '+repr(deltaID)+' is not a valid delta, skipping it...')
 	}
-	helper(rootDeltaID)
 	return out.join(' ')
 }
 
