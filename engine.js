@@ -218,6 +218,8 @@ const tween={
 	},
 	get delta()
 	{
+		let alpha=tween._alpha
+		alpha=(smoothAlpha(alpha))
 		return deltas.blended(tween._initialDelta,tween._targetDelta,tween._alpha)
 	},
 	set delta(delta)
@@ -365,7 +367,7 @@ function requestTweenByID(deltaID,time=0,force=false)
 	}
 }
 
-function requestTween(delta,time=0,force=false)
+function requestTween(delta,time=0,force=false,isAuto=false)
 {
 	//if force is true, it will override the transition blocker
 	//Tweens will be denied if we are in the middle of a transition
@@ -375,6 +377,8 @@ function requestTween(delta,time=0,force=false)
 	{
 		new Audio(config.sounds[delta.sound]).play()
 	}
+	if(!isAuto&&autoIsPending())
+		return//Don't let the user screw up the game
 	tween.time=time
 	tween.delta=delta
 }
@@ -401,12 +405,9 @@ function updateItemIDUnderCursor()
 		itemIDUnderCursor=currentItemIDUnderCursor
 	}
 }
-function render()
+
+function autoIsPending(currentState=tween.delta)
 {
-	updateItemIDUnderCursor()
-	const currentState=tween.delta
-	deltas.pour(items,currentState)
-	requestAnimationFrame(render)
 	if(!tween.time)
 	{
 		if(keyPath.exists(currentState,'scene transitions auto'.split(' ')))//auto doesn't always exist (set it to null to delete it)
@@ -414,18 +415,62 @@ function render()
 			let auto=currentState.scene.transitions.auto//DONT USE items.scene.transitions.auto (this is updated every frame and overwritten; null can't delete this auto so you shouldn't use it. It causes lags and delays when you try to make it work with if/else statements etc)
 			const autodeltaid=auto.delta
 			const autodelta=getDeltaByID(auto.delta)//config.deltas[auto.delta]
-			// deltaContainedInState(auto.delta,{})
 			if(!deltaContainedInState(auto.delta,{}))
 			{
-				console.log('Requesting auto-tween: auto.delta = '+repr(autodeltaid)+' and auto.time = '+repr(auto.time))
-				requestTween(autodelta,auto.time,true)
+				return true
 			}
 		}
+	}
+	return false
+}
+
+function render()
+{
+	const currentState=tween.delta
+	deltas.pour(items,currentState)
+	if(autoIsPending(currentState))
+	{
+		let auto=currentState.scene.transitions.auto//DONT USE items.scene.transitions.auto (this is updated every frame and overwritten; null can't delete this auto so you shouldn't use it. It causes lags and delays when you try to make it work with if/else statements etc)
+		const autodeltaid=auto.delta
+		const autodelta=getDeltaByID(auto.delta)//config.deltas[auto.delta]
+		console.log('Requesting auto-tween: auto.delta = '+repr(autodeltaid)+' and auto.time = '+repr(auto.time))
+		requestTween(autodelta,auto.time,true,true)
+	}
+	else
+	{
+		updateItemIDUnderCursor()
 	}
 	camera.updateProjectionMatrix()//Lets you update camera FOV and aspect ratio
 	camera.aspect=window.innerWidth/window.innerHeight
 	renderer.setSize(window.innerWidth, window.innerHeight)
 	renderer.render(scene, camera)
+	requestAnimationFrame(render)
 }
-render()
 
+// function render()
+// {
+// 	updateItemIDUnderCursor()
+// 	const currentState=tween.delta
+// 	deltas.pour(items,currentState)
+// 	requestAnimationFrame(render)
+// 	if(!tween.time)
+// 	{
+// 		if(keyPath.exists(currentState,'scene transitions auto'.split(' ')))//auto doesn't always exist (set it to null to delete it)
+// 		{
+// 			let auto=currentState.scene.transitions.auto//DONT USE items.scene.transitions.auto (this is updated every frame and overwritten; null can't delete this auto so you shouldn't use it. It causes lags and delays when you try to make it work with if/else statements etc)
+// 			const autodeltaid=auto.delta
+// 			const autodelta=getDeltaByID(auto.delta)//config.deltas[auto.delta]
+// 			if(!deltaContainedInState(auto.delta,{}))
+// 			{
+// 				console.log('Requesting auto-tween: auto.delta = '+repr(autodeltaid)+' and auto.time = '+repr(auto.time))
+// 				requestTween(autodelta,auto.time,true)
+// 			}
+// 		}
+// 	}
+// 	camera.updateProjectionMatrix()//Lets you update camera FOV and aspect ratio
+// 	camera.aspect=window.innerWidth/window.innerHeight
+// 	renderer.setSize(window.innerWidth, window.innerHeight)
+// 	renderer.render(scene, camera)
+// }
+// render()
+render()
