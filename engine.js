@@ -1,7 +1,7 @@
 const renderer = new THREE.WebGLRenderer()
 renderer.setSize(window.innerWidth, window.innerHeight)
 renderer.setPixelRatio(window.devicePixelRatio)
-document.body.appendChild(renderer.domElement)
+document.getElementById('renderer').appendChild(renderer.domElement)
 
 const scene = new THREE.Scene()
 scene.background=new THREE.Color(.1,.1,.1)

@@ -1,31 +1,29 @@
+@import url('https://fonts.googleapis.com/css?family=Quicksand')
 *
 {
-	margin:0
+	margin:0;
 }
 body 
 {
 	overscroll-behavior-y: none;
 	overscroll-behavior-x: none;
+	margin: 0;
+	padding: 0;
 }
-.overlay 
+#overlay
 {
-	position: fixed;
-	display: block;
-	width: 100%;
-	height: 100%;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
+	text-align:center;
+	color: white;
+	font-family: Quicksand,sans-serif;
+	font-size: 30px;
 	pointer-events: none;
-}
-
-.overlayText
-{
 	position: absolute;
-	top: 50%;
-	left: 50%;
-	font-size: 50px;
-	color: black;
-	transform: translate(-50%,-50%);
+	text-shadow: 0 0 7px #000000, 0 0 5px #000000;
+	/* top:80%; */
+	bottom: 5%;
+	left: 5%;
+	right: 5%;
+	user-select: none;
+	vertical-align:bottom;
+
 }
