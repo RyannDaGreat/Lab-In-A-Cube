@@ -265,9 +265,11 @@ function Process(string) {
 	}
 	if(config.type==='none')
 		string='Preview type is set to none, so this area wont show a preview. This can make the editor run faster if you use a browser with a slower javascript engine. (I personally found Firefox to be slower than Safari slower than Chrome)'
-	if(config.type==='json')
+	else if(config.type==='json')
 
 		string=config.min?JSON.stringify(parsed):JSON.stringify(parsed,null,4)
+	else if(config.type==='state')
+		string=localStorage.getItem('state')
 	else
 		string=djson.stringify(parsed)
 
@@ -349,14 +351,15 @@ To preview your DJSON as a JSON file, set that in the 'preview' settings (exampl
 You can make this somewhere in your djson: 
 
 preview
-	type json
-	type djson
-	type none
+	type json       (Shows the normalized json form of your current djson)
+	type djson      (Shows the djson you're currently working on after it's been normalized)
+	type state      (Show the current state of the game in djson format)
+	type none       (Doesnt really do anything...saves a little CPU though)
 	min true
 	min false		(whether to minify if we're looking at a JSON)
 	numbers true
-	numbers false
-	mode vim
+	numbers false   (Whether to show line numbers)
+	mode vim		(YEAH! My editor supports VIM thanks to codemirror plugins)
 	mode sublime
 	mode default
 	height 75		(Specify the height percent of the game preview pane)
@@ -449,6 +452,17 @@ editor.on("change", (cm, change) => {
 
 		// cm.options.indentUnit=cm.options.tabSize=config.tab||4
 })
+
+
+
+function refreshState()
+{
+	let string=Process("")
+	if(config.numbers)
+		string=numbered_lines_string(string)
+	if(config.type==='state')document.getElementById('previewtext').innerHTML ="<pre>" + string + "</pre>"
+}
+setInterval(refreshState,.1)
 
 /*
 	Simple Split Pane Implementation

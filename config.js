@@ -14,15 +14,18 @@ preview
 	height 80
 	mode sublime
 	numbers
-	type djson
+	type state
 textures
 	dog ./Assets/dog.jpg
 	weird ./Assets/weird.jpg
 	blank ./Assets/blank.png
 sounds
-	bark ./Assets/Sounds/Woof.mp3
+	woof ./Assets/Sounds/Woof.mp3
+	nyan ./Assets/Sounds/Nyan.mp3
+	sadness ./Assets/Sounds/Sadviolin.mp3
 geometries
 	dog ./Assets/dog.obj
+	flask ./Assets/flask.obj
 items
 	light1 lightItem	light2 lightItem	light3 lightItem	light4 lightItem
 	light5 lightItem	light6 lightItem	light7 lightItem	light8 lightItem
@@ -31,34 +34,38 @@ items
 	camx boxItem
 	camy boxItem
 	camz boxItem
+	flask boxItem
+	skybox boxItem
 
 deltas	redCubeText
 	overlay	text Red Cube
 
 deltas	redBackground
 	scene	background	color	r 1	g 0	b 0
-	//sound ./Assets/Sounds/Woof.mp3
+	inherit autonull
+	//sound woof
 
 deltas	greenBackground
 	scene	background	color	r 0	g .31	b 0
 	overlay	text Green Cube
-	//scene	transitions	auto null
-	//sound ./Assets/Sounds/Woof.mp3
+	scene	transitions	auto null
+	//sound woof
 
 deltas	blueBackground
 	overlay	size 30
 	scene	background	color	r 0	g 0	b 0.31
-	//sound ./Assets/Sounds/Woof.mp3
-	//scene	transitions	auto null
+	//sound woof
+	scene	transitions	auto null
 	overlay	text "Blue\n\nCube\nYou\nknow,\ndoggos\nLOVE\nblue\nthings!\n\\n\\n\\n"	 <--- YEAH that's right, we can even use newlines! (this is a comment)
 	camx	transform	position	x 0
 	scene	transitions	drag	dog	dog	time 1	delta blueDoggo-0
-	
+
 deltas
 	blueDoggo-0
 		dog	transform	rotation	x -90
+		sound woof
 		overlay	text "THE DOGE THANKS YOU FOR YOUR SERVICE!\n(Click the doggy!)"	size 40
-		scene	transitions	auto	time 1	delta blueDoggo-1
+		scene	transitions	auto	time 3	delta blueDoggo-1
 	blueDoggo-1
 		dog	transform	position	x 0	y -500
 		dog	transform	scale	overall 20
@@ -67,27 +74,70 @@ deltas
 		camera	transform	rotation	x -30
 		camera	fov 30
 		scene	transitions
-			auto	time 1	delta blueDoggo-1
 			enter	dog	delta clickDoggoText	time 0
 			drag	dog	dog	delta mainInitialCamera
-		
+			auto	null
+		sound sadness
 			
 	clickDoggoText
 		overlay	text (that's right...just DO IT!!)	size 20
 		scene	transitions	auto null
+		scene	transitions	enter	dog null
 	
 
 deltas	blackBackground
 	scene	background	color	r 3	g 0	b 0
 	camx	transform	position	x 0
 	//scene	transitions	auto null
-	//sound ./Assets/Sounds/Woof.mp3
+	//sound woof
+
+deltas
+	zoomOutAnimation-0
+		sound nyan
+		scene	transitions	auto	delta zoomOutAnimation-1	time 5
+		overlay	text Zooming out to show you that...this is literally a lab in a giant cube!
+		camera	transform
+			rotation	x 90
+			position	x 0	z 0	y -1000
+	zoomOutAnimation-1
+		scene	transitions	auto	delta zoomOutAnimation-2	time 9
+		camera	transform
+			position	y -13000
+			rotation	x 90	z 30	y 15
+		flask	transform	scale	overall 10000
+		flask	transform
+			rotation	x -98	y -147	z 333
+		skybox	material	mode basic	modes	basic	opacity .6	color	r 1	g 0	b .5
+		flask	material	mode standard	modes	standard	wireframe true	color	r 5	g 5	b 0
+	zoomOutAnimation-2	inherit zoomOutAnimation-0
+		scene	transitions	auto	delta zoomOutAnimation-3	time 5
+		camera	fov 100	transform	rotation	z -30	y -5
+		flask	transform
+			scale	overall 40000
+			rotation	x 25	y 98	z -159
+		sound null
+		skybox	material	mode basic	modes	basic	opacity 1	color	r .5	g 1	b 0
+		flask	material	mode standard	modes	standard	wireframe true	color	r 0	g 1	b 10
+	zoomOutAnimation-3	inherit autonull initialCamera initial	scene	transitions	auto	time 1
+
 
 deltas	initial
-	sound ./Assets/Sounds/Woof.mp3
-	inherit initialCamera main
+	skybox	transform	scale	overall 200
+	skybox	material	mode basic	modes	basic
+		color	r 1	g 1	b 1
+		transparent true
+		opacity .2
+	inherit initialCamera main autonull
+	flask	transform	scale	overall 140
+	flask	transform
+		position	y -230	z 0	x 0
+		rotation	x 45	y 30	z 20
+	flask	material	mode standard	modes	standard	wireframe true	color	r 10	g 1	b 1
+	flask	geometry flask
 	box	texture blank	material	mode standard	modes	standard	color	r 1	g 1	b 1
 	dog	texture dog		material	mode standard	modes	standard	color	r 1	g 1	b 1
+	scene	transitions	auto null	delta initial	time .5
+	scene	transitions	drag	flask	flask	delta zoomOutAnimation-0	time 4
 	
 deltas	initialCamera
 	camera	transform
@@ -109,7 +159,7 @@ deltas	initial	scene	transitions	enter	box	delta boxText	time 0
 deltas	boxText	overlay	text This boring white box resets the scene when you click it (except for camera position)	size 20
 
 deltas	main
-	inherit blackBackground resetcamboxes greenText
+	inherit blackBackground resetcamboxes greenText autonull
 	overlay	text Welcome to Lab In a Cube!
 	overlay	size 40
 	
@@ -212,7 +262,7 @@ deltas	pour_2
 	scene	transitions	auto	delta pour_3
 	overlay	text WOOF!!	size 40
 deltas	pour_3
-	sound Assets/Sounds/Woof.mp3
+	sound woof
 	// Wait a few seconds
 	dog	transform	scale	y 50
 	scene	transitions	auto	delta pour_4
@@ -240,7 +290,6 @@ deltas	pour_5
 
 
 
-
 	`
 
 function loadConfigFromLocalStorage()
@@ -254,12 +303,17 @@ function loadConfigFromLocalStorage()
 	}
 	config=djson.parse(storedItem)
 }
+function saveStateToLocalStorage()
+{
+	localStorage.setItem('state',djson.stringify(tween.delta))
+}
 let config
 loadConfigFromLocalStorage()
 console.log(JSON.stringify(config))
 if(weAreInAnIframe())
 	{
 		setInterval(loadConfigFromLocalStorage, 100)
+		setInterval(saveStateToLocalStorage, 100)
 	}
 
 
