@@ -373,12 +373,12 @@ function requestTween(delta,time=0,force=false,isAuto=false)
 	//Tweens will be denied if we are in the middle of a transition
 	console.assert(arguments.length>=1,'Wrong number of arguments.')
 	if(tween.time&&!force){console.log("Blocked Transition (another transition is still tweening)");return}//Don't allow more than one tween at a time
-	else if(delta.sound && typeof delta.sound==='string')
+	if(!isAuto&&autoIsPending())
+		return//Don't let the user screw up the game
+	if(delta.sound && typeof delta.sound==='string')
 	{
 		new Audio(config.sounds[delta.sound]).play()
 	}
-	if(!isAuto&&autoIsPending())
-		return//Don't let the user screw up the game
 	tween.time=time
 	tween.delta=delta
 }
