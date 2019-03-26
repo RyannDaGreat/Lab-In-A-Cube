@@ -219,7 +219,8 @@ function smoothAlpha(x)
 function blend(x,y,alpha,clamped=false)
 {
 	//If clamp is turned on, then we restrict alpha to reasonable values (between 0 and 1 inclusively)
-	alpha=clamp(alpha,0,1)
+	if(clamped)
+		alpha=clamp(alpha,0,1)
 	return (1-alpha)*x+alpha*y
 }
 function gtoc()

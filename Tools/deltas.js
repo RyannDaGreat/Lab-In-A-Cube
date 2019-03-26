@@ -86,8 +86,6 @@ const deltas={//Idk if it's safe to call this deltas...
 	blended(x,y,alpha,threshold=0)
 	{
 		console.assert(arguments.length>=3,'deltas.blended error: wrong number of arguments')
-		alpha=smoothAlpha(alpha)
-		// alpha=smoothAlpha(smoothAlpha(alpha))
 		//Pure function: no mutations
 		//EXAMPLE:
 		//	let a={a:0,b:{c:1,d:2},W:false}
@@ -100,7 +98,7 @@ const deltas={//Idk if it's safe to call this deltas...
 		{
 			if(Object.getPrototypeOf(o)===Number.prototype&&
 				Object.getPrototypeOf(d)===Number.prototype  )
-				return [blend(o,d,alpha,true),d]
+				return [blend(o,d,alpha,false),d]
 			return [alpha>=threshold?d:o,d]
 		}
 		deltas.apply(x,y,blended)

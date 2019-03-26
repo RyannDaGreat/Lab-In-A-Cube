@@ -57,6 +57,10 @@ const items={
 	},
 	scene:
 	{
+		transitions:
+		{
+			smooth:1,
+		},
 		get scene(){return scene},
 		background:
 		{
@@ -219,8 +223,8 @@ const tween={
 	get delta()
 	{
 		let alpha=tween._alpha
-		alpha=(smoothAlpha(alpha))
-		return deltas.blended(tween._initialDelta,tween._targetDelta,tween._alpha)
+		alpha=blend(alpha,smoothAlpha(alpha),items.scene.transitions.smooth)
+		return deltas.blended(tween._initialDelta,tween._targetDelta,alpha)
 	},
 	set delta(delta)
 	{
