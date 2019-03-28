@@ -16,7 +16,7 @@ function uniqueFromRight(array)
 			out.unshift(element)
 		}
 	return out
-}dd
+}
 function getRequest(url,callback=console.log)
 {
 	var Http = new XMLHttpRequest()

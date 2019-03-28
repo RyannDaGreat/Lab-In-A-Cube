@@ -143,7 +143,7 @@ function requestTransition(transition,force=false,isAuto=false)
 	console.assert(arguments.length>=1,'Wrong number of arguments.')
 	function t(id)//t is for Tween
 	{
-		requestTween(getDeltaByID(id),transition.time,force,isAuto)
+		requestTweenByID(id,transition.time,force,isAuto)
 	}
 	function c(id)//c is for Condition
 	{
@@ -405,11 +405,26 @@ function deltaRawCompositionFromIdsString(deltaIdsSeparatedBySpaces)
 	//Takes a space-separated string of deltaID's and returns the composition of all of those deltas as a delta object
 	const deltaIds=getArrayOfDeltaIDsFromString(deltaIdsSeparatedBySpaces)
 	assert.isPureArray(deltaIds)
+	return deltaRawCompositionFromIdArray(deltaIds)
+}
+
+function deltaRawCompositionFromIdArray(deltaIdsAsArray)
+{
+	console.assert(arguments.length==1,'Wrong number of arguments.')
+	assert.isPureArray(deltaIdsAsArray)
+	for(const deltaID of deltaIdsAsArray)
+		console.assert(deltaID in config.deltas,'deltaRawCompositionFromIdsString error: '+repr(deltaID)+' is not a real delta!\ndeltaIdsSeparatedBySpaces = '+repr(deltaIdsAsArray.join(' ')))
+	return deltaCompositionFromArray(deltaIdsAsArray.map(getRawDeltaFromConfigByID))
+}
+function deltaCompositionFromArray(deltaArray)
+{
+	console.assert(arguments.length==1,'Wrong number of arguments.')
+	assert.isPureArray(deltaArray)
 	const out={}
-	for(const deltaID of deltaIds)
+	for(const delta of deltaArray)
 	{
-		console.assert(deltaID in config.deltas,'deltaRawCompositionFromIdsString error: '+repr(deltaID)+' is not a real delta!\ndeltaIdsSeparatedBySpaces = '+repr(deltaIdsSeparatedBySpaces))
-		deltas.pour(out,getRawDeltaFromConfigByID(deltaID))
+		assert.isPureObject(delta)
+		deltas.pour(out,delta)
 	}
 	return out
 }
@@ -425,6 +440,7 @@ function requestTweenByID(deltaID,time=0,force=false,isAuto=false)
 	console.assert(arguments.length>=1,'Wrong number of arguments.')
 	if(!deltaIDContainedInState(deltaID,{}))
 	{
+		pushDeltaIDToStateStack(deltaID)
 		console.log('requestTweenByID: deltaID = '+repr(deltaID)+' and time = '+repr(time))
 		requestTween(getDeltaByID(deltaID),time,force,isAuto)
 	}
@@ -492,6 +508,23 @@ function autoIsPending(currentState=tween.delta)
 	return false
 }
 
+const stateDeltaStack=[]
+function pushDeltaIDToStateStack(deltaID)
+{
+	stateDeltaStack.push(deltaID)
+}
+function getStateDeltaStack()
+{
+	return stateDeltaStack
+}
+function getSimplifiedStateDeltaStack()
+{
+	return uniqueFromRight(stateDeltaStack)
+}
+function printDeltaStack()
+{
+	console.log(stateDeltaStack.join('\n'))
+}
 function render()
 {
 	const currentState=tween.delta

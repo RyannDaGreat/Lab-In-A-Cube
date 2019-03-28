@@ -313,10 +313,10 @@ let config
 loadConfigFromLocalStorage()
 console.log(JSON.stringify(config))
 if(weAreInAnIframe())
-	{
-		setInterval(loadConfigFromLocalStorage, 100)
-		setInterval(saveStateToLocalStorage, 100)
-	}
+{
+	setInterval(loadConfigFromLocalStorage, 100)
+	setInterval(saveStateToLocalStorage, 100)
+}
 
 
 if(config.geometries)
