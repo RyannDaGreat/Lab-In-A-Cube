@@ -286,6 +286,7 @@ deltas	pour_5
 	overlay	text 
 	`
 
+let previousLoadedConfigString
 function loadConfigFromLocalStorage()
 {
 	if(!tween.time && !autoIsPending())
@@ -298,12 +299,13 @@ function loadConfigFromLocalStorage()
 			storedItem=defaultConfig
 		}
 		const newConfig=djson.parse(storedItem)
-		if(!deltas.contains(config,newConfig))
+		if(previousLoadedConfigString!=storedItem && !deltas.contains(config,newConfig))
 		{
 			playSound('./Assets/Sounds/Woof.mp3')
 			deltas.pour(config,newConfig)
 			refreshStateFromConfig()
 		}
+		previousLoadedConfigString=storedItem
 	}
 }
 
