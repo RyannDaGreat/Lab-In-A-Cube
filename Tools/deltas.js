@@ -135,5 +135,24 @@ const deltas={//Idk if it's safe to call this deltas...
 		//In other words, the only difference between pour and deltas.apply is that pour doesn't mutate 'd'.
 		d=deltas.copied(d)
 		deltas.apply(o,d)
-	}
+	},
+	poured(o,d)
+	{
+		//This should return the resulting object of a deltas.pour action, without mutating either 'o' or 'd'
+		console.assert(arguments.length==2,'deltas.poured error: wrong number of arguments')
+		o=deltas.copied(o)
+		deltas.pour(o,d)
+		return o
+		//(Untested)
+	},
+	soaked(o,d)
+	{
+		//This should return the resulting object of a deltas.soak action, without mutating either 'o' or 'd'
+		console.assert(arguments.length==2,'deltas.soaked error: wrong number of arguments')
+		d=deltas.copied(d)
+		deltas.soak(o,d)
+		return d
+		//(Untested)
+	},
+
 }
