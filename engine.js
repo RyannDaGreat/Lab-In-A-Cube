@@ -137,6 +137,59 @@ renderer.domElement.addEventListener("mouseout",   function(){mouse_in_renderer=
 renderer.domElement.addEventListener("mouseleave", function(){mouse_in_renderer=false}, true)
 renderer.domElement.addEventListener("mousemove", updateMousePosition, true)
 
+function requestTransition(transition,force=false)
+{
+	//Handle conditions
+	console.assert(arguments.length>=1,'Wrong number of arguments.')
+	function t(id)//t is for Tween
+	{
+		requestTween(getDeltaByID(id),transition.time,force)
+	}
+	function c(id)//c is for Condition
+	{
+		return deltaIDContainedInState(id)
+	}
+	let d=transition.delta
+	assert.isString(d)
+	d=d.trim().split(/\ +/)
+	assert.isPureArray(d)
+	console.log(d)
+	if(d.length===0)
+	{
+		console.error('You must specify a delta (deltaIDs cannot contain spaces nor be empty strings)')
+	}
+	else if(d.length===1)
+	{
+		t(d[0])
+	}
+	else if(d.length===2)
+	{
+		console.error('Invalid number of arguments at the moment',transition.delta)
+	}
+	else if(d.length===3)
+	{
+		console.assert(d[1]==='if')
+		if(c(d[2]))
+			t(d[0])
+	}
+	else if(d.length===4)
+	{
+		console.error('Invalid number of arguments at the moment',transition.delta)
+	}
+	else if(d.length===5)
+	{
+		console.assert(d[1]==='if')
+		console.assert(d[3]==='else')
+		if(c(d[2]))
+			t(d[0])
+		else
+			t(d[4])
+	}
+	else
+	{
+		console.error('Invalid number of arguments at the moment',transition.delta)
+	}
+}
 
 function triggerEnterTransition(enterItemID)
 {
@@ -148,15 +201,18 @@ function triggerEnterTransition(enterItemID)
 	if(cursor && enterItemID in cursor)
 	{
 		const transition = items.scene.transitions.enter[enterItemID]
-		// requestTweenByID(transition.delta,transition.time)//Force the entry transition
-		requestTween(getDeltaByID(transition.delta),transition.time,true)
+		requestTransition(transition,true)
+		// requestTweenByID(transition.delta,transition.time,true)//Force the entry transition
+		// requestTween(getDeltaByID(transition.delta),transition.time,true)
 		console.log("triggerEnterTransition: "+enterItemID)
 	}
-	else
+	else if(debugMouseHovers)
 	{
 		console.error("triggerEnterTransition error: No transition from "+enterItemID+" exists")
 	}
 }
+
+const debugMouseHovers=false
 
 function triggerLeaveTransition(leaveItemID)
 {
@@ -168,11 +224,12 @@ function triggerLeaveTransition(leaveItemID)
 	if(cursor && leaveItemID in cursor)
 	{
 		const transition = items.scene.transitions.leave[leaveItemID]
-		requestTween(getDeltaByID(transition.delta),transition.time,true)
-		// requestTweenByID(transition.delta,transition.time)
+		// requestTween(getDeltaByID(transition.delta),transition.time,true)
+		requestTransition(transition,true)
+		// requestTweenByID(transition.delta,transition.time,true)
 		console.log("triggerLeaveTransition: "+leaveItemID)
 	}
-	else
+	else if(debugMouseHovers)
 	{
 		console.error("triggerLeaveTransition error: No transition from "+leaveItemID+" exists")
 	}
@@ -187,7 +244,8 @@ function triggerDragTransition(mousedownItem,mouseupItem)
 	{
 		const transition = items.scene.transitions.drag[mousedownItem.ID][mouseupItem.ID]
 		// requestTween(getDeltaByID(transition.delta),transition.time )
-		requestTweenByID(transition.delta,transition.time)
+		// requestTweenByID(transition.delta,transition.time)
+		requestTransition(transition,false)
 		console.log("triggerDragTransition: "+mousedownItem.ID+" TO "+mouseupItem.ID)
 	}
 	else
@@ -270,7 +328,7 @@ function getDeltaInheritanceChainString(rootDeltaID)
 	return out.join(' ')
 }
 
-function deltaContainedInState(deltaID,deltaContainedInState_Cache)
+function deltaIDContainedInState(deltaID,deltaContainedInState_Cache)
 {
 
 	const currentState=tween.delta
@@ -278,7 +336,7 @@ function deltaContainedInState(deltaID,deltaContainedInState_Cache)
 	console.assert(arguments.length==2,'Wrong number of arguments.')
 	assert.isPureObject(deltaContainedInState_Cache)
 	assert.isString(deltaID)
-	console.assert(deltaExistsInConfig(deltaID),'deltaContainedInState error: deltaID = '+repr(deltaID)+' is not in config')
+	console.assert(deltaExistsInConfig(deltaID),'deltaIDContainedInState error: deltaID = '+repr(deltaID)+' is not in config')
 	if(deltaID in deltaContainedInState_Cache)//This NEEDS to exist in order for this function to avoid circular loops
 		return deltaContainedInState_Cache[deltaID]
 	return deltaContainedInState_Cache[deltaID]=deltas.contains(currentState,getDeltaByID(deltaID,deltaContainedInState_Cache))
@@ -360,7 +418,7 @@ function print_current_state()
 function requestTweenByID(deltaID,time=0,force=false)
 {
 	console.assert(arguments.length>=1,'Wrong number of arguments.')
-	if(!deltaContainedInState(deltaID,{}))
+	if(!deltaIDContainedInState(deltaID,{}))
 	{
 		console.log('requestTweenByID: deltaID = '+repr(deltaID)+' and time = '+repr(time))
 		requestTween(getDeltaByID(deltaID),time,force)
@@ -402,7 +460,8 @@ function updateItemIDUnderCursor()
 		console.assert(currentItemIDUnderCursor===undefined || typeof currentItemIDUnderCursor ==='string','Oops...if youre reading this you need to figure out why ID; (a RESERVED parameter) was allowed to be turned into a non-string')
 		if(itemIDUnderCursor!==currentItemIDUnderCursor)
 		{
-			console.log('Item ID under cursor changed from '+itemIDUnderCursor+' to '+currentItemIDUnderCursor)
+			if(debugMouseHovers)
+				console.log('Item ID under cursor changed from '+itemIDUnderCursor+' to '+currentItemIDUnderCursor)
 			triggerLeaveTransition(itemIDUnderCursor)
 			triggerEnterTransition(currentItemIDUnderCursor)
 		}
@@ -419,7 +478,7 @@ function autoIsPending(currentState=tween.delta)
 			let auto=currentState.scene.transitions.auto//DONT USE items.scene.transitions.auto (this is updated every frame and overwritten; null can't delete this auto so you shouldn't use it. It causes lags and delays when you try to make it work with if/else statements etc)
 			const autodeltaid=auto.delta
 			const autodelta=getDeltaByID(auto.delta)//config.deltas[auto.delta]
-			if(!deltaContainedInState(auto.delta,{}))
+			if(!deltaIDContainedInState(auto.delta,{}))
 			{
 				return true
 			}
@@ -464,7 +523,7 @@ function render()
 // 			let auto=currentState.scene.transitions.auto//DONT USE items.scene.transitions.auto (this is updated every frame and overwritten; null can't delete this auto so you shouldn't use it. It causes lags and delays when you try to make it work with if/else statements etc)
 // 			const autodeltaid=auto.delta
 // 			const autodelta=getDeltaByID(auto.delta)//config.deltas[auto.delta]
-// 			if(!deltaContainedInState(auto.delta,{}))
+// 			if(!deltaIDContainedInState(auto.delta,{}))
 // 			{
 // 				console.log('Requesting auto-tween: auto.delta = '+repr(autodeltaid)+' and auto.time = '+repr(auto.time))
 // 				requestTween(autodelta,auto.time,true)

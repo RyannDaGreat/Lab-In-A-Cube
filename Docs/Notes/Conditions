@@ -7,8 +7,8 @@ condition(id,s=new Set)
 	if s.has(id) return true	//Base case
 	for idi of inheritanceChain(id).reversed():												//Should this be reversed? IFF it's not, then we have to use 'x + total' wherever we use 'total + x' and vice versa. I think I accidently made the electron negative....oh well. Oops. I guess we can fix that with refactoring. inheritanceChain is conceptually backwards (not a technical problem, just an ugliness)??
 		if condition(idi,s|{idi})
-			if stateContains(getDeltaByID(idi) + total)
-				total = getDeltaByID(idi) + total
+			if stateContains(getRawDeltaByID(idi) + total)
+				total = getRawDeltaByID(idi) + total
 			else return false
 		else continue
 	assert stateContains(total)
@@ -18,7 +18,7 @@ I THINK the above function is correct...ive spent a day or so working on it so I
 
 //Question: Should we include 'vacuous truth'? This is a stange case where the size of the state dict changes with time....I don't think it really matters though.
 
-I have no idea what the complexity of this algorithm is, but it could be way better. We could cache condition with respect to ID's until things change etc. But that sonuds like premature optimization for now...
+I have no idea what the complexity of this algorithm is, but it could be way better. We could cache condition with respect to ID's until things change etc. But that sonuds like premature optimization for now... 
 
 let a delta called 'impossible' exist
 
