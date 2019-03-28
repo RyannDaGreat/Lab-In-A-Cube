@@ -3,6 +3,10 @@ function weAreInAnIframe()
 {
 	 return window.location !== window.parent.location 
 }
+function playSound(url)
+{
+	new Audio(url).play()
+}
 function uniqueFromRight(array)
 {
 	//Example: uniqueFromRight([1,2,1,3,3,2,1,2,3,1])

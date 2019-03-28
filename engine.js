@@ -137,13 +137,13 @@ renderer.domElement.addEventListener("mouseout",   function(){mouse_in_renderer=
 renderer.domElement.addEventListener("mouseleave", function(){mouse_in_renderer=false}, true)
 renderer.domElement.addEventListener("mousemove", updateMousePosition, true)
 
-function requestTransition(transition,force=false,isAuto=false)
+function requestTransition(transition,ignoreBlocking=false,isAuto=false)
 {
 	//Handle conditions
 	console.assert(arguments.length>=1,'Wrong number of arguments.')
 	function t(id)//t is for Tween
 	{
-		requestTweenByID(id,transition.time,force,isAuto)
+		requestTweenByID(id,transition.time,ignoreBlocking,isAuto)
 	}
 	function c(id)//c is for Condition
 	{
@@ -205,8 +205,6 @@ function triggerEnterTransition(enterItemID)
 	{
 		const transition = items.scene.transitions.enter[enterItemID]
 		requestTransition(transition,true)
-		// requestTweenByID(transition.delta,transition.time,true)//Force the entry transition
-		// requestTween(getDeltaByID(transition.delta),transition.time,true)
 		console.log("triggerEnterTransition: "+enterItemID)
 	}
 	else if(debugMouseHovers)
@@ -227,9 +225,7 @@ function triggerLeaveTransition(leaveItemID)
 	if(cursor && leaveItemID in cursor)
 	{
 		const transition = items.scene.transitions.leave[leaveItemID]
-		// requestTween(getDeltaByID(transition.delta),transition.time,true)
 		requestTransition(transition,true)
-		// requestTweenByID(transition.delta,transition.time,true)
 		console.log("triggerLeaveTransition: "+leaveItemID)
 	}
 	else if(debugMouseHovers)
@@ -246,8 +242,6 @@ function triggerDragTransition(mousedownItem,mouseupItem)
 	if(mousedownItem.ID in cursor && mouseupItem.ID in cursor[mousedownItem.ID])
 	{
 		const transition = items.scene.transitions.drag[mousedownItem.ID][mouseupItem.ID]
-		// requestTween(getDeltaByID(transition.delta),transition.time )
-		// requestTweenByID(transition.delta,transition.time)
 		requestTransition(transition,false)
 		console.log("triggerDragTransition: "+mousedownItem.ID+" TO "+mouseupItem.ID)
 	}
@@ -360,8 +354,7 @@ function getRawDeltaFromConfigByID(deltaID)
 {
 	//Simply read a delta from the config and return a copy (in-case we mutate it later). This intermediate function exists to help throw useful errors.
 	//This function should be cached...but right now I'm not caching it because the config might be reloaded dynamically, and I don't want to add hooks to that method to clear this cache.
-	console.assert(arguments.length==1,'Wrong number of arguments.')
-	assert.isPureObject(config.deltas)//config.deltas must exist
+	console.assert(arguments.length>=1,'Wrong number of arguments.')//>=1 instead of ===1 because of deltaRawCompositionFromIdArray using the Array.prototype.map function (which passes multiple arguments, only the first of which is important)
 	if(deltaExistsInConfig(deltaID))
 	{
 		console.assert(typeof config.deltas[deltaID] === 'object','getDeltaByID error: '+'typeof config.deltas['+deltaID+'] === '+typeof config.deltas[deltaID]+'\n(All entries in config.deltas should be objects! Not numbers, not strings, etc. Check the djson and make sure no spaces are attached to delta '+deltaID)
@@ -416,9 +409,17 @@ function deltaRawCompositionFromIdArray(deltaIdsAsArray)
 		console.assert(deltaID in config.deltas,'deltaRawCompositionFromIdsString error: '+repr(deltaID)+' is not a real delta!\ndeltaIdsSeparatedBySpaces = '+repr(deltaIdsAsArray.join(' ')))
 	return deltaCompositionFromArray(deltaIdsAsArray.map(getRawDeltaFromConfigByID))
 }
-function deltaCompositionFromArray(deltaArray)
+function deltaCompositionFromIdArray(deltaIdsAsArray)
 {
 	console.assert(arguments.length==1,'Wrong number of arguments.')
+	assert.isPureArray(deltaIdsAsArray)
+	for(const deltaID of deltaIdsAsArray)
+		console.assert(deltaID in config.deltas,'deltaRawCompositionFromIdsString error: '+repr(deltaID)+' is not a real delta!\ndeltaIdsSeparatedBySpaces = '+repr(deltaIdsAsArray.join(' ')))
+	return deltaCompositionFromArray(deltaIdsAsArray.map(getDeltaByID))
+}
+function deltaCompositionFromArray(deltaArray)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
 	assert.isPureArray(deltaArray)
 	const out={}
 	for(const delta of deltaArray)
@@ -435,14 +436,14 @@ function print_current_state()
 	console.log(djson.stringify(tween.delta))
 }
 
-function requestTweenByID(deltaID,time=0,force=false,isAuto=false)
+function requestTweenByID(deltaID,time=0,ignoreBlocking=false,isAuto=false)
 {
 	console.assert(arguments.length>=1,'Wrong number of arguments.')
 	if(!deltaIDContainedInState(deltaID,{}))
 	{
 		pushDeltaIDToStateStack(deltaID)
 		console.log('requestTweenByID: deltaID = '+repr(deltaID)+' and time = '+repr(time))
-		requestTween(getDeltaByID(deltaID),time,force,isAuto)
+		requestTween(getDeltaByID(deltaID),time,ignoreBlocking,isAuto)
 	}
 	else
 	{
@@ -450,17 +451,17 @@ function requestTweenByID(deltaID,time=0,force=false,isAuto=false)
 	}
 }
 
-function requestTween(delta,time=0,force=false,isAuto=false)
+function requestTween(delta,time=0,ignoreBlocking=false,isAuto=false)
 {
-	//if force is true, it will override the transition blocker
+	//if ignoreBlocking is true, it will override the transition blocker
 	//Tweens will be denied if we are in the middle of a transition
 	console.assert(arguments.length>=1,'Wrong number of arguments.')
-	if(tween.time&&!force){console.log("Blocked Transition (another transition is still tweening)");return}//Don't allow more than one tween at a time
+	if(tween.time&&!ignoreBlocking){console.log("Blocked Transition (another transition is still tweening)");return}//Don't allow more than one tween at a time
 	if(!isAuto&&autoIsPending())
 		return//Don't let the user screw up the game
 	if(delta.sound && typeof delta.sound==='string')
 	{
-		new Audio(config.sounds[delta.sound]).play()
+		playSound(config.sounds[delta.sound])
 	}
 	tween.time=time
 	tween.delta=delta
@@ -508,7 +509,7 @@ function autoIsPending(currentState=tween.delta)
 	return false
 }
 
-const stateDeltaStack=[]
+const stateDeltaStack=[]//This is referenced by getters/setters in config
 function pushDeltaIDToStateStack(deltaID)
 {
 	stateDeltaStack.push(deltaID)
@@ -520,6 +521,20 @@ function getStateDeltaStack()
 function getSimplifiedStateDeltaStack()
 {
 	return uniqueFromRight(stateDeltaStack)
+}
+function setStateFromDeltaIDArray(deltaIdsAsArray)
+{
+	tween._targetDelta=deltaCompositionFromIdArray(deltaIdsAsArray)
+	// requestTween(deltaCompositionFromIdArray(deltaIdsAsArray),time,true,true)
+}
+function setStateFromDeltaIDSpaceSplitString(deltaIdsSeparatedBySpaces)
+{
+	setStateFromDeltaIDArray(getArrayOfDeltaIDsFromString(deltaIdsSeparatedBySpaces),time)
+}
+function refreshStateFromConfig()
+{
+	setStateFromDeltaIDArray(getSimplifiedStateDeltaStack())
+	printDeltaStack()
 }
 function printDeltaStack()
 {

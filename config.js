@@ -284,32 +284,44 @@ deltas	pour_5
 	box	texture weird	material	modes	standard	color	r 0	g 1	b 0
 	scene	transitions	smooth 1	auto	delta main
 	overlay	text 
-
-
-
-
-
-
-
-
 	`
 
 function loadConfigFromLocalStorage()
 {
-	let storedItem=localStorage.getItem('config')
-	if(!storedItem)
+	if(!tween.time && !autoIsPending())
 	{
-		console.warn("Failed to load 'config' from localstorage")
-		localStorage.setItem('config',defaultConfig)//Write new config file if none currently exists...
-		storedItem=defaultConfig
+		let storedItem=localStorage.getItem('config')
+		if(!storedItem)
+		{
+			console.warn("Failed to load 'config' from localstorage")
+			localStorage.setItem('config',defaultConfig)//Write new config file if none currently exists...
+			storedItem=defaultConfig
+		}
+		const newConfig=djson.parse(storedItem)
+		if(!deltas.contains(config,newConfig))
+		{
+			playSound('./Assets/Sounds/Woof.mp3')
+			deltas.pour(config,newConfig)
+			refreshStateFromConfig()
+		}
 	}
-	config=djson.parse(storedItem)
 }
+
 function saveStateToLocalStorage()
 {
 	localStorage.setItem('state',djson.stringify(tween.delta))
 }
-let config
+
+const config={
+	get state()
+	{
+		return getStateDeltaStack().join(' ')
+	},
+	set state(string)
+	{
+		stateDeltaStack
+	}
+}
 loadConfigFromLocalStorage()
 console.log(JSON.stringify(config))
 if(weAreInAnIframe())
