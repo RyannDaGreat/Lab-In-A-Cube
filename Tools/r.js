@@ -3,6 +3,20 @@ function weAreInAnIframe()
 {
 	 return window.location !== window.parent.location 
 }
+function uniqueFromRight(array)
+{
+	//Example: uniqueFromRight([1,2,1,3,3,2,1,2,3,1])
+	//Output:  [2, 3, 1]
+	seen=new Set
+	out=[]
+	for(element of [...array].reverse())
+		if(!seen.has(element))
+		{
+			seen.add(element)
+			out.unshift(element)
+		}
+	return out
+}dd
 function getRequest(url,callback=console.log)
 {
 	var Http = new XMLHttpRequest()

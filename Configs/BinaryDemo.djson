@@ -18,7 +18,6 @@ items
 	light1 lightItem	light2 lightItem	light3 lightItem	light4 lightItem
 	light5 lightItem	light6 lightItem	light7 lightItem	light8 lightItem
 
-
 deltas	initialCamera
 	camera	transform
 			position	x 0	y 0	z 1000
@@ -28,8 +27,6 @@ deltas	initialCamera
 
 deltas	autonull	scene	transitions	auto null
 
-
-
 items	box0 boxItem
 deltas	box0up	inherit autonull
 	box0	transform	position	y 500	x 0
@@ -37,8 +34,6 @@ deltas	box0up	inherit autonull
 deltas	box0down	inherit autonull
 	box0	transform	position	y -500
 	scene	transitions	drag	box0	box0	delta box0up	time 1
-
-
 
 items	box1 boxItem
 deltas	box1up	inherit autonull
@@ -48,7 +43,6 @@ deltas	box1down	inherit autonull
 	box1	transform	position	y -500
 	scene	transitions	drag	box1	box1	delta box1up	time 1
 
-
 items	box2 boxItem
 deltas	box2up	inherit autonull
 	box2	transform	position	y 500	x 2000
@@ -56,8 +50,6 @@ deltas	box2up	inherit autonull
 deltas	box2down	inherit autonull
 	box2	transform	position	y -500
 	scene	transitions	drag	box2	box2	delta box2up	time 1
-
-
 
 items	box3 boxItem
 deltas	box3up	inherit autonull
@@ -67,7 +59,6 @@ deltas	box3down	inherit autonull
 	box3	transform	position	y -500
 	scene	transitions	drag	box3	box3	delta box3up	time 1
 
-
 items	box4 boxItem
 deltas	box4up	inherit autonull
 	box4	transform	position	y 500	x 4000
@@ -75,7 +66,6 @@ deltas	box4up	inherit autonull
 deltas	box4down	inherit autonull
 	box4	transform	position	y -500
 	scene	transitions	drag	box4	box4	delta box4up	time 1
-
 
 items	box5 boxItem
 deltas	box5up	inherit autonull
@@ -85,7 +75,6 @@ deltas	box5down	inherit autonull
 	box5	transform	position	y -500
 	scene	transitions	drag	box5	box5	delta box5up	time 1
 
-
 items	box6 boxItem
 deltas	box6up	inherit autonull
 	box6	transform	position	y 500	x 6000
@@ -94,13 +83,8 @@ deltas	box6down	inherit autonull
 	box6	transform	position	y -500
 	scene	transitions	drag	box6	box6	delta box6up	time 1
 
-
-
 deltas	initial
 	inherit box0up box1up box2up box3up box4up box5up box6up
-
-
-
 
 deltas	initial
 	overlay	text Welcome to Lab In a Cube!
@@ -122,7 +106,3 @@ deltas	initial
 	scene	ambience	intensity 0.8	color	r 1	g 1	b 1
 	scene	transitions	auto	delta initial	time 1
 	camera	transform	position	z 5000	x 3000
-	
-	
-	
-	

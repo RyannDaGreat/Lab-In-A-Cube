@@ -137,13 +137,13 @@ renderer.domElement.addEventListener("mouseout",   function(){mouse_in_renderer=
 renderer.domElement.addEventListener("mouseleave", function(){mouse_in_renderer=false}, true)
 renderer.domElement.addEventListener("mousemove", updateMousePosition, true)
 
-function requestTransition(transition,force=false)
+function requestTransition(transition,force=false,isAuto=false)
 {
 	//Handle conditions
 	console.assert(arguments.length>=1,'Wrong number of arguments.')
 	function t(id)//t is for Tween
 	{
-		requestTween(getDeltaByID(id),transition.time,force)
+		requestTween(getDeltaByID(id),transition.time,force,isAuto)
 	}
 	function c(id)//c is for Condition
 	{
@@ -153,7 +153,6 @@ function requestTransition(transition,force=false)
 	assert.isString(d)
 	d=d.trim().split(/\ +/)
 	assert.isPureArray(d)
-	console.log(d)
 	if(d.length===0)
 	{
 		console.error('You must specify a delta (deltaIDs cannot contain spaces nor be empty strings)')
@@ -181,9 +180,13 @@ function requestTransition(transition,force=false)
 		console.assert(d[1]==='if')
 		console.assert(d[3]==='else')
 		if(c(d[2]))
+		{
 			t(d[0])
+		}
 		else
+		{
 			t(d[4])
+		}
 	}
 	else
 	{
@@ -332,6 +335,8 @@ function deltaIDContainedInState(deltaID,deltaContainedInState_Cache)
 {
 
 	const currentState=tween.delta
+	if(currentState.sound!==undefined)
+		delete currentState.sound
 	return deltas.contains(currentState,getDeltaByID(deltaID,deltaContainedInState_Cache))
 	console.assert(arguments.length==2,'Wrong number of arguments.')
 	assert.isPureObject(deltaContainedInState_Cache)
@@ -376,7 +381,7 @@ function getDeltaByID(deltaID)
 	//	But right now it isn't, because in the Editor, we can change the config without reloading the whole page...and that would mean I would have to hook config's changes into clearing the cache.
 	console.assert(arguments.length>=1,'Wrong number of arguments.')
 	let out=deltaRawCompositionFromIdsString(getDeltaInheritanceChainString(deltaID))
-	// delete out.inherit//We don't want this variable hanging around when we compare the deltas to the state
+	delete out.inherit//We don't want this variable hanging around when we compare the deltas to the state
 	// delete out.sound//We don't want this variable hanging around when we compare the deltas to the state
 	return out
 }
@@ -415,13 +420,13 @@ function print_current_state()
 	console.log(djson.stringify(tween.delta))
 }
 
-function requestTweenByID(deltaID,time=0,force=false)
+function requestTweenByID(deltaID,time=0,force=false,isAuto=false)
 {
 	console.assert(arguments.length>=1,'Wrong number of arguments.')
 	if(!deltaIDContainedInState(deltaID,{}))
 	{
 		console.log('requestTweenByID: deltaID = '+repr(deltaID)+' and time = '+repr(time))
-		requestTween(getDeltaByID(deltaID),time,force)
+		requestTween(getDeltaByID(deltaID),time,force,isAuto)
 	}
 	else
 	{
@@ -497,7 +502,7 @@ function render()
 		const autodeltaid=auto.delta
 		const autodelta=getDeltaByID(auto.delta)//config.deltas[auto.delta]
 		console.log('Requesting auto-tween: auto.delta = '+repr(autodeltaid)+' and auto.time = '+repr(auto.time))
-		requestTween(autodelta,auto.time,true,true)
+		requestTransition(auto,true,true)
 	}
 	else
 	{
@@ -509,31 +514,4 @@ function render()
 	renderer.render(scene, camera)
 	requestAnimationFrame(render)
 }
-
-// function render()
-// {
-// 	updateItemIDUnderCursor()
-// 	const currentState=tween.delta
-// 	deltas.pour(items,currentState)
-// 	requestAnimationFrame(render)
-// 	if(!tween.time)
-// 	{
-// 		if(keyPath.exists(currentState,'scene transitions auto'.split(' ')))//auto doesn't always exist (set it to null to delete it)
-// 		{
-// 			let auto=currentState.scene.transitions.auto//DONT USE items.scene.transitions.auto (this is updated every frame and overwritten; null can't delete this auto so you shouldn't use it. It causes lags and delays when you try to make it work with if/else statements etc)
-// 			const autodeltaid=auto.delta
-// 			const autodelta=getDeltaByID(auto.delta)//config.deltas[auto.delta]
-// 			if(!deltaIDContainedInState(auto.delta,{}))
-// 			{
-// 				console.log('Requesting auto-tween: auto.delta = '+repr(autodeltaid)+' and auto.time = '+repr(auto.time))
-// 				requestTween(autodelta,auto.time,true)
-// 			}
-// 		}
-// 	}
-// 	camera.updateProjectionMatrix()//Lets you update camera FOV and aspect ratio
-// 	camera.aspect=window.innerWidth/window.innerHeight
-// 	renderer.setSize(window.innerWidth, window.innerHeight)
-// 	renderer.render(scene, camera)
-// }
-// render()
 render()
