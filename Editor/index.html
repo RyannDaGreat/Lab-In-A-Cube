@@ -407,6 +407,7 @@ let iframeSingleton=undefined
 
 let loadedHistory=false
 let ed=undefined
+let prevConfigGame=true//default true because bt default the game exists as an iframe
 editor.on("change", (cm, change) => {
 		// console.log(JSON.stringify(cm.doc.history),null,4)
 		// if(loadedHistory)
@@ -443,6 +444,13 @@ editor.on("change", (cm, change) => {
 		else
 			cm.options.vimMode=false
 
+
+
+			if('nogame' in config)
+			{
+
+				document.getElementById('previewiframe').innerHTML=`preview\n\tnogame\n\n(unset and refresh game preview the game)`
+			}
 
 		// cm.options.indentUnit=cm.options.tabSize=config.tab||4
 		var str=Process(value) 
