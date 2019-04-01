@@ -22,6 +22,16 @@ engineModules={
 
 const overlay=document.getElementById('overlay')
 
+const textures={default:null}
+
+const cubeMaps={default:null}
+
+const geometries={
+	box:  new THREE.BoxGeometry(700, 700, 700, 10, 10, 10),
+}
+
+const sounds={}
+
 const items={
 	//Reserved item names:
 	get sound(){},
@@ -74,16 +84,6 @@ const items={
 		},
 	},
 }
-
-const textures={default:null}
-
-const cubeMaps={default:null}
-
-const geometries={
-	box:  new THREE.BoxGeometry(700, 700, 700, 10, 10, 10),
-}
-
-const sounds={}
 
 let mouse_x,mouse_y,mouse_in_renderer=false//THese are updated periodically.
 function updateMousePosition(event)
@@ -540,26 +540,33 @@ function printDeltaStack()
 {
 	console.log(stateDeltaStack.join('\n'))
 }
+prevstateString=undefined
+batterySavingMode=true//Only render frames when tween.delta changes. (Fire/stuff wont work if this is turned on but that's OK)
 function render()
 {
 	const currentState=tween.delta
-	deltas.pour(items,currentState)
-	if(autoIsPending(currentState))
+	const currentStateString=JSON.stringify(currentState)
+	if(!batterySavingMode||prevstateString!==currentStateString)//To save battery life, only animate the frames when we have some change in the deltas. 
 	{
-		let auto=currentState.scene.transitions.auto//DONT USE items.scene.transitions.auto (this is updated every frame and overwritten; null can't delete this auto so you shouldn't use it. It causes lags and delays when you try to make it work with if/else statements etc)
-		const autodeltaid=auto.delta
-		const autodelta=getDeltaByID(auto.delta)//config.deltas[auto.delta]
-		console.log('Requesting auto-tween: auto.delta = '+repr(autodeltaid)+' and auto.time = '+repr(auto.time))
-		requestTransition(auto,true,true)
+		console.log('animating')
+		deltas.pour(items,currentState)
+		if(autoIsPending(currentState))
+		{
+			let auto=currentState.scene.transitions.auto//DONT USE items.scene.transitions.auto (this is updated every frame and overwritten; null can't delete this auto so you shouldn't use it. It causes lags and delays when you try to make it work with if/else statements etc)
+			const autodeltaid=auto.delta
+			console.log('Requesting auto-tween: auto.delta = '+repr(autodeltaid)+' and auto.time = '+repr(auto.time))
+			requestTransition(auto,true,true)
+		}
+		else
+		{
+			updateItemIDUnderCursor()
+		}
+		camera.updateProjectionMatrix()//Lets you update camera FOV and aspect ratio
+		camera.aspect=window.innerWidth/window.innerHeight
+		renderer.setSize(window.innerWidth, window.innerHeight)
+		renderer.render(scene, camera)
+		prevstateString=currentStateString
 	}
-	else
-	{
-		updateItemIDUnderCursor()
-	}
-	camera.updateProjectionMatrix()//Lets you update camera FOV and aspect ratio
-	camera.aspect=window.innerWidth/window.innerHeight
-	renderer.setSize(window.innerWidth, window.innerHeight)
-	renderer.render(scene, camera)
 	requestAnimationFrame(render)
 }
 render()

@@ -326,7 +326,7 @@ const config={
 }
 loadConfigFromLocalStorage()
 console.log(JSON.stringify(config))
-if(1||weAreInAnIframe())
+if(weAreInAnIframe())
 {
 	setInterval(loadConfigFromLocalStorage, 100)
 	setInterval(saveStateToLocalStorage, 100)
