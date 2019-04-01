@@ -277,6 +277,10 @@ const tween={
 	},
 	get delta()
 	{
+		if(gtoc()>tween._deadline)
+		{
+			return tween._targetDelta
+		}
 		let alpha=tween._alpha
 		alpha=blend(alpha,smoothAlpha(alpha),items.scene.transitions.smooth)
 		return deltas.blended(tween._initialDelta,tween._targetDelta,alpha)
@@ -289,6 +293,7 @@ const tween={
 		tween.delta//BEcause its a bit glitchy....idk why. This fixes it.
 		tween.delta
 		tween.delta
+		requestRender()
 	},
 }
 
@@ -540,13 +545,29 @@ function printDeltaStack()
 {
 	console.log(stateDeltaStack.join('\n'))
 }
-prevstateString=undefined
-batterySavingMode=true//Only render frames when tween.delta changes. (Fire/stuff wont work if this is turned on but that's OK)
+
+//This section is to save battery life (only render when the items' state changes)
+let prevstateString=undefined
+let prevState=undefined//For further efficiency; we don't need to comparre strings every frame
+let prevWidth=undefined//When undefined will force to render even if batterysavingmode is true
+let prevHeight=undefined
+let batterySavingMode=true//Only render frames when tween.delta changes. (Fire/stuff wont work if this is turned on but that's OK)
+let renderRequested=false
+function requestRender()
+{
+	if(!renderRequested)
+		requestAnimationFrame(render)
+	renderRequested=true//This funciton exists so we don't call requestAnimationFrame(render) needlessly many times
+}
+
 function render()
 {
+	renderRequested=false//REset this so requestRender() can be called again
 	const currentState=tween.delta
+	if(currentState===prevState)//If tween recycled a state (and didn't bother calculating a new one), it means 
+		return//SOmebody must call render() again in order to make the program continue to render things
 	const currentStateString=JSON.stringify(currentState)
-	if(!batterySavingMode||prevstateString!==currentStateString)//To save battery life, only animate the frames when we have some change in the deltas. 
+	if(!batterySavingMode||prevstateString!==currentStateString||window.innerHeight!==prevHeight||window.innerWidth!==prevWidth)//To save battery life, only animate the frames when we have some change in the deltas. 
 	{
 		console.log('animating')
 		deltas.pour(items,currentState)
@@ -561,12 +582,21 @@ function render()
 		{
 			updateItemIDUnderCursor()
 		}
-		camera.updateProjectionMatrix()//Lets you update camera FOV and aspect ratio
-		camera.aspect=window.innerWidth/window.innerHeight
-		renderer.setSize(window.innerWidth, window.innerHeight)
-		renderer.render(scene, camera)
 		prevstateString=currentStateString
+		prevHeight=window.innerHeight
+		prevWidth=window.innerWidth
+		// 
+		camera.aspect=prevWidth/prevHeight
+		camera.updateProjectionMatrix()//Lets you update camera FOV and aspect ratio
+		renderer.setSize(prevWidth,prevHeight)
+		renderer.render(scene, camera)
 	}
+	else
+	{
+		// keepGPUAwake()
+	}
+	prevState=currentState
 	requestAnimationFrame(render)
 }
+
 render()
