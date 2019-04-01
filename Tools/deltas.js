@@ -62,9 +62,12 @@ const deltas={//Idk if it's safe to call this deltas...
 		// }
 		// deltas.apply(o,d,f)//No mutations should occur
 
+		
 		let out=true
 		function f(o,d)//This is like applyDelta, except it doesn't actually apply anything. Instead, in every place that we would have had to made a change, we instead set out to false
 		{
+			if(!is_object(o))
+				return false
 			if(o===deltas.none)
 				if(d!==deltas.none)
 					out=false

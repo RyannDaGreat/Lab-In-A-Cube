@@ -280,18 +280,19 @@ const tween={
 	},
 	get delta()
 	{
-		if(gtoc()>tween._deadline)
-		{
-			return tween._targetDelta
-		}
+		// if(tween._alpha===1)
+		// {
+		// 	return tween._targetDelta
+		// }
 		let alpha=tween._alpha
 		alpha=blend(alpha,smoothAlpha(alpha),items.scene.transitions.smooth)
 		return deltas.blended(tween._initialDelta,tween._targetDelta,alpha)
 	},
 	set delta(delta)
 	{
-		// pourDelta(tween._initialDelta,delta)
+		// deltas.pour(tween._initialDelta,delta)
 		tween._initialDelta=deltas.blended(deltas.blended(tween._initialDelta,tween._targetDelta,1),delta,0)
+		// tween._initialDelta=deltas.poured(deltas._targetDelta,deltas._initialDelta)
 		tween._targetDelta=delta
 		tween.delta//BEcause its a bit glitchy....idk why. This fixes it.
 		tween.delta
@@ -586,12 +587,10 @@ function render()
 		camera.updateProjectionMatrix()//Lets you update camera FOV and aspect ratio
 		renderer.setSize(prevWidth,prevHeight)
 		renderer.render(scene, camera)
-		if(currentState!==prevState)//If tween recycled a state (and didn't bother calculating a new one), it means 
+		if(JSON.stringify(currentState)!==JSON.stringify(prevState))//If tween recycled a state (and didn't bother calculating a new one), it means 
 		{
-			prevState=currentState
-			requestAnimationFrame(render)//IF STATE HASNT CHANED; SOmebody must call render() again in order to make the program continue to render things. THis is because requestAnimationFrame(render) is skipped (because we're returning NOW)
-
+			requestRender()//IF STATE HASNT CHANED; SOmebody must call render() again in order to make the program continue to render things. THis is because requestAnimationFrame(render) is skipped (because we're returning NOW)
 		}
 	}
+	 	prevState=currentState
 }
-requestRender()
