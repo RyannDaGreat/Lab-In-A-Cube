@@ -455,12 +455,23 @@ editor.on("change", (cm, change) => {
 		// cm.options.indentUnit=cm.options.tabSize=config.tab||4
 		var str=Process(value) 
 		localStorage.setItem('config', value);
+		localStorage.setItem('configChanged','true')//This is nessecary for efficiency's sake. THe engine won't reload the config without this.
 		if(config.numbers)str=numbered_lines_string(str,i=>i+'\t')
 		document.getElementById('previewtext').innerHTML ="<pre>" + str+ "</pre>"
 
 		// cm.options.indentUnit=cm.options.tabSize=config.tab||4
 })
 
+
+// let toc=gtoc()
+// function tic()
+// {
+// 	toc=gtoc()
+// }
+// function toc()
+// {
+// 	return gtoc()-toc
+// }
 
 
 function refreshState()

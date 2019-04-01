@@ -286,15 +286,26 @@ deltas	pour_5
 	overlay	text 
 	`
 
+
+
+
 let previousLoadedConfigString
 function loadConfigFromLocalStorage()
 {
+	if(previousLoadedConfigString===undefined || localStorage.getItem('configChanged')==='true')
+	{
+		localStorage.setItem('configChanged','false')//This is to lighten the 9ms burden of refreshing this every .1 seconds when using the editor
+	}
+	else
+	{
+		return
+	}
 	if(!tween.time && !autoIsPending())
 	{
 		let storedItem=localStorage.getItem('config')
 		if(!storedItem)
 		{
-			console.warn("Failed to load 'config' from localstorage")
+			console.warn("Failed to load 'config' from localStorage")
 			localStorage.setItem('config',defaultConfig)//Write new config file if none currently exists...
 			storedItem=defaultConfig
 		}
@@ -307,6 +318,7 @@ function loadConfigFromLocalStorage()
 		}
 		previousLoadedConfigString=storedItem
 	}
+	requestRender()//Aand the game begins...
 }
 
 function saveStateToLocalStorage()

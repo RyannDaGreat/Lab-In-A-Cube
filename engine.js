@@ -2,6 +2,7 @@ const renderer = new THREE.WebGLRenderer()
 renderer.setSize(window.innerWidth, window.innerHeight)
 renderer.setPixelRatio(window.devicePixelRatio)
 document.getElementById('renderer').appendChild(renderer.domElement)
+window.onresize=requestRender//Re-render when we resize the window
 
 const scene = new THREE.Scene()
 scene.background=new THREE.Color(.1,.1,.1)
@@ -91,6 +92,7 @@ function updateMousePosition(event)
 	mouse_in_renderer=true
 	mouse_x =  (event.clientX/window.innerWidth )*2-1
 	mouse_y = -(event.clientY/window.innerHeight)*2+1
+	updateItemIDUnderCursor()
 }
 function getItemUnderCursor()//Give it a mouse event
 {
@@ -139,6 +141,7 @@ renderer.domElement.addEventListener("mousemove", updateMousePosition, true)
 
 function requestTransition(transition,ignoreBlocking=false,isAuto=false)
 {
+	// requestRender()
 	//Handle conditions
 	console.assert(arguments.length>=1,'Wrong number of arguments.')
 	function t(id)//t is for Tween
@@ -478,6 +481,8 @@ const blocked_deltas=new Set
 let itemIDUnderCursor//Can be undefined if there is no item under the cursor
 function updateItemIDUnderCursor()
 {
+	if(autoIsPending())
+		return
 	if(!tween.time)
 	{
 		//We shouldn't be processing this data while we're tweening
@@ -547,7 +552,6 @@ function printDeltaStack()
 }
 
 //This section is to save battery life (only render when the items' state changes)
-let prevstateString=undefined
 let prevState=undefined//For further efficiency; we don't need to comparre strings every frame
 let prevWidth=undefined//When undefined will force to render even if batterysavingmode is true
 let prevHeight=undefined
@@ -564,10 +568,7 @@ function render()
 {
 	renderRequested=false//REset this so requestRender() can be called again
 	const currentState=tween.delta
-	if(currentState===prevState)//If tween recycled a state (and didn't bother calculating a new one), it means 
-		return//SOmebody must call render() again in order to make the program continue to render things
-	const currentStateString=JSON.stringify(currentState)
-	if(!batterySavingMode||prevstateString!==currentStateString||window.innerHeight!==prevHeight||window.innerWidth!==prevWidth)//To save battery life, only animate the frames when we have some change in the deltas. 
+	if(!batterySavingMode||currentState!==prevState||window.innerHeight!==prevHeight||window.innerWidth!==prevWidth)//To save battery life, only animate the frames when we have some change in the deltas. 
 	{
 		console.log('animating')
 		deltas.pour(items,currentState)
@@ -578,11 +579,6 @@ function render()
 			console.log('Requesting auto-tween: auto.delta = '+repr(autodeltaid)+' and auto.time = '+repr(auto.time))
 			requestTransition(auto,true,true)
 		}
-		else
-		{
-			updateItemIDUnderCursor()
-		}
-		prevstateString=currentStateString
 		prevHeight=window.innerHeight
 		prevWidth=window.innerWidth
 		// 
@@ -590,13 +586,12 @@ function render()
 		camera.updateProjectionMatrix()//Lets you update camera FOV and aspect ratio
 		renderer.setSize(prevWidth,prevHeight)
 		renderer.render(scene, camera)
-	}
-	else
-	{
-		// keepGPUAwake()
-	}
-	prevState=currentState
-	requestAnimationFrame(render)
-}
+		if(currentState!==prevState)//If tween recycled a state (and didn't bother calculating a new one), it means 
+		{
+			prevState=currentState
+			requestAnimationFrame(render)//IF STATE HASNT CHANED; SOmebody must call render() again in order to make the program continue to render things. THis is because requestAnimationFrame(render) is skipped (because we're returning NOW)
 
-render()
+		}
+	}
+}
+requestRender()
