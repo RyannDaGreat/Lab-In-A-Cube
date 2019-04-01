@@ -27,6 +27,26 @@ const textures={default:null}
 
 const cubeMaps={default:null}
 
+//CURSOR STYLES
+function setCursor(style)
+{
+	renderer.domElement.style.cursor= style
+}
+function setWaitingCursor()
+{
+	setCursor('wait')
+	setCursor('none')
+}
+function setNormalCursor()
+{
+	setCursor('default')
+}
+function setDraggableCursor()
+{
+	setCursor('grab')
+}
+
+
 const geometries={
 	box:  new THREE.BoxGeometry(700, 700, 700, 10, 10, 10),
 }
@@ -590,6 +610,11 @@ function render()
 		if(JSON.stringify(currentState)!==JSON.stringify(prevState))//If tween recycled a state (and didn't bother calculating a new one), it means 
 		{
 			requestRender()//IF STATE HASNT CHANED; SOmebody must call render() again in order to make the program continue to render things. THis is because requestAnimationFrame(render) is skipped (because we're returning NOW)
+			setWaitingCursor()
+		}
+		else
+		{
+			setNormalCursor()
 		}
 	}
 	 	prevState=currentState
