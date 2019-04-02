@@ -32,8 +32,9 @@ const djson={
 		}
 		return djson.parse(out)
 	},
-	parse(lines,level=-1,leaf_parser=djson.parse_leaf,macros=true)
+	parse(lines,level=-1,leaf_parser=djson.parse_leaf,macros=true,delete_emptystring_keys=true)
 	{
+		//TODO: refactor macros, leaf_parser, and delete_emptystring_keys into some 'post-processing' method
 		if(typeof lines==='string')
 			lines=lines.split('\n')
 		let out={}
@@ -98,6 +99,10 @@ const djson={
 		if(macros)
 		{
 			out=djson_macros.macroized(out)
+		}
+		if(delete_emptystring_keys)
+		{
+			out=djson_macros.deletedEmptyKeys(out)
 		}
 		return out
 	},
