@@ -32,7 +32,7 @@ const djson={
 		}
 		return djson.parse(out)
 	},
-	parse(lines,level=-1,leaf_parser=djson.parse_leaf)
+	parse(lines,level=-1,leaf_parser=djson.parse_leaf,macros=true)
 	{
 		if(typeof lines==='string')
 			lines=lines.split('\n')

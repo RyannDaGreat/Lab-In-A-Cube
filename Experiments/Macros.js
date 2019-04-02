@@ -12,7 +12,7 @@ function containsMacro(object,key)
 		}
 		else
 		{
-			for(value of object)
+			for(const value of object)
 			{
 				if(containsMacro(value,key))
 				{
@@ -33,27 +33,27 @@ function containsMacro(object,key)
 	}
 }
 
-function appliedMacros(object,macros,allMacros)
+function appliedMacros(object,macros,otherMacros)
 {
 	console.assert(arguments.length===3,'Wrong number of arguments')
 	assert.isPureObject(macros)
-	assert.isPureObject(allMacros)
+	assert.isPureObject(otherMacros)
 	let out={}
 	if(is_object(object))
 	{
 		for(let [key,value] of Object.entries(object))
 		{
-			key  =appliedMacros(key,macros,allMacros)
-			value=appliedMacros(value,macros,allMacros)
-			console.log(key,value)
+			key  =appliedMacros(key,macros,otherMacros)
+			value=appliedMacros(value,macros,otherMacros)
+			// console.log(key,value)
 			if(typeof value==='string')
 			{
-				if(purgeable(value,macros,allMacros))
+				if(purgeable(value,otherMacros))
 				{
 					continue
 				}
 			}
-			if(purgeable(key,macros,allMacros))
+			if(purgeable(key,otherMacros))
 			{
 				continue
 			}
@@ -73,14 +73,26 @@ function appliedMacros(object,macros,allMacros)
 }
 
 
-function purgeable(string,macros,allMacros)
+function transposed(object)
+{
+	const out={}
+	for(const [key1,value1] of Object.entries(object))
+		for(const [key2,value2] of Object.entries(value1))
+			if(out[key2]!==undefined)
+				out[key2][key1]=value2
+			else
+				out[key2]={[key1]:value2}
+	return out
+}
+
+function purgeable(string,otherMacros)
 {
 	console.assert(arguments.length===2,'Wrong number of arguments')
 	assert.isString(string)
-	assert.isPureObject(allMacros)
+	assert.isPureObject(otherMacros)
 	for(const chunk of string.split('~'))
 	{
-		if(!chunk in macros && chunk in allMacros)
+		if(chunk in otherMacros)
 		{
 			return true
 		}
@@ -88,25 +100,25 @@ function purgeable(string,macros,allMacros)
 	return false
 }
 
-function purgedUnexpandedMacros(object,macros,allMacros)
+function purgedUnexpandedMacros(object,otherMacros)
 {
 	console.assert(arguments.length===2,'Wrong number of arguments')
 	if(!is_object(object))
 	{
 		return object
 	}
-	assert.isPureObject(allMacros)
+	assert.isPureObject(otherMacros)
 	//Delete all sections which have leftover macros in them
 	let out={}
 	for(let [key,value] of Object.entries(object))
 	{
-		if(purgeable(key,macros,allMacros))
+		if(purgeable(key,otherMacros))
 		{
 			continue
 		}
 		else if(typeof value==='string')
 		{
-			if(purgeable(value,macros,allMacros))
+			if(purgeable(value,otherMacros))
 			{
 				continue
 			}
@@ -118,20 +130,159 @@ function purgedUnexpandedMacros(object,macros,allMacros)
 		else
 		{
 			// assert.isPureObject(value)
-			out[key]=purgedUnexpandedMacros(value,allMacros)
+			out[key]=purgedUnexpandedMacros(value,otherMacros)
 		}
 	}
 	return out
 }
 
-function composedMacros(object,...macros)
+function otherMacros(macros,allMacros)
+{
+	const out={}
+	for(const macro of Object.values(allMacros))
+	{
+		for(const key in macro)
+		{
+			if(!(key in macros))
+			{
+				out[key]=null
+			}
+		}
+	}
+	return out
+}
+
+function deletedEmptyKeys(object)
+{
+	if(!is_object(object))
+		return object
+	const out={}
+	for(const [key,value] of Object.entries(object))
+	{
+		if(key.trim())
+		{
+			out[key]=deletedEmptyKeys(value)
+		}
+	}
+	return out
+}
+
+function composedMacros(object,macrosets)
 {
 	console.assert(arguments.length===2,'Wrong number of arguments')
-	let out={}
-	for(macros of macrosets)
+	assert.isPureObject(macrosets)
+	macrosets=deltas.copied(macrosets)
+	macrosets=deletedEmptyKeys(macrosets)
+	for(const [key,value] of Object.entries(macrosets))
 	{
-		pour(out,appliedMacros(object,macrso))
+		if(!is_object(value))
+		{
+			for(const macroset of Object.values(macrosets))//Add this string-string key-value pair to any value which doesn't allready have an entry for that key
+			{
+				if(is_object(macroset))
+				{
+					if(!(key in macroset))
+					{
+						macroset[key]=value
+					}
+				}
+			}
+		}
 	}
-	out=purgedUnexpandedMacros(...macros keys merge)
-	return 
+	console.log("\n")
+	console.log(djson.stringify(macrosets))
+	console.log("\n")
+	let out={}
+	let allMacroKeys={}
+	// console.log(macrosets)
+	for(const macroset of Object.values(macrosets))
+	{
+		if(is_object(macroset))
+		{
+			for(const key in macroset)
+			{
+				allMacroKeys[key]=null//Doesn't matter what the value is. It only matters that the key exists.
+			}
+		}
+	}
+	deltas.pour(out,purgedUnexpandedMacros(object,allMacroKeys))
+	for(const macroset of Object.values(macrosets))
+	{
+		if(is_object(macroset))
+		{
+			const x=appliedMacros(object,macroset,otherMacros(macroset,allMacroKeys))
+			console.log(djson.stringify(x))
+			deltas.pour(out,x)
+		}
+	}
+	return out
 }
+
+
+function macroized(object)
+{
+	if(!is_object(object))
+	{
+		return object
+	}
+	let out={}
+	for(const [key,value] of Object.entries(object))
+	{
+		if(key!=='~')
+		{
+			out[key]=macroized(value)
+		}
+	}
+	if('~' in object)
+	{
+		const macrosets=object['~']
+		out=composedMacros(out,macrosets)
+		// delete out['~']//Perhaps usefull for debugging??
+	}
+	return out
+}
+
+
+// testobject=djson.parse(`
+// deltas	thing~N~move	position	x ~N	y ~M	x,y N~,~M
+// `)
+
+// testmacroset=djson.parse(`
+// 0
+// 	N Hello
+// 	M Lesiq
+// 1
+// 	N Ryan
+// 	M Burgert
+// 2
+// 	N cheese
+// 	M potato
+// `)
+
+// console.log(composedMacros(testobject,testmacroset))
+
+
+var macroizedtester=`
+
+deltas	pipe~pipe#~_to_slot~slot#
+	universal
+~
+	universal universality
+	0	pipe# 11	slot# 22	universal override
+	1	pipe# a		slot# b
+	2	pipe# A		slot# B
+	3	pipe# aa	slot# bb
+
+
+`
+
+
+
+console.log(djson.stringify(macroized(djson.parse(macroizedtester))))
+
+
+
+
+
+
+
