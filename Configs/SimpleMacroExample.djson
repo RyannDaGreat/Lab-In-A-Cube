@@ -1,0 +1,23 @@
+preview	type djson
+
+	light1	intensity 0.1	transform	position	x -10000	y -10000	z -10000
+	light2	intensity 0.1	transform	position	x -10000	y -10000	z  10000
+	light3	intensity 0.1	transform	position	x -10000	y  10000	z -10000
+	light4	intensity 0.1	transform	position	x -10000	y  10000	z  10000
+	light5	intensity 0.1	transform	position	x  10000	y -10000	z -10000
+	light6	intensity 0.1	transform	position	x  10000	y -10000	z  10000
+	light7	intensity 0.1	transform	position	x  10000	y  10000	z -10000
+	light8	intensity 0.1	transform	position	x  10000	y  10000	z  10000
+
+@
+	light~#	intensity 0.1	transform	position	x X~10000	y Y~10000	z Z~10000
+	~
+		 Adding the Z-Component
+		x~y~-		X x		Y y		Z -		# x~y~-
+		x~y~+		X x		Y y		Z +		# x~y~+
+		~
+			X~-		x X		y -
+			X~+		x X		y +
+			~
+				-	X -
+				+	X +

@@ -78,7 +78,7 @@ const djson={
 					const [key,value]=split_on_first_space(entry)
 					// if(false)if(value&&value!==value.trimLeft())console.warn('djson.parse warning at line '+current_line_number+': value starts with whitespace, which means you might have tried using spaces as indents: value==='+JSON.stringify(value))
 					// if(!value)                         console.warn('djson.parse warning at line '+current_line_number+': value is empty! You must have had some line ending with key followed by a single space before the end of the line')
-					applyDjsonDelta(out,nested_path(path,{[key]:leaf_parser(value)}))
+					applyDjsonDelta(out,nested_path(path,{[key]:value}))
 				}
 				else
 				{
@@ -87,15 +87,14 @@ const djson={
 			}
 
 			applyDjsonDelta(out,nested_path(path,djson.parse(lines,line_level)))
-			// [key,values]=entries
 
-			// const isLeaf=Boolean(entries.length>=1)
-
-			// if(false && key==='')              console.warn('djson.parse warning at line '+current_line_number+': key==="", which means you have a blank line somewherere')
-			// if(false && key in out)            console.warn('djson.parse warning at line '+current_line_number+': key is not unique! key==='+JSON.stringify(key))
-			// console.assert(is_object(out))
-
+			//I disabled the below warning simply because I found them annoying. But you might find them useful...
+			//	if(false && key==='')   console.warn('djson.parse warning at line '+current_line_number+': key==="", which means you have a blank line somewherere')
+			//	if(false && key in out) console.warn('djson.parse warning at line '+current_line_number+': key is not unique! key==='+JSON.stringify(key))
+			//	console.assert(is_object(out))
 		}
+
+		//POST PROCESSING SECTION UNTIL END OF FUNCTION
 		if(macros)
 		{
 			out=djson_macros.macroized(out)
@@ -104,6 +103,23 @@ const djson={
 		{
 			out=djson_macros.deletedEmptyKeys(out)
 		}
+		function parse_leaves(object)
+		{
+			if(is_object(object))
+			{
+				const out={}
+				for(const [key,value] of Object.entries(object))
+				{
+					out[key]=parse_leaves(value)
+				}
+				return out
+			}
+			else
+			{
+				return leaf_parser(object)
+			}
+		}
+		out=parse_leaves(out)
 		return out
 	},
 	stringify(object,level=0,out=[])
