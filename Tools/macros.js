@@ -1,5 +1,5 @@
-//Meant to be used for djson post-processing. Really the only important function in here is macroized.
-const macros={
+//Meant to be used for djson post-processing. Really the only important function in here is djson_macros.macroized.
+var djson_macros={
 	containsMacro(object,key)
 	{
 		console.warn('This function is UNTESTED! Beware!')
@@ -16,7 +16,7 @@ const macros={
 			{
 				for(const value of object)
 				{
-					if(containsMacro(value,key))
+					if(djson_macros.containsMacro(value,key))
 					{
 						return true
 					}
@@ -45,17 +45,17 @@ const macros={
 		{
 			for(let [key,value] of Object.entries(object))
 			{
-				key  =appliedMacros(key,macros,otherMacros)
-				value=appliedMacros(value,macros,otherMacros)
+				key  =djson_macros.appliedMacros(key,macros,otherMacros)
+				value=djson_macros.appliedMacros(value,macros,otherMacros)
 				// console.log(key,value)
 				if(typeof value==='string')
 				{
-					if(purgeable(value,otherMacros))
+					if(djson_macros.purgeable(value,otherMacros))
 					{
 						continue
 					}
 				}
-				if(purgeable(key,otherMacros))
+				if(djson_macros.purgeable(key,otherMacros))
 				{
 					continue
 				}
@@ -114,13 +114,13 @@ const macros={
 		let out={}
 		for(let [key,value] of Object.entries(object))
 		{
-			if(purgeable(key,otherMacros))
+			if(djson_macros.purgeable(key,otherMacros))
 			{
 				continue
 			}
 			else if(typeof value==='string')
 			{
-				if(purgeable(value,otherMacros))
+				if(djson_macros.purgeable(value,otherMacros))
 				{
 					continue
 				}
@@ -132,7 +132,7 @@ const macros={
 			else
 			{
 				// assert.isPureObject(value)
-				out[key]=purgedUnexpandedMacros(value,otherMacros)
+				out[key]=djson_macros.purgedUnexpandedMacros(value,otherMacros)
 			}
 		}
 		return out
@@ -163,7 +163,7 @@ const macros={
 		{
 			if(key.trim())
 			{
-				out[key]=deletedEmptyKeys(value)
+				out[key]=djson_macros.deletedEmptyKeys(value)
 			}
 		}
 		return out
@@ -174,7 +174,7 @@ const macros={
 		console.assert(arguments.length===2,'Wrong number of arguments')
 		assert.isPureObject(macrosets)
 		macrosets=deltas.copied(macrosets)
-		macrosets=deletedEmptyKeys(macrosets)
+		macrosets=djson_macros.deletedEmptyKeys(macrosets)
 		for(const [key,value] of Object.entries(macrosets))
 		{
 			if(!is_object(value))
@@ -207,12 +207,12 @@ const macros={
 				}
 			}
 		}
-		deltas.pour(out,purgedUnexpandedMacros(object,allMacroKeys))
+		deltas.pour(out,djson_macros.purgedUnexpandedMacros(object,allMacroKeys))
 		for(const macroset of Object.values(macrosets))
 		{
 			if(is_object(macroset))
 			{
-				const x=appliedMacros(object,macroset,otherMacros(macroset,allMacroKeys))
+				const x=djson_macros.appliedMacros(object,macroset,djson_macros.otherMacros(macroset,allMacroKeys))
 				console.log(djson.stringify(x))
 				deltas.pour(out,x)
 			}
@@ -232,13 +232,13 @@ const macros={
 		{
 			if(key!=='~')
 			{
-				out[key]=macros.macroized(value)
+				out[key]=djson_macros.macroized(value)
 			}
 		}
 		if('~' in object)
 		{
 			const macrosets=object['~']
-			out=composedMacros(out,macrosets)
+			out=djson_macros.composedMacros(out,macrosets)
 			// delete out['~']//Perhaps usefull for debugging??
 		}
 		return out
@@ -262,7 +262,7 @@ const macros={
 // 	M potato
 // `)
 
-// console.log(composedMacros(testobject,testmacroset))
+// console.log(djson_macros.composedMacros(testobject,testmacroset))
 
 
 // var macroizedtester=`
@@ -290,7 +290,7 @@ const macros={
 
 
 
-// console.log(djson.stringify(macros.macroized(djson.parse(macroizedtester))))
+// console.log(djson.stringify(djson_macros.macroized(djson.parse(macroizedtester))))
 
 
 

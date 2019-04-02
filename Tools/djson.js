@@ -36,7 +36,7 @@ const djson={
 	{
 		if(typeof lines==='string')
 			lines=lines.split('\n')
-		const out={}
+		let out={}
 		const originalNumberOfLines=lines.length
 		const originalString=lines.join('\n')
 		while(lines.length)
@@ -94,6 +94,10 @@ const djson={
 			// if(false && key in out)            console.warn('djson.parse warning at line '+current_line_number+': key is not unique! key==='+JSON.stringify(key))
 			// console.assert(is_object(out))
 
+		}
+		if(macros)
+		{
+			out=djson_macros.macroized(out)
 		}
 		return out
 	},

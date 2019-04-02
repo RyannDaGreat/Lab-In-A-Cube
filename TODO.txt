@@ -10,6 +10,14 @@ Notes:
 	*I added mouse-over transitions. I would reccomend never setting the time too high on them though, because async transitions aren't a thing right now.
 	*In JSON's, .3 is an invalid number. In DJSON, it is. (Also, -.5 is invalid JSON but valid DJSON)
 
+	Later I'd like to make the background of the scene clickable, but right now this would require a lot of refactoring...this is a problem for another day. (April 1)
+
+	Currently auto-transition doesn't work with simple conditions. This must be fixed. (April 1)
+
+	Right now the engine doesn't work on my iphone or ipad. I should fix this. 
+	Right now the sand font isn't loading properly onto other peoples' computers. THis should be fixed
+	Font-size should appear more uniform across computers ; measuring in px might not be such a good idea
+
 RESERVED:
 	Deltas:
 		initial

@@ -34,8 +34,13 @@ function setCursor(style)
 }
 function setWaitingCursor()
 {
-	setCursor('wait')
-	setCursor('none')
+	setCursor('progress')
+	// setCursor('wait')
+	// setCursor('none')
+}
+function setClickableCursor()
+{
+	setCursor('pointer')
 }
 function setNormalCursor()
 {
@@ -113,6 +118,18 @@ function updateMousePosition(event)
 	mouse_x =  (event.clientX/window.innerWidth )*2-1
 	mouse_y = -(event.clientY/window.innerHeight)*2+1
 	updateItemIDUnderCursor()
+	if(itemByIDIsClickable(itemIDUnderCursor))
+	{
+		setClickableCursor()
+	}
+	else if(itemByIDIsDraggable(itemIDUnderCursor))
+	{
+		setDraggableCursor()
+	}
+	else
+	{
+		setNormalCursor()
+	}
 }
 function getItemUnderCursor()//Give it a mouse event
 {
@@ -136,6 +153,31 @@ function getItemUnderCursor()//Give it a mouse event
 	}
 	return
 	return 'scene'//If we're not mousing over an object, we're definately mousing over the scene
+}
+function itemByIDIsClickable(itemID)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments')
+	console.assert(!itemID || itemID in items,'Not a real itemID! ItemID: ',itemID)
+	if(!itemID)
+	{
+		return false
+	}
+	//Returns true IFF we can drag this item to iteself
+	const scene=tween.delta.scene
+	return keyPath.exists(scene,['transitions','drag',itemID,itemID])
+}
+function itemByIDIsDraggable(itemID)
+{
+
+	console.assert(arguments.length===1,'Wrong number of arguments')
+	console.assert(!itemID || itemID in items,'Not a real itemID! ItemID: ',itemID)
+	if(!itemID)
+	{
+		return false
+	}
+	//Returns true IFF we can drag this item to iteself
+	const scene=tween.delta.scene
+	return keyPath.exists(scene,['transitions','drag',itemID])
 }
 
 let mousedownItem
@@ -500,7 +542,7 @@ const blocked_deltas=new Set
 
 
 let itemIDUnderCursor//Can be undefined if there is no item under the cursor
-function updateItemIDUnderCursor()
+function updateItemIDUnderCursor()//Can be cached with respect to state and cursor position. 
 {
 	if(autoIsPending())
 		return
@@ -521,7 +563,10 @@ function updateItemIDUnderCursor()
 		itemIDUnderCursor=currentItemIDUnderCursor
 	}
 }
-
+function updateCursorStyle()
+{
+	//This function doesnt exist yet. once/if i refactor this code, this will be the function you call to update the cursor style.
+}
 function autoIsPending(currentState=tween.delta)
 {
 	if(!tween.time)
@@ -576,7 +621,7 @@ function printDeltaStack()
 let prevState=undefined//For further efficiency; we don't need to comparre strings every frame
 let prevWidth=undefined//When undefined will force to render even if batterysavingmode is true
 let prevHeight=undefined
-let batterySavingMode=true//Only render frames when tween.delta changes. (Fire/stuff wont work if this is turned on but that's OK)
+let batterySavingMode=false//Only render frames when tween.delta changes. (Fire/stuff wont work if this is turned on but that's OK)
 let renderRequested=false
 function requestRender()
 {
@@ -591,7 +636,6 @@ function render()
 	const currentState=tween.delta
 	if(!batterySavingMode||currentState!==prevState||window.innerHeight!==prevHeight||window.innerWidth!==prevWidth)//To save battery life, only animate the frames when we have some change in the deltas. 
 	{
-		console.log('animating')
 		deltas.pour(items,currentState)
 		if(autoIsPending(currentState))
 		{
