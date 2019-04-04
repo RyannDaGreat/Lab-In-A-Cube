@@ -25,8 +25,6 @@ const overlay=document.getElementById('overlay')
 
 const textures={default:null}
 
-const cubeMaps={default:null}
-
 //CURSOR STYLES
 function setCursor(style)
 {
@@ -342,10 +340,6 @@ const tween={
 	},
 	get delta()
 	{
-		// if(tween._alpha===1)
-		// {
-		// 	return tween._targetDelta
-		// }
 		let alpha=tween._alpha
 		alpha=blend(alpha,smoothAlpha(alpha),items.scene.transitions.smooth)
 		return deltas.blended(tween._initialDelta,tween._targetDelta,alpha)
@@ -370,9 +364,8 @@ function getDeltaInheritanceChainString(rootDeltaID)
 	//This function has been tested (not for edge cases yet though) seems to work perfectly (got it on the first try) 
 	//TODO: This function is needed to handle circular delta inheritance. 
 	//This function should DEFINITELY be cached...but right now it's NOT. In fact, even the result of this chain should be cached...getDeltaByID should be cached. But that's premature optimization for now...
-
-	const deltaContainedInState_Cache={}//NOT SURE WHAT TO DO WITH THIS YET BUT I HAVE TO GO TO CLASS...WE WANT RECURSIVE CONDITIONS....
-	console.assert(arguments.length==1,'Wrong number of arguments.')
+	//NOT SURE WHAT TO DO WITH THIS YET BUT I HAVE TO GO TO CLASS...WE WANT RECURSIVE CONDITIONS....
+	console.assert(arguments.length===1, 'Wrong number of arguments.')
 	const out=[]
 	function helper(deltaID)
 	{
@@ -382,7 +375,7 @@ function getDeltaInheritanceChainString(rootDeltaID)
 		{
 			out.unshift(deltaID)//Put it at the beginning; which is the place of least-priority
 			const delta=getRawDeltaFromConfigByID(deltaID)
-			if(delta.inherit!=undefined)
+			if(delta.inherit!==undefined)
 			{
 				console.assert(typeof delta.inherit==='string','getDeltaInheritanceChainString helper error: '+repr(deltaID)+' inheritance cannot be of type object, it must be a space-separated string of deltaIDs')
 				for(inheritedDeltaID of getArrayOfDeltaIDsFromString(delta.inherit).reverse())
@@ -396,20 +389,20 @@ function getDeltaInheritanceChainString(rootDeltaID)
 	return out.join(' ')
 }
 
-function deltaIDContainedInState(deltaID,deltaContainedInState_Cache)
+function deltaIDContainedInState(deltaID)
 {
 
+	console.assert(arguments.length===2,'Wrong number of arguments.')
 	const currentState=tween.delta
 	if(currentState.sound!==undefined)
 		delete currentState.sound
-	return deltas.contains(currentState,getDeltaByID(deltaID,deltaContainedInState_Cache))
-	console.assert(arguments.length==2,'Wrong number of arguments.')
-	assert.isPureObject(deltaContainedInState_Cache)
-	assert.isString(deltaID)
-	console.assert(deltaExistsInConfig(deltaID),'deltaIDContainedInState error: deltaID = '+repr(deltaID)+' is not in config')
-	if(deltaID in deltaContainedInState_Cache)//This NEEDS to exist in order for this function to avoid circular loops
-		return deltaContainedInState_Cache[deltaID]
-	return deltaContainedInState_Cache[deltaID]=deltas.contains(currentState,getDeltaByID(deltaID,deltaContainedInState_Cache))
+	return deltas.contains(currentState,getDeltaByID(deltaID))
+	// assert.isPureObject(deltaContainedInState_Cache)
+	// assert.isString(deltaID)
+	// console.assert(deltaExistsInConfig(deltaID),'deltaIDContainedInState error: deltaID = '+repr(deltaID)+' is not in config')
+	// if(deltaID in deltaContainedInState_Cache)//This NEEDS to exist in order for this function to avoid circular loops
+	// 	return deltaContainedInState_Cache[deltaID]
+	// return deltaContainedInState_Cache[deltaID]=deltas.contains(currentState,getDeltaByID(deltaID,deltaContainedInState_Cache))
 
 	//This is the foundation of all conditions. The question: Is this delta contained in the current state?
 	//This function can be cached with respect to the simplified state-stack of deltas
@@ -417,7 +410,7 @@ function deltaIDContainedInState(deltaID,deltaContainedInState_Cache)
 
 function deltaExistsInConfig(deltaID)
 {
-	console.assert(arguments.length==1,'Wrong number of arguments.')
+	console.assert(arguments.length===1, 'Wrong number of arguments.')
 	return deltaID in config.deltas
 }
 
@@ -453,7 +446,7 @@ function getDeltaByID(deltaID)
 
 function getArrayOfDeltaIDsFromString(deltaIdsSeparatedBySpaces)
 {
-	console.assert(arguments.length==1,'Wrong number of arguments.')
+	console.assert(arguments.length===1, 'Wrong number of arguments.')
 	assert.isPrototypeOf(deltaIdsSeparatedBySpaces,String)
 	console.assert(!deltaIdsSeparatedBySpaces.includes('\t'),'deltaRawCompositionFromIdsString error: Dont feed tabs into deltaRawCompositionFromIdsString! Your string: '+repr(deltaIdsSeparatedBySpaces))
 	console.assert(!deltaIdsSeparatedBySpaces.includes('\n'),'deltaRawCompositionFromIdsString error: Dont feed more than one line into deltaRawCompositionFromIdsString! Your string: '+repr(deltaIdsSeparatedBySpaces))
@@ -465,7 +458,7 @@ function getArrayOfDeltaIDsFromString(deltaIdsSeparatedBySpaces)
 
 function deltaRawCompositionFromIdsString(deltaIdsSeparatedBySpaces)
 {
-	console.assert(arguments.length==1,'Wrong number of arguments.')
+	console.assert(arguments.length===1, 'Wrong number of arguments.')
 	//Takes a space-separated string of deltaID's and returns the composition of all of those deltas as a delta object
 	const deltaIds=getArrayOfDeltaIDsFromString(deltaIdsSeparatedBySpaces)
 	assert.isPureArray(deltaIds)
@@ -575,8 +568,7 @@ function autoIsPending(currentState=tween.delta)
 		{
 			let auto=currentState.scene.transitions.auto//DONT USE items.scene.transitions.auto (this is updated every frame and overwritten; null can't delete this auto so you shouldn't use it. It causes lags and delays when you try to make it work with if/else statements etc)
 			const autodeltaid=auto.delta
-			const autodelta=getDeltaByID(auto.delta)//config.deltas[auto.delta]
-			if(!deltaIDContainedInState(auto.delta,{}))
+			if(!deltaIDContainedInState(autodeltaid,{}))
 			{
 				return true
 			}
@@ -617,12 +609,12 @@ function printDeltaStack()
 	console.log(stateDeltaStack.join('\n'))
 }
 
-//This section is to save battery life (only render when the items' state changes)
-let prevState=undefined//For further efficiency; we don't need to comparre strings every frame
-let prevWidth=undefined//When undefined will force to render even if batterysavingmode is true
+//This section is to save battery life (my laptop's battery is terrible, so I'm optimizing this site for energy consumption as well) (only render when the items' state changes)
+let prevState =undefined//For further efficiency; we don't need to comparre strings every frame
+let prevWidth =undefined//When undefined will force to render even if batterysavingmode is true
 let prevHeight=undefined
-let batterySavingMode=false//Only render frames when tween.delta changes. (Fire/stuff wont work if this is turned on but that's OK)
-let renderRequested=false
+let batterySavingMode=true//Only render frames when tween.delta changes. (Fire/stuff wont work if this is turned on but that's OK because i think not-having my laptop die is more important)
+let renderRequested  =false
 function requestRender()
 {
 	if(!renderRequested)
@@ -634,7 +626,7 @@ function render()
 {
 	renderRequested=false//REset this so requestRender() can be called again
 	const currentState=tween.delta
-	if(!batterySavingMode||currentState!==prevState||window.innerHeight!==prevHeight||window.innerWidth!==prevWidth)//To save battery life, only animate the frames when we have some change in the deltas. 
+	if(!batterySavingMode||currentState!==prevState||window.innerHeight!==prevHeight||window.innerWidth!==prevWidth)//To save battery life, only animate the frames when we have some change in the deltas.
 	{
 		deltas.pour(items,currentState)
 		if(autoIsPending(currentState))
@@ -645,13 +637,13 @@ function render()
 			requestTransition(auto,true,true)
 		}
 		prevHeight=window.innerHeight
-		prevWidth=window.innerWidth
+		prevWidth =window.innerWidth
 		// 
 		camera.aspect=prevWidth/prevHeight
 		camera.updateProjectionMatrix()//Lets you update camera FOV and aspect ratio
 		renderer.setSize(prevWidth,prevHeight)
 		renderer.render(scene, camera)
-		if(JSON.stringify(currentState)!==JSON.stringify(prevState))//If tween recycled a state (and didn't bother calculating a new one), it means 
+		if(JSON.stringify(currentState)!==JSON.stringify(prevState))//If tween recycled a state (and didn't bother calculating a new one), it means
 		{
 			requestRender()//IF STATE HASNT CHANED; SOmebody must call render() again in order to make the program continue to render things. THis is because requestAnimationFrame(render) is skipped (because we're returning NOW)
 			setWaitingCursor()
@@ -661,5 +653,5 @@ function render()
 			setNormalCursor()
 		}
 	}
-	 	prevState=currentState
+	prevState=currentState
 }

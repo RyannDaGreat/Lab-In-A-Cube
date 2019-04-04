@@ -286,9 +286,6 @@ deltas	pour_5
 	overlay	text 
 	`
 
-
-
-
 let previousLoadedConfigString
 function loadConfigFromLocalStorage()
 {
@@ -310,7 +307,7 @@ function loadConfigFromLocalStorage()
 			storedItem=defaultConfig
 		}
 		const newConfig=djson.parse(storedItem)
-		if(previousLoadedConfigString!=storedItem && !deltas.contains(config,newConfig))
+		if(previousLoadedConfigString!==storedItem && !deltas.contains(config, newConfig))
 		{
 			playSound('./Assets/Sounds/Woof.mp3')
 			deltas.pour(config,newConfig)
@@ -333,11 +330,13 @@ const config={
 	},
 	set state(string)
 	{
-		stateDeltaStack
+		assert.isString(string)
+		stateDeltaStack=string.split(' ')
 	}
+	//...more items will be added...
 }
 loadConfigFromLocalStorage()
-console.log(JSON.stringify(config))
+
 if(weAreInAnIframe())
 {
 	setInterval(loadConfigFromLocalStorage, 100)
@@ -356,7 +355,7 @@ if(config.textures)
 if(config.items)
 	for(const [itemName,itemType] of Object.entries(config.items))
 		if(itemName in modules)
-			console.error('ERROR: Cannot add item with name '+repr(itemName)+' because that allready exists. No duplicates are allowed.')//This is a very important check to make sure that they don't get rid of things like 'scene' etc
+			console.error('ERROR: Cannot add item with name '+repr(itemName)+' because that already exists. No duplicates are allowed.')//This is a very important check to make sure that they don't get rid of things like 'scene' etc
 		else
 			items[itemName]=modules[itemType](itemName)//Load all the items
 
@@ -364,4 +363,10 @@ if(config.sounds)
 	for(const [soundName,soundURL] of Object.entries(config.sounds))
 		sounds[soundName]=new Audio(soundURL)//Load all the sounds
 
+requestTween({
+				 overlay:
+				 {
+					 text: ''
+				 }
+			 })
 requestTweenByID('initial')

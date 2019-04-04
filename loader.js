@@ -7,6 +7,7 @@ function load_geometry(name,url)
 		try
 		{
 			geometries[name]=object.children[0].geometry
+			requestRender()
 		}
 		catch
 		{
@@ -22,21 +23,6 @@ function load_geometry(name,url)
 
 function load_texture(name,url)
 {
-	var texture = new THREE.TextureLoader().load(url );
+	var texture = new THREE.TextureLoader().load(url,requestRender);//This callback calls requestRender so that we can see the newly loaded texture when it loads
 	textures[name]=texture
 }
-
-
-// function load_cube_map(name,url_prefix,px,nx,py,ny,pz,nz)
-// {
-// 	cubeMaps[name] = new THREE.CubeTextureLoader()
-// 		.setPath( url_prefix )
-// 		.load( [
-// 			px,
-// 			nx,
-// 			py,
-// 			ny,
-// 			pz,
-// 			nz
-// 		] );
-// }

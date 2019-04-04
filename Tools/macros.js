@@ -179,20 +179,21 @@ var djson_macros={
 		{
 			if(!is_object(value))
 			{
-				for(const macroset of Object.values(macrosets))//Add this string-string key-value pair to any value which doesn't allready have an entry for that key
+				for(const macrosetKey in (macrosets))//Add this string-string key-value pair to any value which doesn't allready have an entry for that key
 				{
-					if(is_object(macroset))
+					if(is_object(macrosets[macrosetKey]))
 					{
-						if(!(key in macroset))
+						if(!(key in macrosets[macrosetKey]))
 						{
-							macroset[key]=value
+							macrosets[macrosetKey][key]=value
 						}
 					}
 				}
+				macrosets[key]={[key]:value}//Also do stuff if there are no other macrosets...
 			}
 		}
 		console.log("\n")
-		console.log(djson.stringify(macrosets))
+		console.log("MACROSETS",djson.stringify(macrosets))
 		console.log("\n")
 		let out={}
 		let allMacroKeys={}
@@ -228,11 +229,21 @@ var djson_macros={
 			return object
 		}
 		let out={}
-		for(const [key,value] of Object.entries(object))
+		for(let [key,value] of Object.entries(object))
 		{
-			if(key!=='~')
+			if(key!=='~')//Get through all the non-macros first...
 			{
-				out[key]=djson_macros.macroized(value)
+				for(const KEY of key.split(','))
+				{
+					if(is_object(value) && KEY!==''&&KEY[0]=='~')
+					{
+						deltas.pour(out,djson_macros.macroized(value))//We're in a scope
+					}
+					else
+					{
+						deltas.pour(out,{[KEY]:djson_macros.macroized(value)})
+					}
+				}
 			}
 		}
 		if('~' in object)

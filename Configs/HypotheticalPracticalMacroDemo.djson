@@ -1,0 +1,25 @@
+preview	type json	height 0	nogame true	numbers true
+~flasks
+	deltas	T~_to_~S	T	position	spos
+	deltas	initial	S	position	spos
+	deltas	initial	T	position	tpos
+	deltas	drag	T	S	delta T~_to_~S	time 1
+	deltas	initial	transitions	enter	T	delta T~_text
+	deltas	initial	transitions	leave	T	delta emptyText
+	deltas	T~text	overlay	text Selecting ~T
+	deltas	emptyText	overlay	text 
+	~
+		t~0	S slot~0	T tube~t	tpos TPOS	spos aaa
+		t~1	S slot~1	T tube~t	tpos TPOS	spos bbb
+		t~2	S slot~2	T tube~t	tpos TPOS	spos ccc
+		t~3	S slot~3	T tube~t	tpos TPOS	spos ddd
+		t~4	S slot~4	T tube~t	tpos TPOS	spos eee
+		t~5	S slot~5	T tube~t	tpos TPOS	spos fff
+		~
+			0	t 0	TPOS 000
+			1	t 1	TPOS 111
+			2	t 2	TPOS 222
+			3	t 3	TPOS 333
+			4	t 4	TPOS 444
+			5	t 5	TPOS 555
+			6	t 6	TPOS 666

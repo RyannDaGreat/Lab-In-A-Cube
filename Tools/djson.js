@@ -4,14 +4,16 @@
 const djson={
 	parse_leaf(leaf)
 	{
+		if(!(typeof leaf==='string'))
+			return leaf//Idk why but i made bugs
 		//This function is meant to be plugged into djson.parse's leaf_parser parameter as the default
 		//Summary: try converting the leaf into a JSON-style value, and if we can't, just leave it as a string.
-		console.assert(leaf!=null&&Object.getPrototypeOf(leaf)===String.prototype,'Leaf must be a string')
+		console.assert(leaf!=null&&Object.getPrototypeOf(leaf)===String.prototype,'Leaf must be a string; leaf=',leaf)
 		try
 		{
 			return JSON.parse(leaf)
 		}catch{}
-		if(leaf.match(/^\ *\-?.\d+\ *$/))//A number like .234 isn't valid JSON number but is valid JS number
+		if(leaf.match(/^\ *\-?\.\d+\ *$/))//A number like .234 isn't valid JSON number but is valid JS number
 			return Number(leaf)
 		return leaf
 	},
@@ -119,6 +121,7 @@ const djson={
 				return leaf_parser(object)
 			}
 		}
+		// console.log('pre-parseley: ',out)
 		out=parse_leaves(out)
 		return out
 	},

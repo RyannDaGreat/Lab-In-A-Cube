@@ -2,7 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="135bb503-6ec1-462c-9f44-1d512427b351" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Configs/SimpleMacroExample.djson" beforeDir="false" afterPath="$PROJECT_DIR$/Configs/SimpleMacroExample.djson" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Tools/djson.js" beforeDir="false" afterPath="$PROJECT_DIR$/Tools/djson.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Tools/macros.js" beforeDir="false" afterPath="$PROJECT_DIR$/Tools/macros.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/engine.js" beforeDir="false" afterPath="$PROJECT_DIR$/engine.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/loader.js" beforeDir="false" afterPath="$PROJECT_DIR$/loader.js" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -14,21 +22,30 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file pinned="false" current-in-tab="true">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-3259">
-              <caret line="21" column="69" selection-start-line="21" selection-start-column="69" selection-end-line="21" selection-end-column="69" />
+            <state relative-caret-position="315">
+              <caret line="21" column="45" selection-start-line="21" selection-start-column="45" selection-end-line="21" selection-end-column="45" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$APPLICATION_CONFIG_DIR$/javascript/extLibs/http_cdnjs.cloudflare.com_ajax_libs_three.js_102_three.js">
+        <entry file="file://$PROJECT_DIR$/engine.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="321315">
-              <caret line="21421" column="13" selection-start-line="21421" selection-start-column="13" selection-end-line="21421" selection-end-column="13" />
+            <state relative-caret-position="7542">
+              <caret line="595" column="17" selection-start-line="595" selection-start-column="17" selection-end-line="595" selection-end-column="17" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/config.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="446">
+              <caret line="360" column="34" selection-start-line="360" selection-start-column="34" selection-end-line="360" selection-end-column="34" />
             </state>
           </provider>
         </entry>
@@ -36,7 +53,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external/lib.dom.d.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="778">
+            <state relative-caret-position="259080">
               <caret line="17272" column="17" selection-start-line="17272" selection-start-column="17" selection-end-line="17272" selection-end-column="17" />
             </state>
           </provider>
@@ -59,6 +76,7 @@
       <find>key in o</find>
       <find>up</find>
       <find>alert(</find>
+      <find>deltaContainedInState_Cache</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -69,6 +87,8 @@
       <list>
         <option value="$PROJECT_DIR$/three.js" />
         <option value="$PROJECT_DIR$/index.html" />
+        <option value="$PROJECT_DIR$/engine.js" />
+        <option value="$PROJECT_DIR$/config.js" />
       </list>
     </option>
   </component>
@@ -88,8 +108,8 @@
         <subPane>
           <expand>
             <path>
-              <item name="Test1" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Test1" type="462c0819:PsiDirectoryNode" />
+              <item name="ThreeJS" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ThreeJS" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -103,7 +123,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="/usr/local/bin/node" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.JavaScript" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -138,19 +158,22 @@
       <option name="presentableId" value="Default" />
       <updated>1552802358506</updated>
       <workItem from="1552802359723" duration="19349000" />
+      <workItem from="1554351466567" duration="1669000" />
+      <workItem from="1554353183657" duration="257000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="19349000" />
+    <option name="totallyTimeSpent" value="21275000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info id="Favorites" order="0" side_tool="true" />
-      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.12755461" />
+      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.12875536" />
       <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="0" visible="true" weight="0.08072289" />
+      <window_info anchor="bottom" id="Terminal" order="0" visible="true" weight="0.08072289" />
       <window_info anchor="bottom" id="Event Log" order="1" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="2" />
       <window_info anchor="bottom" id="Docker" order="3" show_stripe_button="false" />
@@ -161,6 +184,7 @@
       <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="9" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="10" />
+      <window_info anchor="right" id="make" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -189,16 +213,8 @@
     <option name="version" value="1" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/three.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="23" column="10" selection-start-line="23" selection-start-column="10" selection-end-line="23" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/three.min.js">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/three.js" />
+    <entry file="file://$PROJECT_DIR$/three.min.js" />
     <entry file="file://$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external/lib.es5.d.ts">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="285">
@@ -206,24 +222,38 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="315">
+          <caret line="21" column="45" selection-start-line="21" selection-start-column="45" selection-end-line="21" selection-end-column="45" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external/lib.dom.d.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="778">
+        <state relative-caret-position="259080">
           <caret line="17272" column="17" selection-start-line="17272" selection-start-column="17" selection-end-line="17272" selection-end-column="17" />
         </state>
       </provider>
     </entry>
     <entry file="file://$APPLICATION_CONFIG_DIR$/javascript/extLibs/http_cdnjs.cloudflare.com_ajax_libs_three.js_102_three.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="321315">
-          <caret line="21421" column="13" selection-start-line="21421" selection-start-column="13" selection-end-line="21421" selection-end-column="13" />
+        <state relative-caret-position="39687">
+          <caret line="48065" column="4" selection-start-line="48065" selection-start-column="4" selection-end-line="48065" selection-end-column="4" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/index.html">
+    <entry file="file://$PROJECT_DIR$/engine.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-3259">
-          <caret line="21" column="69" selection-start-line="21" selection-start-column="69" selection-end-line="21" selection-end-column="69" />
+        <state relative-caret-position="7542">
+          <caret line="595" column="17" selection-start-line="595" selection-start-column="17" selection-end-line="595" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="446">
+          <caret line="360" column="34" selection-start-line="360" selection-start-column="34" selection-end-line="360" selection-end-column="34" />
         </state>
       </provider>
     </entry>
