@@ -7,8 +7,6 @@ function load_config(url)
 		})
 }
 
-// load_config('demo.djson')
-
 let defaultConfig=`
 preview
 	height 50

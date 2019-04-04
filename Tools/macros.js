@@ -1,5 +1,5 @@
 //Meant to be used for djson post-processing. Really the only important function in here is djson_macros.macroized.
-var djson_macros={
+var djson_macros=proxies.argumentCountChecker({
 	containsMacro(object,key)
 	{
 		console.warn('This function is UNTESTED! Beware!')
@@ -254,7 +254,7 @@ var djson_macros={
 		}
 		return out
 	}
-}
+})
 
 
 // testobject=djson.parse(`

@@ -1,4 +1,5 @@
-const gloves={
+const gloves=proxies.argumentCountChecker({
+	//Gloves are recursive proxies; basically proxies that are meant to work even with an 'deltas.apply' method call
 	broadcaster:function(objects,path=[])
 	{
 		//Will broadcast any deltas to all objects in objects.
@@ -12,6 +13,7 @@ const gloves={
 		//	via this glove; you can only set them
 		//EXAMPLE:
 		//	A={};B={};C=gloves.broadcaster([A,B]);C.a.b.c=5;console.log(A.a.b.c,B.a.b.c)
+		//This function was originally created to be used with deltas.apply, but can be generalized (which is why it's just a generic glove)
 		assert.rightArgumentLength(arguments)
 		assert.isPureArray(objects)
 		assert.isPureArray(path)
@@ -33,4 +35,4 @@ const gloves={
 		}
 		return new Proxy(Object.create(null),handler)
 	},
-}
+})

@@ -1,14 +1,17 @@
 //All generalizable functions that don't really fit anywhere else, but that I'd like to reuse for other projects in the future...
 function weAreInAnIframe()
 {
-	 return window.location !== window.parent.location 
+	console.assert(arguments.length===0,'Wrong number of arguments.')
+	 return window.location !== window.parent.location
 }
 function playSound(url)
 {
+	console.assert(arguments.length===1,'Wrong number of arguments.')
 	new Audio(url).play()
 }
 function uniqueFromRight(array)
 {
+	console.assert(arguments.length===1,'Wrong number of arguments.')
 	//Example: uniqueFromRight([1,2,1,3,3,2,1,2,3,1])
 	//Output:  [2, 3, 1]
 	seen=new Set
@@ -23,10 +26,12 @@ function uniqueFromRight(array)
 }
 function getRequest(url,callback=console.log)
 {
+	console.assert(arguments.length===2,'Wrong number of arguments.')
+	// Example usage: getRequest(url,response=>{console.log(response)})
 	var Http = new XMLHttpRequest()
 	Http.open("GET", url)
 	Http.send()
-	Http.onreadystatechange=(e)=>
+	Http.onreadystatechange=()=>
 	{
 		console.assert(Http.status===200,"r.js getRequest error: code "+Http.status+" (should be 200) on url "+repr(url))
 		callback(Http.responseText)
@@ -34,14 +39,17 @@ function getRequest(url,callback=console.log)
 }
 function print(x)
 {
+	console.assert(arguments.length===1,'Wrong number of arguments.')
 	console.log(x)//What can I say? I really miss python...console.log is ugly.
 }
 function repr(x)
 {
+	console.assert(arguments.length===1,'Wrong number of arguments.')
 	return JSON.stringify(x)
 }
 function sortKeys(object)
 {
+	console.assert(arguments.length===1,'Wrong number of arguments.')
 	//Recursively reorder the keys alphabetically
 	//Intended for use on json-like objects
 	//Originally written to normalize djson files' object representations
@@ -60,50 +68,46 @@ function sortKeys(object)
 		}
 	}
 }
-function is_object(x)
-{
-	assert.rightArgumentLength(arguments)
-	return Boolean(x&&Object.getPrototypeOf(x)===Object.prototype)
-}
-function are_objects(...variables)
-{
-	for(const variable of variables)
-		if(!is_object(variable))
-			return false
-	return true
-}
 function bad_sleep(seconds)
 {
+	console.assert(arguments.length===1,'Wrong number of arguments.')
 	//Burn CPU for seconds
 	const e=new Date().getTime()+(seconds*1000)
-	while (new Date().getTime() <= e);
+	while(new Date().getTime() <= e);
 }
 function random_chance(probability)
 {
+	console.assert(arguments.length===1,'Wrong number of arguments.')
 	return Math.random()<probability
 }
 function all_chars_are_unique(string)
 {
-	return string.length==number_of_unique_chars(string)
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	return string.length===number_of_unique_chars(string)
 }
 function number_of_unique_chars(string)
 {
+	console.assert(arguments.length===1,'Wrong number of arguments.')
 	return new Set(string.split('')).size
 }
 function random_integer(max)
 {
+	console.assert(arguments.length===1,'Wrong number of arguments.')
 	return Math.floor(Math.random()*(max+1))
 }
 function random_index(list)
 {
+	console.assert(arguments.length===1,'Wrong number of arguments.')
 	return random_integer(list.length-1)
 }
 function random_element(list)
 {
+	console.assert(arguments.length===1,'Wrong number of arguments.')
 	return list[random_index(list)]
 }
 function charInString(char,string)
 {
+	console.assert(arguments.length===2,'Wrong number of arguments.')
 	set=new Set()
 	for(const char of string)
 		set.push(char)
@@ -111,6 +115,7 @@ function charInString(char,string)
 }
 function currentFunctionName() 
 {
+	//Returns the name of the function that calls this
 	try
 	{
 		throw new Error()
@@ -129,32 +134,38 @@ function currentFunctionName()
 }
 function removeDuplicateCharacters(string)
 {
+	console.assert(arguments.length===1,'Wrong number of arguments.')
 	//Examples:
 	//	'larry' --> 'lary'
 	//  'abcda' --> 'abcd'
 	//  'babcc' --> 'bac'
-	return [...new Set(string)].join('')
+	return [...new Set(string)].join('')//Relies on the order of 'set' (the way chrome's v8 engine does things)
 }
 function removeNonAlphabeticCharacters(string)
 {
+	console.assert(arguments.length===1,'Wrong number of arguments.')
 	return string.replace(/[^a-zA-Z]/g, "")
 }
 function withoutKey(object,key)
 {
+	console.assert(arguments.length===2,'Wrong number of arguments.')
 	out={...object}
 	delete out[key]
 	return out
 }
 function split_on_first_space(string)
 {
+	console.assert(arguments.length===1,'Wrong number of arguments.')
 	return string.split(/ (.*)/,2)
 }
 function remove_empty_lines(string)
 {
+	console.assert(arguments.length===1,'Wrong number of arguments.')
 	return split_lines(string).filter(x=>x.trim()).join('\n')
 }
 function nested_path(path,value)
 {
+	console.assert(arguments.length===2,'Wrong number of arguments.')
 	//EXAMPLE: nested_path([4,3,2,1],0) ==== {4:{3:{2:{1:0}}}}
 	//EXAMPLE: nested_path([],)
 	console.assert(path&&Object.getPrototypeOf(path)===Array.prototype,'Path must be a list of keys')
@@ -165,6 +176,8 @@ function nested_path(path,value)
 }
 function multiply_string(string,number)
 {
+	console.assert(arguments.length===2,'Wrong number of arguments.')
+	//Like python ("abc"*3=="abcabcabc")
 	let out=''
 	while(number--)
 		out+=string
@@ -172,11 +185,41 @@ function multiply_string(string,number)
 }
 function is_defined(x)
 {
+	console.assert(arguments.length===1,'Wrong number of arguments.')
 	return x!==undefined
+}
+function is_prototype_of(x,type)
+{
+	console.assert(arguments.length===2,'Wrong number of arguments.')
+	assert.defined(type)
+	return Boolean(x&&Object.getPrototypeOf(x)===type.prototype)
 }
 function is_object(x)
 {
-	return Boolean(x&&Object.getPrototypeOf(x)===Object.prototype)
+	//Returns true IFF x is a pure object, meaning it could have been created with an object literal (no funky prototype chains)
+	//For example, is_object(any delta) is always true (because all deltas should be able to exist from object literals)
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	return is_prototype_of(x,Object)
+}
+function is_function(x)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	return is_prototype_of(x,Function)
+}
+function is_array(x)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	return is_prototype_of(x,Array)
+}
+function is_string(x)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	return is_prototype_of(x,String)
+}
+function is_number(x)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	return is_prototype_of(x,Number)
 }
 function are_objects(...variables)
 {
@@ -187,6 +230,7 @@ function are_objects(...variables)
 }
 function numbered_lines_string(string,numberToPrefix=i=>i+'\t')
 {
+	console.assert(arguments.length>=1,'Wrong number of arguments.')
 	//This function is meant for printing out code, with line-numbers on the far left.
 	//EXAMPLE:
 	//	CODE:
@@ -202,6 +246,7 @@ function numbered_lines_string(string,numberToPrefix=i=>i+'\t')
 }
 function singleton(get)
 {
+	console.assert(arguments.length===1,'Wrong number of arguments.')
 	//Makes a singleton out of a simple ()=>value getter function
 	let singleton
 	return function()
@@ -213,6 +258,8 @@ function singleton(get)
 }
 function get_indent_level(line,key={'\t':4})
 {
+	console.assert(arguments.length>=1,'Wrong number of arguments.')
+	//Another possible key: {'\t':4,' ':1} (converts 1 tab = 4 spaces)
 	let out=0
 	for(const char of line)
 		if(char in key)
@@ -223,6 +270,7 @@ function get_indent_level(line,key={'\t':4})
 }
 function clamp(x,a,b)
 {
+	console.assert(arguments.length===3,'Wrong number of arguments.')
 	//Clamp x between a and b (doesn't matter if a>b or b<a)
 	if(x<Math.min(a,b))
 		return Math.min(a,b)
@@ -232,10 +280,12 @@ function clamp(x,a,b)
 }
 function smoothAlpha(x)
 {
+	console.assert(arguments.length===1,'Wrong number of arguments.')
 	return (3*x-x*x*x)/2//https://www.desmos.com/calculator/pfaw67cutk
 }
 function blend(x,y,alpha,clamped=false)
 {
+	console.assert(arguments.length>=3,'Wrong number of arguments.')
 	//If clamp is turned on, then we restrict alpha to reasonable values (between 0 and 1 inclusively)
 	if(clamped)
 		alpha=clamp(alpha,0,1)
@@ -244,5 +294,6 @@ function blend(x,y,alpha,clamped=false)
 function gtoc()
 {
 	//Return _remainintTime in seconds since 1970
+	console.assert(arguments.length===0,'Wrong number of arguments.')
 	return new Date().getTime()/1000
 }

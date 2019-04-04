@@ -1,4 +1,4 @@
-const keyPath={
+const keyPath=proxies.argumentCountChecker({
 	//
 	exists(object,path)
 	{
@@ -56,4 +56,4 @@ const keyPath={
 			object=object[key]
 		object[path_end]=value
 	},
-}
+})

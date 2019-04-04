@@ -1,4 +1,4 @@
-const assert={
+const assert=proxies.argumentCountChecker({
 	rightArgumentLength(arguments)
 	{
 		try
@@ -57,4 +57,4 @@ const assert={
 	{
 		assert.isPrototypeOf(variable,Number)
 	},
-}
+})

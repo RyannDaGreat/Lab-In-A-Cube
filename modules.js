@@ -1,13 +1,14 @@
-const modules={
-	boxItem(ID)
+let modules={
+	get boxItem(){return modules.mesh},//This is legacy from a few tests we did when I first put the engine together. If you don't need it you can delete it in the future.
+	mesh(ID)
 	{
 		const materials ={
-			basic:new THREE.MeshBasicMaterial({color: 0xfffff, wireframe: true }),//color.r/g/b, wireframe, 
+			basic:new THREE.MeshBasicMaterial({color: 0xfffff, wireframe: true }),//color.r/g/b, wireframe,
 			phong:new THREE.MeshPhongMaterial(),//color.r/g/b
 			standard:new THREE.MeshStandardMaterial(),
-		} 
+		}
 		let geometry='box'
-		let material='standard'
+		let material='basic'
 		let texture='default'
 		let mesh=new THREE.Mesh(geometries[geometry], materials[material])
 		scene.add(mesh)
@@ -27,13 +28,14 @@ const modules={
 				if(value in geometries)
 					mesh.geometry=geometries[geometry=value]
 				else
-					console.error('ERROR setting geometry: '+JSON.stringify(value)+' is not in geometries')
+					console.error('ERROR setting geometry: '+JSON.stringify(value)+' is not in geometries. ')
 			}
 		}
 		mesh.userData.item=item//This is to let click events access this item's ID, which have to originate in the threeObject
 		return item
 	},
-	lightItem(ID)
+	get lightItem(){return modules.light},//This is legacy from a few tests we did when I first put the engine together. If you don't need it you can delete it in the future.
+	light(ID)
 	{
 		const light = new THREE.PointLight(0xffffff,1,100)
 		light.position.set( 50, 50, 50 )
@@ -49,3 +51,5 @@ const modules={
 		return item
 	},
 }
+modules=proxies.argumentCountChecker(modules)
+modules=proxies.tryGetter(modules,()=>modules.mesh)

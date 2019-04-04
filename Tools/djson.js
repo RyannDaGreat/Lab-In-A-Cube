@@ -1,7 +1,7 @@
 //DJSON Warnings:
 //	Don't use blank lines! It can be dangerous. If you use a COMPLETELY blank line (no whitespace), it will erase the rest of the current scope until the next unindented entry (this is because a blank line can be interpereted as a key called "". So, if you use another blank line later on, it will erase the previous value, and it will look as though values have been deleted.) They can be fine when written by a machine, but they're dangerous to try writing by hand (watch out for duplicate value warnings! Those are why thigns get overwritten)
 //	We can make warnings about duplicate values
-const djson={
+const djson=proxies.argumentCountChecker({
 	parse_leaf(leaf)
 	{
 		if(!(typeof leaf==='string'))
@@ -57,7 +57,7 @@ const djson={
 			const current_line_number=originalNumberOfLines-(lines.length)
 			function applyDjsonDelta(o,d)//A simpler variant of deltas.apply that lets you rewrite deltas, making djson potentially very readable if written by hand
 			{
-				for(const key in d)
+				for(const key of Object.keys(d))
 					if(are_objects(o,d[key]) && key in o)
 						applyDjsonDelta(o[key],d[key])
 					else
@@ -236,5 +236,5 @@ deltaTest aposd
 		console.log("DJSON RE-STRINGIFIED:\n"+stringified2)
 		console.assert(stringified===stringified2)
 	},
-}
+})
 // djson.test()

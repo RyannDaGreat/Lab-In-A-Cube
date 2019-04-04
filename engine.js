@@ -23,7 +23,8 @@ engineModules={
 
 const overlay=document.getElementById('overlay')
 
-const textures={default:null}
+let textures={default:null}
+textures=proxies.tryGetter(textures,()=>textures.default)
 
 //CURSOR STYLES
 function setCursor(style)
@@ -48,7 +49,6 @@ function setDraggableCursor()
 {
 	setCursor('grab')
 }
-
 
 const geometries={
 	box:  new THREE.BoxGeometry(700, 700, 700, 10, 10, 10),

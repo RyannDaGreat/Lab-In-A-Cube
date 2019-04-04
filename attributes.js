@@ -1,4 +1,4 @@
-const attributes={
+const attributes=proxies.argumentCountChecker({
 	position(threeObject)
 	{
 		return{
@@ -66,4 +66,4 @@ const attributes={
 			set b(value){color.b=value},
 		}
 	},
-}
+})

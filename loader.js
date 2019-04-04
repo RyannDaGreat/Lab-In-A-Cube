@@ -16,9 +16,9 @@ function load_geometry(name,url)
 	}
 	function callback( obj )
 	{
-		object = obj//Maybe eliminate maybe not....I think loadingmanager might come in handy....when we want to load all the textures etc
+		object = obj//Maybe eliminate maybe not....I think loading manager might come in handy....when we want to load all the textures etc
 	}
-	var loader = new THREE.OBJLoader(new THREE.LoadingManager(loadModel)).load(url, callback, ()=>{}, ()=>{})
+	new THREE.OBJLoader(new THREE.LoadingManager(loadModel)).load(url, callback, ()=>{}, ()=>{})
 }
 
 function load_texture(name,url)
