@@ -411,7 +411,15 @@ function deltaIDContainedInState(deltaID)
 function deltaExistsInConfig(deltaID)
 {
 	console.assert(arguments.length===1, 'Wrong number of arguments.')
-	return deltaID in config.deltas
+	if(!is_defined(config.deltas))
+	{
+		console.warn("deltaExistsInConfig: There is no 'deltas' entry in the config, therefore",repr(deltaID),"cannot exist in the config")
+		return false
+	}
+	else
+	{
+		return deltaID in config.deltas
+	}
 }
 
 function getRawDeltaFromConfigByID(deltaID)

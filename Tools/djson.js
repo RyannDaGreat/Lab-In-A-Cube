@@ -72,14 +72,28 @@ const djson=proxies.argumentCountChecker({
 
 			const path=[]//This gets added to...
 
+			if(entries.length && entries[0].includes(' '))
+			{
+				const next_line=lines[0]
+				if(entries.length>1||
+					entries.length===1&&
+					next_line!==undefined&&//We're not on the last line
+					get_indent_level(next_line)>line_level//There's stuff to put in this key (that has spaces)
+					)
+				{
+					path.push(entries.shift())//A special case
+				}
+			}
+
 			for(const entry of entries)
 			{
-				console.assert(!entry.includes('\t'),'This is impossible unless djson.parse is broken.')
+				console.assert(!entry.includes('\t'),'This is impossible unless djson.parse is broken.',entry)
 				if(entry.includes(' '))
 				{
 					const [key,value]=split_on_first_space(entry)
-					// if(false)if(value&&value!==value.trimLeft())console.warn('djson.parse warning at line '+current_line_number+': value starts with whitespace, which means you might have tried using spaces as indents: value==='+JSON.stringify(value))
-					// if(!value)                         console.warn('djson.parse warning at line '+current_line_number+': value is empty! You must have had some line ending with key followed by a single space before the end of the line')
+					//I disabled the below warnings simply because I found them annoying. But you might find them useful...so I didn't delete them
+					//	if(false)if(value&&value!==value.trimLeft())console.warn('djson.parse warning at line '+current_line_number+': value starts with whitespace, which means you might have tried using spaces as indents: value==='+JSON.stringify(value))
+					//	if(!value)                                  console.warn('djson.parse warning at line '+current_line_number+': value is empty! You must have had some line ending with key followed by a single space before the end of the line')
 					applyDjsonDelta(out,nested_path(path,{[key]:value}))
 				}
 				else
@@ -90,7 +104,7 @@ const djson=proxies.argumentCountChecker({
 
 			applyDjsonDelta(out,nested_path(path,djson.parse(lines,line_level)))
 
-			//I disabled the below warning simply because I found them annoying. But you might find them useful...
+			//I disabled the below warnings simply because I found them annoying. But you might find them useful...so I didn't delete them
 			//	if(false && key==='')   console.warn('djson.parse warning at line '+current_line_number+': key==="", which means you have a blank line somewherere')
 			//	if(false && key in out) console.warn('djson.parse warning at line '+current_line_number+': key is not unique! key==='+JSON.stringify(key))
 			//	console.assert(is_object(out))

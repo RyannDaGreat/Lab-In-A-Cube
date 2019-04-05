@@ -190,6 +190,7 @@ function is_defined(x)
 }
 function is_prototype_of(x,type)
 {
+	//This is like type-checking with 'typeof', or 'instanceof', except that this way of checking is much more precise.
 	console.assert(arguments.length===2,'Wrong number of arguments.')
 	assert.defined(type)
 	return Boolean(x&&Object.getPrototypeOf(x)===type.prototype)
@@ -259,6 +260,7 @@ function singleton(get)
 function get_indent_level(line,key={'\t':4})
 {
 	console.assert(arguments.length>=1,'Wrong number of arguments.')
+	assert.isString(line)
 	//Another possible key: {'\t':4,' ':1} (converts 1 tab = 4 spaces)
 	let out=0
 	for(const char of line)
