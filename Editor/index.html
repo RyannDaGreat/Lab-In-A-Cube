@@ -188,7 +188,6 @@ function Process(string) {
 		if ('height' in config) {
 			let h = config.height
 			if (typeof JSON.parse(h) == 'number') {
-
 				h = JSON.parse(h)
 				h = clamp(h, 0, 100)
 				document.getElementById('previewiframe').style.height = config.height + '%'
@@ -221,90 +220,96 @@ function Process(string) {
 */
 
 colors = {
-	purple: 'string',
-	leafKey: 'string',
+	cyan: 'string',
 	blue: 'comment',
-	cyan: 'tag',
+	purple: 'tag',
 	strike: 'strikethrough',
 }
 
-let bunky = false
 
 //Below is where the syntax highlighting magic happens...
-CodeMirror.defineMode('simplemode', function() {
-	return {
-		token: function(stream, state) {
-			if (bunky) {
-				stream.match(/[^\t]*/, true)
-				bunky = false
-				return colors.blue
-			}
-			stream.match(/\t*/)
-			if (stream.match(/[^\t ]*[ ][^\t]*/, false)) {
-				stream.match(/[^\t ]* /, true)
-				if (!stream.eol())
-					bunky = true
-				return colors.leafKey
-			}
-			if (stream.match(/[ ][^\t]*/, true)) {
-				return colors.blue
-			}
-			if (stream.match(/ /, true)) {
-				return colors.blue
-			}
-			if (stream.match(/[^\t]* /)) {
-				return
-			}
-			if (stream.match(/[\t]*[^\t ]*[\t]*/)) {
-				// [colors.blue,colors.purple]=[colors.purple,colors.blue]
-				return colors.cyan
-			}
-			// stream.eat(/[\t]*/,false)
-			// stream.next()
-
-			return //Uncolored
-
-		}
-	}
-})
-
-// CodeMirror.defineMode('simplemode', function() {
+// CodeMirror.defineMode('simplemode', function() 
+// {
+// 	let leaf = false
+// 	let keyWithSpaces=false
+// 	let sotl=false//start of trimmed line
 // 	return {
-// 		token: function(stream, state) {
-// 			if (bunky) {
-// 				stream.match(/[^\t]*/, true)
-// 				bunky = false
-// 				return colors.blue
-// 			}
+// 		token: function(stream, state)
+// 		{
+// 			const current_line=stream.lookAhead(0)
+// 			const next_line=stream.lookAhead(1)||''
+// 			// console.log(current_line)
+// 			let current_level=get_indent_level(current_line)
+// 			let next_level=get_indent_level(next_line)
+// 			if(stream.sol())
+// 				sotl=true
 // 			stream.match(/\t*/)
-// 			if (stream.match(/[^\t ]*[ ][^\t]*/, false)) {
+// 			if(leaf)
+// 			{
+// 				stream.match(/[^\t]*/, true)
+// 				leaf = false
+// 				if(keyWithSpaces)
+// 				{
+// 					keyWithSpaces=false
+// 					return
+// 				}
+// 				sotl=false
+// 				return colors.blue
+// 			}
+// 			if (stream.match(/[^\t ]*[ ][^\t]*/, false))
+// 			{
 // 				stream.match(/[^\t ]* /, true)
-// 				if (!stream.eol())
-// 					bunky = true
-// 				return colors.leafKey
-// 			}
-// 			if (stream.match(/[ ][^\t]*/, true)) {
-// 				return colors.blue
-// 			}
-// 			if (stream.match(/ /, true)) {
-// 				return colors.blue
-// 			}
-// 			if (stream.match(/[^\t]* /)) {
-// 				return
-// 			}
-// 			if (stream.match(/[\t]*[^\t ]*[\t]*/)) {
-// 				// [colors.blue,colors.purple]=[colors.purple,colors.blue]
+// 				leaf = true
+// 				const trilly=current_line.trimLeft().split('\t')
+// 				if(next_level>current_level)
+// 				{
+// 					keyWithSpaces=true
+// 					sotl=false
+// 					return
+// 				}
+// 				sotl=false
 // 				return colors.cyan
 // 			}
-// 			// stream.eat(/[\t]*/,false)
-// 			// stream.next()
-
+// 			if (stream.match(/[\t]*[^\t ]*[\t]*/)) 
+// 			{
+// 				sotl=false
+// 				return colors.purple
+// 			}
 // 			return //Uncolored
-
 // 		}
 // 	}
 // })
 
+CodeMirror.defineMode('simplemode', function() 
+{
+	let leaf = false
+	return {
+		token: function(stream, state)
+		{
+			const current_line=stream.lookAhead(0)
+			const next_line=stream.lookAhead(1)
+			console.log(current_line)
+			if(leaf)
+			{
+				stream.match(/[^\t]*/, true)
+				leaf = false
+				return colors.blue
+			}
+			stream.match(/\t*/)
+			if (stream.match(/[^\t ]*[ ][^\t]*/, false)) 
+			{
+				stream.match(/[^\t ]* /, true)
+				leaf = true
+				return colors.cyan
+			}
+			if (stream.match(/[\t]*[^\t ]*[\t]*/)) 
+			{
+				return colors.purple
+			}
+			return //Uncolored
+		}
+	}
+})
 
 var PREVIEW = document.getElementById('preview')
 
@@ -312,9 +317,8 @@ var converter = new showdown.Converter()
 
 /* Set Default Text */
 document.getElementById("previewtext")
-	.innerHTML = converter.makeHtml(
-		// document.getElementById("defaulttext").innerHTML
-		`<pre>Welcome to the DJSON (Delta JSON) Editor!
+	.innerHTML = converter.makeHtml(`<pre>Welcome to the DJSON (Delta JSON) Editor!
+
 Your progress is always saved in localStorage (on every keystroke), so if you reload the page you should be fine.
 To preview your DJSON as a JSON file, set that in the 'preview' settings (example shown below).
 You can make this somewhere in your djson: 
@@ -325,31 +329,20 @@ preview
 	type state      (Show the current state of the game in djson format, realtime)
 	type none       (Doesnt really do anything...saves a little CPU though)
 	min true
-	min false		(whether to minify if we're looking at a JSON)
-	numbers true	
+	min false       (whether to minify if we're looking at a JSON)
+	numbers true
 	numbers false   (Whether to show line numbers)
-	mode vim		(YEAH! My editor supports VIM thanks to codemirror plugins)
-	mode sublime	(This is my personal favorite mode)
-	mode default	(Boring but useful)
-	height 75		(Specify the height percent of the game preview pane)
+	mode vim        (YEAH! My editor supports VIM thanks to codemirror plugins)
+	mode sublime    (This is my personal favorite mode)
+	mode default    (Boring but useful)
+	height 75       (Specify the height percent of the game preview pane)
 
 When you're EDITING text (AKA, the text editor is in focus), and you press control+r (or command+r on a mac),
 it won't refresh the whole page. Instead, it will just refresh the game view. 
 This lets you refresh the game view without losing your edit history.
+</pre>`)
 
-
-</pre>`
-
-	)
-
-document.getElementById("editorTextArea")
-	.innerHTML = localStorage.getItem('config') || ""
-
-
-
-
-/* Create Editor */
-
+document.getElementById("editorTextArea").innerHTML = localStorage.getItem('config') || ""
 
 var initialconfig = localStorage.getItem('config')
 //console.log(initialconfig)
@@ -359,9 +352,11 @@ var keymap = 'default'
 if (initialconfig && initialconfig.mode in { vim: {}, sublime: {} })
 	keymap = initialconfig.mode
 
-function refreshGame() { document.getElementById('previewiframe').innerHTML = `<iframe id='iframeid' style='filter:invert(1);' src="../index.html" width="100%" height="100%"></iframe>` }
+function refreshGame() 
+{
+	document.getElementById('previewiframe').innerHTML = `<iframe id='iframeid' style='filter:invert(1);' src="../index.html" width="100%" height="100%"></iframe>` 
+}
 var editor = CodeMirror.fromTextArea(editorTextArea, {
-
 	extraKeys: {
 		"Ctrl-R": refreshGame,
 		"Ctrl-S": () => {},
@@ -380,33 +375,9 @@ var editor = CodeMirror.fromTextArea(editorTextArea, {
 editor.setSize("100%", "100%")
 
 let iframeSingleton = undefined
-
 let loadedHistory = false
-let ed = undefined
 let prevConfigGame = true //default true because bt default the game exists as an iframe
 editor.on("change", (cm, change) => {
-	//BELOW IS A FAILED ATTEMPT TO PRESERVE HISTORY UPON REFRESHING THE PAGE
-	// console.log(JSON.stringify(cm.doc.history),null,4)
-	// if(loadedHistory)
-	// 	localHistory.setItem('config_history',JSON.stringify(cm.doc.history))
-	// else
-	// {
-	// 	localHistory=true
-	// 	let config_history=localStorage.getItem('config_history')
-	// 	if(config_history)
-	// 	{
-	// 			console.warn("aspodk aspdok aspokd    poaksd pasokd apok   asdo    ")
-	// 		let parsed=JSON.parse(config_history)
-	// 		if(parsed)
-	// 		{
-	// 			console.warn("ASOIJDAOISDJPOAISJDPOAIJSDOPIAJIOSD")
-	// 			cm.doc.history=parsed
-	// 		}
-	// 	}
-	// }
-
-	ed = cm
-
 	const value = cm.getValue()
 	cm.options.lineWrapping = Boolean(config.wrap)
 	//
@@ -420,14 +391,11 @@ editor.on("change", (cm, change) => {
 	if ('nogame' in config)
 		document.getElementById('previewiframe').innerHTML = `preview\n\tnogame\n\n(unset and refresh game preview the game)`
 	//
-	// cm.options.indentUnit=cm.options.tabSize=config.tab||4
 	var str = Process(value)
 	localStorage.setItem('config', value);
 	localStorage.setItem('configChanged', 'true') //This is nessecary for efficiency's sake. THe engine won't reload the config without this.
 	if (config.numbers) str = numbered_lines_string(str, i => i + '\t')
 	document.getElementById('previewtext').innerHTML = "<pre>" + str + "</pre>"
-
-	// cm.options.indentUnit=cm.options.tabSize=config.tab||4
 })
 
 function refreshState() {
@@ -479,7 +447,5 @@ split.onmousedown = function(event) {
 		document.removeEventListener('mouseup', onMouseMove)
 		document.removeEventListener('mousemove', onMouseMove)
 	})
-
-
 }
 </script>

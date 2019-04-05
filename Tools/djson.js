@@ -72,6 +72,8 @@ const djson=proxies.argumentCountChecker({
 
 			const path=[]//This gets added to...
 
+			const enable_keys_with_spaces=false//This will be added once I can get syntax highlighting working for it, which turns out to be tricky. 
+			if(enable_keys_with_spaces)
 			if(entries.length && entries[0].includes(' '))
 			{
 				const next_line=lines[0]
