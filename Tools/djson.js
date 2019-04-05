@@ -13,8 +13,10 @@ const djson=proxies.argumentCountChecker({
 		{
 			return JSON.parse(leaf)
 		}catch{}
-		if(leaf.match(/^\ *\-?\.\d+\ *$/))//A number like .234 isn't valid JSON number but is valid JS number
-			return Number(leaf)
+		const number=parsedSimpleMathFromString(leaf)//If this is undefined, it means it failed to parse the expression
+		if(number!==undefined)
+			return number
+		//	OLD VERSION FOR DOING NUMBERS: if(leaf.match(/^\ *\-?\.\d+\ *$/))//A number like .234 isn't valid JSON number but is valid JS number// return Number(leaf)
 		return leaf
 	},
 	parse_handwritten(lines)

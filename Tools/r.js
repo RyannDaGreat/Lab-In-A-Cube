@@ -282,6 +282,7 @@ function clamp(x,a,b)
 }
 function smoothAlpha(x)
 {
+	//For smooth blending (as opposed to linear, jerky animations)
 	console.assert(arguments.length===1,'Wrong number of arguments.')
 	return (3*x-x*x*x)/2//https://www.desmos.com/calculator/pfaw67cutk
 }
@@ -298,4 +299,64 @@ function gtoc()
 	//Return _remainintTime in seconds since 1970
 	console.assert(arguments.length===0,'Wrong number of arguments.')
 	return new Date().getTime()/1000
+}
+function stringIsNumerical(string)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	console.assert(typeof string==='string')
+	//EXAMPLES:
+	//	stringIsNumerical('')   false
+	//	stringIsNumerical(' ')   false
+	//	stringIsNumerical('Infinity')   false
+	//	stringIsNumerical('NaN')   false
+	//	stringIsNumerical('0')   true
+	//	stringIsNumerical(' . 2   ')   false
+	//	stringIsNumerical(' . 2   ')   false
+	//	stringIsNumerical(' +.2   ')   true
+	//	stringIsNumerical(' -.2   ')   true
+	//	stringIsNumerical('+-.2   ')   false
+	//	stringIsNumerical('123   ')   true
+	//	stringIsNumerical('1.23   ')   true
+	//	stringIsNumerical('1.2.3   ')   false
+	if(!string.trim())return false//Number('')===Number(' ')===0
+	const number=Number(string)
+	return JSON.parse(JSON.stringify(number))===number
+}
+function parsedSimpleMathFromString(string)
+{
+	//Supports ONLY +,-,* and NOT parenthesis etc
+	//Can parse strings like '23 +3 - 234'
+	//Returns a number or returns undefined upon error
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	console.assert(typeof string==='string')
+	//EXAMPLES:
+	//	parsedSimpleMathFromString('  0-01*88') === -88
+	//	parsedSimpleMathFromString('  0-01')    === -1
+	//	parsedSimpleMathFromString('  0+0')     === 0
+	//	parsedSimpleMathFromString(' ')     === undefined
+	//	parsedSimpleMathFromString(' 0')     === 0
+	//	parsedSimpleMathFromString(' 0.')     === 0
+	//	parsedSimpleMathFromString(' .2')     === 0.2
+	//	parsedSimpleMathFromString(' .2-.1')     === 0.1
+	let sum=0
+	string=string.replace(/\-/,'+-1*')//Replace all subtraction/negation signs with multiplication by -1
+	for(const chunk of string.split('+'))
+	{
+		let product=1
+		for(let factor of chunk.split('*'))
+		{
+			if(!stringIsNumerical(factor))
+			{
+				return undefined
+			}
+			else
+			{
+				product*=Number(factor)
+			}
+		}
+		sum+=product
+	}
+	if(!stringIsNumerical(''+sum))//If we have 'NaN' or 'Infinity' etc, don't return a number.
+		return undefined
+	return sum
 }
