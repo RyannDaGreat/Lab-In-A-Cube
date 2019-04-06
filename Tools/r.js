@@ -339,6 +339,8 @@ function parsedSimpleMathFromString(string)
 	//	parsedSimpleMathFromString(' .2')     === 0.2
 	//	parsedSimpleMathFromString(' .2-.1')     === 0.1
 	let sum=0
+	if(string.trim()[0]==='-')//Handle the edge case where the expression begins with a '-' sign
+		string='0'+string
 	string=string.replace(/\-/,'+-1*')//Replace all subtraction/negation signs with multiplication by -1
 	for(const chunk of string.split('+'))
 	{

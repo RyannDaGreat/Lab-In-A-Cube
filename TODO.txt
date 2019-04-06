@@ -31,6 +31,40 @@ DELTAS CONTAIN:
 	BUT WAIT: WOULD CONDITIONS MESS UP PROPERTIES OF DELTAS, AND IF SO WOULD IT MATTER??
 
 
+BUGS:
+	WHY is 
+		~scope
+			 We're going to pour the beaker into the flask
+			items	beaker~n mesh
+			items	flask~n mesh
+			deltas	initial	beaker~n	transform	position	x bx	y by	z bz
+			deltas	initial	flask~n		transform	position	x fx	y fy	z fz
+			deltas	pour~n	flask~n		transform	position	x bx	y by~+1	z bz
+			deltas	pour~n	scene	transitions	auto						delta initial	time 1
+			deltas	initial	scene	transitions	drag	beaker~n	flask~n	delta pour~n	time 1
+			~	i	n i	bx i~00	by -50	bz 0	fx i~00	fy 0	fz 100
+			~	~	0	i 0
+			~	~	1	i 1
+			~	~	2	i 2
+			~	~	3	i 3
+	DIFFERENT FROM
+		~scope
+		 We're going to pour the beaker into the flask
+		items	beaker~n mesh
+		items	flask~n mesh
+		deltas	initial	beaker~n	transform	position	x bx	y by	z bz
+		deltas	initial	flask~n		transform	position	x fx	y fy	z fz
+		deltas	pour~n	flask~n		transform	position	x bx	y by~+1	z bz
+		deltas	pour~n	scene	transitions	auto						delta initial	time 1
+		deltas	initial	scene	transitions	drag	beaker~n	flask~n	delta pour~n	time 1
+		~
+			i	n i	bx i~00	by -50	bz 0	fx i~00	fy 0	fz 100
+			~
+				0	i 0
+				1	i 1
+				2	i 2
+				3	i 3
+	ONLY WHEN USING MACROS??!
 
 
 TODO

@@ -52,6 +52,7 @@ function setDraggableCursor()
 
 const geometries={
 	box:  new THREE.BoxGeometry(700, 700, 700, 10, 10, 10),
+	cube:  new THREE.BoxGeometry(700, 700, 700, 1, 1, 1),
 }
 
 const sounds={}
@@ -263,10 +264,10 @@ function triggerEnterTransition(enterItemID)
 	if(enterItemID===undefined)
 		return
 	//A transition triggered by mousing over something
-	let cursor=items.scene.transitions.enter
+	let cursor=tween.delta.scene.transitions.enter
 	if(cursor && enterItemID in cursor)
 	{
-		const transition = items.scene.transitions.enter[enterItemID]
+		const transition = tween.delta.scene.transitions.enter[enterItemID]
 		requestTransition(transition,true)
 		console.log("triggerEnterTransition: "+enterItemID)
 	}
@@ -284,10 +285,10 @@ function triggerLeaveTransition(leaveItemID)
 	if(leaveItemID===undefined)
 		return
 	//A transition triggered by mousing over something
-	let cursor=items.scene.transitions.leave
+	let cursor=tween.delta.scene.transitions.leave
 	if(cursor && leaveItemID in cursor)
 	{
-		const transition = items.scene.transitions.leave[leaveItemID]
+		const transition = tween.delta.scene.transitions.leave[leaveItemID]
 		requestTransition(transition,true)
 		console.log("triggerLeaveTransition: "+leaveItemID)
 	}
@@ -301,10 +302,10 @@ function triggerLeaveTransition(leaveItemID)
 function triggerDragTransition(mousedownItem,mouseupItem)
 {
 	console.assert(arguments.length===2,'Wrong number of arguments.')
-	let cursor=items.scene.transitions.drag
+	let cursor=tween.delta.scene.transitions.drag
 	if(mousedownItem.ID in cursor && mouseupItem.ID in cursor[mousedownItem.ID])
 	{
-		const transition = items.scene.transitions.drag[mousedownItem.ID][mouseupItem.ID]
+		const transition = tween.delta.scene.transitions.drag[mousedownItem.ID][mouseupItem.ID]
 		requestTransition(transition,false)
 		console.log("triggerDragTransition: "+mousedownItem.ID+" TO "+mouseupItem.ID)
 	}

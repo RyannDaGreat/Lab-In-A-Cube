@@ -115,13 +115,14 @@ const djson=proxies.argumentCountChecker({
 		}
 
 		//POST PROCESSING SECTION UNTIL END OF FUNCTION
-		if(macros)
-		{
-			out=djson_macros.macroized(out)
-		}
 		if(delete_emptystring_keys)
 		{
 			out=djson_macros.deletedEmptyKeys(out)
+		}
+		if(macros)
+		{
+			// return out
+			out=djson_macros.macroized(out)
 		}
 		function parse_leaves(object)
 		{

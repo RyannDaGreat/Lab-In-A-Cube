@@ -15,7 +15,7 @@
 <script src="./downloaded/jump-to-line.js"></script>
 <script src="../Tools/proxies.js"></script>
 <script src="../Tools/r.js"></script>
-<script src="../Tools/macros.js"></script>
+<script src="../Tools/djson_macros.js"></script>
 <script src="../Tools/assert.js"></script>
 <script src="../Tools/djson.js"></script>
 <script src="../Tools/deltas.js"></script>
@@ -280,36 +280,96 @@ colors = {
 // 	}
 // })
 
-CodeMirror.defineMode('simplemode', function() 
-{
-	let leaf = false
-	return {
-		token: function(stream, state)
-		{
-			const current_line=stream.lookAhead(0)
-			const next_line=stream.lookAhead(1)
-			console.log(current_line)
-			if(leaf)
-			{
-				stream.match(/[^\t]*/, true)
-				leaf = false
+// CodeMirror.defineMode('simplemode', function() 
+// {
+// 	let leaf = false
+// 	return {
+// 		token: function(stream, state)
+// 		{
+// 			const current_line=stream.lookAhead(0)
+// 			const next_line=stream.lookAhead(1)
+// 			console.log(current_line)
+// 			if(leaf)
+// 			{
+// 				stream.match(/[^\t]*/, true)
+// 				leaf = false
+// 				return colors.blue
+// 			}
+// 			stream.match(/\t*/)
+// 			if (stream.match(/[^\t ]*[ ][^\t]*/, false)) 
+// 			{
+// 				stream.match(/[^\t ]* /, true)
+// 				leaf = true
+// 				return colors.cyan
+// 			}
+// 			if (stream.match(/[\t]*[^\t ]*[\t]*/)) 
+// 			{
+// 				return colors.purple
+// 			}
+// 			return //Uncolored
+// 		}
+// 	}
+// })
+
+/*
+	TODO:
+		- Needs Refactoring
+	
+		*/
+
+		colors={
+			purple:'string',
+			leafKey:'string',
+			blue:'comment',
+			cyan:'tag',
+			strike:'strikethrough',
+		}
+
+		let bunky=false
+		CodeMirror.defineMode('simplemode', function () {
+			return {
+				token: function (stream, state) 
+				{
+					if(bunky)
+					{
+						stream.match(/[^\t]*/,true)
+						bunky=false
 				return colors.blue
 			}
 			stream.match(/\t*/)
-			if (stream.match(/[^\t ]*[ ][^\t]*/, false)) 
+			if(stream.match(/[^\t ]*[ ][^\t]*/,false))
 			{
-				stream.match(/[^\t ]* /, true)
-				leaf = true
+				stream.match(/[^\t ]* /,true)
+				if(!stream.eol())
+					bunky=true
+				return colors.leafKey
+			}
+			if(stream.match(/[ ][^\t]*/,true))
+			{
+				return colors.blue
+			}
+			if(stream.match(/ /,true))
+			{
+				return colors.blue
+			}
+			if(stream.match(/[^\t]* /))
+			{
+				return
+			}
+			if(stream.match(/[\t]*[^\t ]*[\t]*/))
+			{
+				// [colors.blue,colors.purple]=[colors.purple,colors.blue]
 				return colors.cyan
 			}
-			if (stream.match(/[\t]*[^\t ]*[\t]*/)) 
-			{
-				return colors.purple
-			}
-			return //Uncolored
+			// stream.eat(/[\t]*/,false)
+			// stream.next()
+
+			return//Uncolored
+
 		}
 	}
 })
+
 
 var PREVIEW = document.getElementById('preview')
 
