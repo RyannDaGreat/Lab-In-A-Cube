@@ -189,9 +189,9 @@ function composedMacros(object,macrosets)
 			}
 		}
 	}
-	console.log("\n")
-	console.log(djson.stringify(macrosets))
-	console.log("\n")
+	// console.log("\n")
+	// console.log(djson.stringify(macrosets))
+	// console.log("\n")
 	let out={}
 	let allMacroKeys={}
 	// console.log(macrosets)
@@ -211,7 +211,7 @@ function composedMacros(object,macrosets)
 		if(is_object(macroset))
 		{
 			const x=appliedMacros(object,macroset,otherMacros(macroset,allMacroKeys))
-			console.log(djson.stringify(x))
+			// console.log(djson.stringify(x))
 			deltas.pour(out,x)
 		}
 	}

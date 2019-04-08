@@ -307,7 +307,7 @@ function loadConfigFromLocalStorage()
 		const newConfig=djson.parse(storedItem)
 		if(previousLoadedConfigString!==storedItem && !deltas.contains(config, newConfig))
 		{
-			playSound('./Assets/Sounds/Woof.mp3')
+			playSound('./Assets/Sounds/ShortBells/E.mp3')//This got annoying, but it was here to 
 			deltas.pour(config,newConfig)
 			refreshStateFromConfig()
 		}
@@ -355,7 +355,14 @@ if(config.items)
 		if(itemName in modules)
 			console.error('ERROR: Cannot add item with name '+repr(itemName)+' because that already exists. No duplicates are allowed.')//This is a very important check to make sure that they don't get rid of things like 'scene' etc
 		else
+		{
 			items[itemName]=modules[itemType](itemName)//Load all the items
+			console.assert(is_object(items[itemName]),'A mistake was made in the code for the module '+repr(itemType)+
+				', detected while creting item '+repr(itemName)+
+				'. All items are supposed to be pure objects, because thats the way deltas apply changes (to pure object trees).'+
+				'Please note that this is NOT a config error, this is a javascript error: blame the programmer of the '+repr(itemType)+' module.'+
+				'\nFor debugging purposes, heres a the object returned by the module: items['+repr(itemName)+']===',items[itemName])
+		}
 
 if(config.sounds)
 	for(const [soundName,soundURL] of Object.entries(config.sounds))

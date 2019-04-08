@@ -64,6 +64,7 @@ const items={
 	get condition(){},
 	overlay:
 	{
+		// NO threeObject, this is a DOM element
 		get element()
 		{
 			return overlay
@@ -86,12 +87,14 @@ const items={
 	},
 	camera:
 	{
+		threeObject:camera,
 		transform:attributes.transform(camera),
 		get fov(){return camera.fov},
 		set fov(value){camera.fov=value},
 	},
 	scene:
 	{
+		threeObject:scene,
 		transitions:
 		{
 			smooth:1,
@@ -393,7 +396,7 @@ function getDeltaInheritanceChainString(rootDeltaID)
 function deltaIDContainedInState(deltaID)
 {
 
-	console.assert(arguments.length===2,'Wrong number of arguments.')
+	console.assert(arguments.length===1,'Wrong number of arguments.')
 	const currentState=tween.delta
 	if(currentState.sound!==undefined)
 		delete currentState.sound
@@ -512,7 +515,7 @@ function print_current_state()
 function requestTweenByID(deltaID,time=0,ignoreBlocking=false,isAuto=false)
 {
 	console.assert(arguments.length>=1,'Wrong number of arguments.')
-	if(!deltaIDContainedInState(deltaID,{}))
+	if(!deltaIDContainedInState(deltaID))
 	{
 		pushDeltaIDToStateStack(deltaID)
 		console.log('requestTweenByID: deltaID = '+repr(deltaID)+' and time = '+repr(time))
@@ -577,7 +580,7 @@ function autoIsPending(currentState=tween.delta)
 		{
 			let auto=currentState.scene.transitions.auto//DONT USE items.scene.transitions.auto (this is updated every frame and overwritten; null can't delete this auto so you shouldn't use it. It causes lags and delays when you try to make it work with if/else statements etc)
 			const autodeltaid=auto.delta
-			if(!deltaIDContainedInState(autodeltaid,{}))
+			if(!deltaIDContainedInState(autodeltaid))
 			{
 				return true
 			}

@@ -67,31 +67,37 @@ BUGS:
 	ONLY WHEN USING MACROS??!
 
 
+An 'other' option for clicking/dragging (dragging into someting 'else', not specified in scene transitions)
+
 TODO
+	No more communicating through local storage; directly access memory instead
+	Make strip-trailing-spaces post-processing option
 
-Error Messages:
-	- When a geometry fails to load
+	• IDEALLY i'd like to modularize textures/materials/etc, and make them something you have to create in the same way as 'object' etc. This would eliminate the need for 'mode modes' and would let multiple objects share the same material, texture, etc. 
+	TO DO THIS: deltas would need to be capable of modifying MORE than just items. They would have to be capable of modifying textures? Or perhaps textures and materials etc could BE item types??
+		++ IDEA: Put items, geometries, etc all in one big object called 'config', and let deltas change everything (including other deltas) in that config  ******THIS IDEA IS DANGEROUS BECAUSE IT COULD BREAK THE ASSOCIATIVE PROPERTY OF DELTAS (if they can modify other deltas)
+
+	2D GUI
+	Flask Liquid
+	Conditions
+
+	Texture Loading
+	Add sounds
+	Add optional smoothing 
+	Add sky/better lighting
+	Add beakers with variable fluid levels
+	Add GUI
+	Make editor NOT dissapear when we zoom in too much (why does it do that??)
+	Toggle Visibility -- objects that aren't visible should let raytracing pass through
+	Make a stack of deltas so we can edit in realtime for real
+	Finish the macro system correctly
+	Keys-with-spaces in dJson + syntax highlighting
+	dJson: Add post-processing as part of the dJSON reading settings (local to scope)
+	Persistent Undo in editor
+	Let camera move around
+	Add .. to djson	(and deltas to djson's without reformatting) (and better djson formatting)
 
 
-2D GUI
-Flask Liquid
-Conditions
 
-Texture Loading
-Add sounds
-Add optional smoothing 
-Add sky/better lighting
-Add beakers with variable fluid levels
-Add GUI
-Make editor NOT dissapear when we zoom in too much (why does it do that??)
-Toggle Visibility -- objects that aren't visible should let raytracing pass through
-Make a stack of deltas so we can edit in realtime for real
-Make macros
-Persistent Undo in editor
-Let camera move around
-Add .. to djson	(and deltas to djson's without reformatting) (and better djson formatting)
-
-
-
-*** WHY THE HELL DOES THIS BREAK ON SAFARI AND FIREFOX BUT WORK ON CHROME?!?!? Answer: There was no localstorage config there.
+*** WHY THE HELL DOES THIS BREAK ON SAFARI AND FIREFOX BUT WORK ON CHROME?!?!? Answer: There was no localstorage config there?? (no, I think its beyond that...)
 
