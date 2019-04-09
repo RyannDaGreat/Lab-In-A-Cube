@@ -1,0 +1,60 @@
+preview	height 50	type state	mode sublime	numbers
+
+items
+	beaker simpleBeaker
+	label sprite
+
+geometries
+	simpleBeakerFluid ./Assets/Models/SimpleBeaker/Fluid.obj
+	simpleBeakerBeaker ./Assets/Models/SimpleBeaker/Beaker.obj
+
+deltas	initial
+	
+	camera
+		transform	position	z 10	y 7
+		transform	rotation	x -35
+		fov 40
+	
+	scene
+		ambience	intensity 0
+		transitions	drag	beaker	beaker	delta unfill	time 1
+	
+	beaker
+		geometry simpleBeakerBeaker
+		 depthWrite was set to false by the advice of https://stackoverflow.com/questions/11165345/three-js-webgl-transparent-planes-hiding-other-planes-behind-them
+		material	mode phong	modes	phong	transparent true	opacity 0.5	depthWrite true
+		transform	rotation	x 0	y 0	z 0
+		visible true
+	
+	beaker	fluid
+		geometry simpleBeakerFluid
+		transform	scale	y 1
+		material	mode phong	modes	phong	transparent false	depthWrite true
+			opacity 0.9	color	r 0	g 0	b 1
+	
+	label	parent beaker	xray true	visible true	text oiweriwur	size 60
+		transform	position	x 0	y -2	z 0
+	
+	scene	transitions	enter	beaker	delta bigLabel	time .1
+	scene	transitions	leave	beaker	delta initial	time .1
+	
+deltas	bigLabel	label	size 100
+
+deltas	unfill
+	beaker	fluid	transform	scale	y 0
+	scene	transitions	auto	delta initial	time 1
+	beaker	transform	rotation	x 180
+
+
+ Lighting:
+items	light1 light	light2 light	light3 light	light4 light
+items	light5 light	light6 light	light7 light	light8 light
+deltas	initial
+	light1	intensity .3	position	x -10000	y -10000	z -10000
+	light2	intensity .3	position	x -10000	y -10000	z  10000
+	light3	intensity .3	position	x -10000	y  10000	z -10000
+	light4	intensity .3	position	x -10000	y  10000	z  10000
+	light5	intensity .3	position	x  10000	y -10000	z -10000
+	light6	intensity .3	position	x  10000	y -10000	z  10000
+	light7	intensity .3	position	x  10000	y  10000	z -10000
+	light8	intensity .3	position	x  10000	y  10000	z  10000

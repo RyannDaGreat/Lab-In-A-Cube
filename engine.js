@@ -523,11 +523,7 @@ function requestTweenByID(deltaID,time=0,ignoreBlocking=false,isAuto=false)
 	}
 	else
 	{
-		if(true)
-		{
-			console.log("AWOIJEOIWEJIOPWQJOIEIOJPQWEJOIPQ")
-			tween.delta={scene:{transitions:{auto:null}}}//This saves us from having to rewrite 'scene	transitions	auto	null' all over the place
-		}
+		tween.delta={scene:{transitions:{auto:null}}}//This saves us from having to rewrite 'scene	transitions	auto	null' all over the place (otherwise, if we enter some delta with auto, by default (if that delta doesnt set scene	transitions	auto	null), we'll be stuck there forever.)
 		console.log('requestTweenByID: Skipping tween '+repr(deltaID)+' because it would have no effect (the gamestate contains it allready)')
 	}
 }
