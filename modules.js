@@ -96,7 +96,8 @@ let modules={
 			let message=text
 			//From https://stackoverflow.com/questions/23514274/three-js-2d-text-sprite-labels
 			var fontface       = 'Quicksand'
-			var fontsize       = size
+			// var fontsize       = size
+			var fontsize=80
 			var borderThickness= 4
 
 			let dpi=200//Higher --> better resolution
@@ -131,10 +132,10 @@ let modules={
  
 			texture.needsUpdate = true
 
-			sprite.scale.set(aspect/2/1/smallness * fontsize, -1/2/smallness* fontsize, -0.75/smallness * fontsize)
+			sprite.scale.set(size*aspect/2/1/smallness * fontsize, size*-1/2/smallness* fontsize, size*-0.75/smallness * fontsize)
 		}
 		let text='Example'
-		let size=40
+		let size=1
 		updateSpriteText()
 		scene.add(sprite)
 		let parent

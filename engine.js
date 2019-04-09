@@ -24,7 +24,7 @@ engineModules={
 const overlay=document.getElementById('overlay')
 
 let textures={default:null}
-textures=proxies.tryGetter(textures,()=>textures.default)
+// textures=proxies.tryGetter(textures,()=>textures.default)
 
 //CURSOR STYLES
 function setCursor(style)

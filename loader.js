@@ -26,3 +26,17 @@ function load_texture(name,url)
 	var texture = new THREE.TextureLoader().load(url,requestRender);//This callback calls requestRender so that we can see the newly loaded texture when it loads
 	textures[name]=texture
 }
+let cubeMaps={}
+function load_cube_map(name,url_prefix,px,nx,py,ny,pz,nz)	
+{	
+	cubeMaps[name] = new THREE.CubeTextureLoader()	
+		.setPath( url_prefix )	
+		.load( [	
+			px,	
+			nx,	
+			py,	
+			ny,	
+			pz,	
+			nz	
+		] );	
+}
