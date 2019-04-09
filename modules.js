@@ -33,19 +33,15 @@ let modules={
 				else
 					console.error('ERROR setting geometry: '+JSON.stringify(value)+' is not in geometries. ')
 			},
-			get threeObject()
-			{
-				return mesh
-			},
+			get threeObject() {return mesh },
 			set parent(itemID)
 			{
 				mesh.parent=items[itemID].threeObject//MAKE SOME ASSERTIONS HERE
 				parent=itemID
 			},
-			get parent()
-			{
-				return parent
-			}
+			get parent() {return parent },
+			set visible(x){mesh.visible=x},
+			get visible(){return mesh.visible},
 		}
 		mesh.userData.item=item//This is to let click events access this item's ID, which have to originate in the threeObject
 		return item
@@ -61,6 +57,8 @@ let modules={
 			position:attributes.position(light),
 			get intensity(){return light.intensity;},
 			set intensity(value){light.intensity=value},
+			set visible(x){light.visible=x},
+			get visible( ){return light.visible},
 		}
 		light.userData.item=item
 		return item
@@ -85,89 +83,77 @@ let modules={
 	},
 	sprite(ID)
 	{
+		//Currently, sprites only show text. This can change later, but for now let's KISS. 
+		//NOTE: ctx stands for 'canvas.context'
 		// function for drawing rounded rectangles
-		function roundRect(context, x, y, w, h, r) 
+		const canvas   = document.createElement('canvas')
+		const ctx  = canvas.getContext('2d')
+		const texture=new THREE.Texture(canvas,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined) 
+		const spriteMaterial=new THREE.SpriteMaterial({map:texture, useScreenCoordinates: false ,depthTest:false})
+		const sprite = new THREE.Sprite( spriteMaterial )
+		function updateSpriteText()
 		{
-			context.beginPath();
-			context.moveTo(x+r, y);
-			context.lineTo(x+w-r, y);
-			context.quadraticCurveTo(x+w, y, x+w, y+r);
-			context.lineTo(x+w, y+h-r);
-			context.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
-			context.lineTo(x+r, y+h);
-			context.quadraticCurveTo(x, y+h, x, y+h-r);
-			context.lineTo(x, y+r);
-			context.quadraticCurveTo(x, y, x+r, y);
-			context.closePath();
-			context.fill();
-			context.stroke();   
-		}
-		var spriteMaterial
-		var texture
-		function makeTextSprite( message, parameters )
-		{
+			let message=text
 			//From https://stackoverflow.com/questions/23514274/three-js-2d-text-sprite-labels
-			if ( parameters === undefined ) parameters = {}
-			var fontface = parameters.hasOwnProperty("fontface") ? parameters["fontface"] : "Arial"
-			var fontsize = parameters.hasOwnProperty("fontsize") ? parameters["fontsize"] : 40 
-			var borderThickness = parameters.hasOwnProperty("borderThickness") ? parameters["borderThickness"] : 4
-			var borderColor = parameters.hasOwnProperty("borderColor") ?parameters["borderColor"] : { r:0, g:0, b:0, a:1.0 }
-			var backgroundColor = parameters.hasOwnProperty("backgroundColor") ?parameters["backgroundColor"] : { r:255, g:255, b:255, a:1.0 }
-			var textColor = parameters.hasOwnProperty("textColor") ?parameters["textColor"] : { r:0, g:0, b:0, a:1.0 }
+			var fontface       = 'Quicksand'
+			var fontsize       = size
+			var borderThickness= 4
 
-			var canvas = document.createElement('canvas')
-			// canvas.height=1000
-			// canvas.width=1000
-			var context = canvas.getContext('2d')
-			context.font = "Bold " + fontsize + "px " + fontface
-			var metrics = context.measureText( message )
-			var textWidth = metrics.width
-			context.fillStyle = "red";
-			context.fill();
-			context.rect(-2220, -2220, 11150, 11100);
+			let dpi=200//Higher --> better resolution
+			let aspect=10//Bigger = skinnier image --> more text can fit
+			let smallness=30//OPPOSITE OF Phyical sprite size
+			canvas.width=aspect*dpi
+			canvas.height=dpi
+			var middleX= canvas.width/2
+			var middleY=canvas.height/2
+			// canvas.style.height=1000+'px'
 
-			// context.translate(250,50);
-			context.scale(3,1);
-			// mirrorImage(context)
+			ctx.font = 'Bold ' + fontsize + 'px ' + fontface
 
-			context.fillStyle   = "rgba(" + backgroundColor.r + "," + backgroundColor.g + "," + backgroundColor.b + "," + backgroundColor.a + ")"
-			context.strokeStyle = "rgba(" + borderColor.r + "," + borderColor.g + "," + borderColor.b + "," + borderColor.a + ")"
+			ctx.shadowBlur = 40;
+			ctx.shadowColor = 'black';
 
-			context.lineWidth = borderThickness
-			roundRect(context, borderThickness/2, borderThickness/2, (textWidth + borderThickness) * 1.1, fontsize * 1.4 + borderThickness, 8)
+			// ctx.fillStyle = 'white';
+			// ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-			context.fillStyle = "rgba("+textColor.r+", "+textColor.g+", "+textColor.b+", 1.0)"
-			context.fillText( message, borderThickness, fontsize + borderThickness)
+			ctx.translate(0,100);
+			ctx.textAlign='center'
+			ctx.lineWidth = borderThickness
 
-			texture = new THREE.Texture(canvas) 
+			let scale=dpi/100
+			ctx.translate(middleX,-middleY/scale);
+			ctx.scale(scale,scale*-1)//Mirror it about the y-axis
+			ctx.strokeStyle = 'rgba(000,000,000,1)'
+			ctx.strokeText(message, 0, 0 );
+			ctx.strokeText(message, 0, 0 );//Second stroke to emphasize shadow
+    		ctx.fillStyle = 'white';
+			ctx.fillText( message, 0, 0)
+ 
 			texture.needsUpdate = true
 
-			spriteMaterial = new THREE.SpriteMaterial( {
-				depthTest:false,//X RAY: set to false to go through objects
-				 map: texture, useScreenCoordinates: false  } )
-			var sprite = new THREE.Sprite( spriteMaterial )
-			sprite.scale.set(0.5/10 * fontsize, -0.25/10 * fontsize, -0.75/10 * fontsize)
-			return sprite
+			sprite.scale.set(aspect/2/1/smallness * fontsize, -1/2/smallness* fontsize, -0.75/smallness * fontsize)
 		}
-		let sprite=makeTextSprite('HEllo')
+		let text='Example'
+		let size=40
+		updateSpriteText()
 		scene.add(sprite)
+		let parent
 		const item={
 			ID:ID,
 			threeObject:sprite,
 			transform:attributes.transform(sprite),
-			get xray()
+			get xray() { return !spriteMaterial.depthTest },
+			set xray(x) { spriteMaterial.depthTest=!x },
+			set visible(x){sprite.visible=x},
+			get visible(){return sprite.visible},
+			set text(x){if(x!==text)text=x;updateSpriteText()},
+			set size(x){if(x!==size)size=x;updateSpriteText()},
+			set parent(itemID)
 			{
-				return !spriteMaterial.depthTest
+				sprite.parent=items[itemID].threeObject//MAKE SOME ASSERTIONS HERE
+				parent=itemID
 			},
-			set xray(x)
-			{
-				spriteMaterial.depthTest=!x
-			},
-			get text()
-			{
-
-			}
-
+			get parent() {return parent },
 		}
 		sprite.userData.item=item
 		return item

@@ -523,6 +523,11 @@ function requestTweenByID(deltaID,time=0,ignoreBlocking=false,isAuto=false)
 	}
 	else
 	{
+		if(true)
+		{
+			console.log("AWOIJEOIWEJIOPWQJOIEIOJPQWEJOIPQ")
+			tween.delta={scene:{transitions:{auto:null}}}//This saves us from having to rewrite 'scene	transitions	auto	null' all over the place
+		}
 		console.log('requestTweenByID: Skipping tween '+repr(deltaID)+' because it would have no effect (the gamestate contains it allready)')
 	}
 }
@@ -666,4 +671,5 @@ function render()
 		}
 	}
 	prevState=currentState
+	updateItemIDUnderCursor()//Becuase when battery saving is on, and we just finish playing an animation, it won't update till we move our mouse
 }
