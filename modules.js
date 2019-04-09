@@ -86,22 +86,24 @@ let modules={
 	sprite(ID)
 	{
 		// function for drawing rounded rectangles
-		function roundRect(ctx, x, y, w, h, r) 
+		function roundRect(context, x, y, w, h, r) 
 		{
-			ctx.beginPath();
-			ctx.moveTo(x+r, y);
-			ctx.lineTo(x+w-r, y);
-			ctx.quadraticCurveTo(x+w, y, x+w, y+r);
-			ctx.lineTo(x+w, y+h-r);
-			ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
-			ctx.lineTo(x+r, y+h);
-			ctx.quadraticCurveTo(x, y+h, x, y+h-r);
-			ctx.lineTo(x, y+r);
-			ctx.quadraticCurveTo(x, y, x+r, y);
-			ctx.closePath();
-			ctx.fill();
-			ctx.stroke();   
+			context.beginPath();
+			context.moveTo(x+r, y);
+			context.lineTo(x+w-r, y);
+			context.quadraticCurveTo(x+w, y, x+w, y+r);
+			context.lineTo(x+w, y+h-r);
+			context.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+			context.lineTo(x+r, y+h);
+			context.quadraticCurveTo(x, y+h, x, y+h-r);
+			context.lineTo(x, y+r);
+			context.quadraticCurveTo(x, y, x+r, y);
+			context.closePath();
+			context.fill();
+			context.stroke();   
 		}
+		var spriteMaterial
+		var texture
 		function makeTextSprite( message, parameters )
 		{
 			//From https://stackoverflow.com/questions/23514274/three-js-2d-text-sprite-labels
@@ -114,10 +116,19 @@ let modules={
 			var textColor = parameters.hasOwnProperty("textColor") ?parameters["textColor"] : { r:0, g:0, b:0, a:1.0 }
 
 			var canvas = document.createElement('canvas')
+			// canvas.height=1000
+			// canvas.width=1000
 			var context = canvas.getContext('2d')
 			context.font = "Bold " + fontsize + "px " + fontface
 			var metrics = context.measureText( message )
 			var textWidth = metrics.width
+			context.fillStyle = "red";
+			context.fill();
+			context.rect(-2220, -2220, 11150, 11100);
+
+			// context.translate(250,50);
+			context.scale(3,1);
+			// mirrorImage(context)
 
 			context.fillStyle   = "rgba(" + backgroundColor.r + "," + backgroundColor.g + "," + backgroundColor.b + "," + backgroundColor.a + ")"
 			context.strokeStyle = "rgba(" + borderColor.r + "," + borderColor.g + "," + borderColor.b + "," + borderColor.a + ")"
@@ -128,20 +139,35 @@ let modules={
 			context.fillStyle = "rgba("+textColor.r+", "+textColor.g+", "+textColor.b+", 1.0)"
 			context.fillText( message, borderThickness, fontsize + borderThickness)
 
-			var texture = new THREE.Texture(canvas) 
+			texture = new THREE.Texture(canvas) 
 			texture.needsUpdate = true
 
-			var spriteMaterial = new THREE.SpriteMaterial( {depthTest:false, map: texture, useScreenCoordinates: true } )
+			spriteMaterial = new THREE.SpriteMaterial( {
+				depthTest:false,//X RAY: set to false to go through objects
+				 map: texture, useScreenCoordinates: false  } )
 			var sprite = new THREE.Sprite( spriteMaterial )
-			sprite.scale.set(0.5/10 * fontsize, 0.25/10 * fontsize, 0.75/10 * fontsize)
+			sprite.scale.set(0.5/10 * fontsize, -0.25/10 * fontsize, -0.75/10 * fontsize)
 			return sprite
 		}
-		const sprite=makeTextSprite('Spritasdapisdaspuidhaspiudfhapsidufhaspdifuaspdfiuhaspdfiuhapsidfuhaspdfiuhaspdifuhae')
+		let sprite=makeTextSprite('HEllo')
 		scene.add(sprite)
 		const item={
 			ID:ID,
 			threeObject:sprite,
 			transform:attributes.transform(sprite),
+			get xray()
+			{
+				return !spriteMaterial.depthTest
+			},
+			set xray(x)
+			{
+				spriteMaterial.depthTest=!x
+			},
+			get text()
+			{
+
+			}
+
 		}
 		sprite.userData.item=item
 		return item
