@@ -42,7 +42,7 @@ deltas	initial
 		transform	scale	y 0
 		material	mode phong	modes	phong	color	r 0	g 0	b 1
 	
-	label	parent beaker	xray true	visible true	text 	size .4
+	label	parent beaker	xray true	visible true	text (Empty)	size .4
 		transform	position	x 0	y -2	z 0
 	
 	scene	transitions	drag	more	more	delta more1	time .3
@@ -92,7 +92,7 @@ deltas
 deltas	more10
 	overlay	text Game Over
 	moreLabel	text (Full)
-	scene	transitions	drag	more	more	delta null
+	scene	transitions	drag	more	more	delta none
 
  Lighting:
 items	light1 light	light2 light	light3 light	light4 light
