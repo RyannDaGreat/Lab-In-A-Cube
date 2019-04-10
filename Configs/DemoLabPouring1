@@ -1,4 +1,4 @@
-preview	height 50	type djson	mode sublime	numbers
+preview	height 50	type state	mode sublime	numbers
 
 sounds
 	bug ./Assets/Sounds/ShortBells/Bug.mp3
@@ -16,7 +16,9 @@ geometries
 
 deltas	initial
 	
-	overlay	text ""
+	inherit reset_more
+	
+	overlay	text Click "Pour" until you reach your desired liquid height
 	
 	camera
 		transform	position	z 10	y 7
@@ -45,18 +47,17 @@ deltas	initial
 	
 	scene	transitions	drag	more	more	delta more1	time .3
 	
-	more
-		transform
-			scale	overall 2
-			position	x -4
-		material	mode standard	modes	standard	color	r 1	g 1	b 0
-	
 	moreLabel	parent more	text Pour	size .5
 
+deltas	reset_more	more
+	transform
+		position	x -4
+		scale	overall 1
+	material	mode standard	modes	standard	color	r .5	g 1	b 0
+	geometry sphere
+
 deltas
-	
 	unfill
-		overlay	text ""
 		scene	transitions	auto	delta unfill_1	time 1
 		beaker	transform	rotation	x 180
 	
@@ -70,6 +71,10 @@ deltas
 		more~N
 			sound e
 			scene	transitions	drag	more	more	delta more~M
+			more
+				transform	scale	overall .9
+				material	mode standard	modes	standard	color	r 0	g .5	b 1
+			scene	transitions	auto	delta reset_more	time .1
 			beaker	fluid	visible true	transform	scale	y N~*.1
 			label	text Level: ~N~ml
 		~
@@ -83,9 +88,11 @@ deltas
 			7	N 7		M 8
 			8	N 8		M 9
 			9	N 9		M 10
-			10	N 10	M 11
-deltas	more11	overlay	text Game Over
-
+			10	N 10
+deltas	more10
+	overlay	text Game Over
+	moreLabel	text (Full)
+	scene	transitions	drag	more	more	delta null
 
  Lighting:
 items	light1 light	light2 light	light3 light	light4 light
@@ -99,4 +106,3 @@ deltas	initial
 	light6	intensity .3	position	x  10000	y -10000	z  10000
 	light7	intensity .3	position	x  10000	y  10000	z -10000
 	light8	intensity .3	position	x  10000	y  10000	z  10000
-	
