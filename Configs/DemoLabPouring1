@@ -26,7 +26,7 @@ deltas	initial
 	beaker
 		geometry simpleBeakerBeaker
 		 depthWrite was set to false by the advice of https://stackoverflow.com/questions/11165345/three-js-webgl-transparent-planes-hiding-other-planes-behind-them
-		material	mode phong	modes	phong	transparent true	opacity 0.5	depthWrite true
+		material	mode phong	modes	phong	transparent true	opacity 0.5	depthWrite false
 		transform	rotation	x 0	y 0	z 0
 		visible true
 	
@@ -34,8 +34,7 @@ deltas	initial
 		geometry simpleBeakerFluid
 		visible false
 		transform	scale	y 0
-		material	mode phong	modes	phong	transparent false	depthWrite true
-			opacity 0.9	color	r 0	g 0	b 1
+		material	mode phong	modes	phong	color	r 0	g 0	b 1
 	
 	label	parent beaker	xray true	visible true	text 	size .4
 		transform	position	x 0	y -2	z 0
@@ -53,12 +52,13 @@ deltas	initial
 deltas
 	
 	unfill
+		overlay	text ""
 		scene	transitions	auto	delta unfill_1	time 1
 		beaker	transform	rotation	x 180
 	
 	unfill_1
 		scene	transitions	auto	delta initial	time 1
-		beaker	fluid	transform	scale	y 0
+		beaker	fluid	transform	scale	y .0
 
 deltas
 	~moreN
@@ -91,3 +91,4 @@ deltas	initial
 	light6	intensity .3	position	x  10000	y -10000	z  10000
 	light7	intensity .3	position	x  10000	y  10000	z -10000
 	light8	intensity .3	position	x  10000	y  10000	z  10000
+	
