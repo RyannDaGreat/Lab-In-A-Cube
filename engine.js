@@ -51,7 +51,7 @@ function setDraggableCursor()
 }
 
 const geometries={
-	box:  new THREE.BoxGeometry(700, 700, 700, 10, 10, 10),
+	box:  new THREE.BoxGeometry(1, 1, 1, 10, 10, 10),
 	cube:  new THREE.BoxGeometry(700, 700, 700, 1, 1, 1),
 }
 
@@ -537,15 +537,12 @@ function requestTween(delta,time=0,ignoreBlocking=false,isAuto=false)
 	if(!isAuto&&autoIsPending())
 		return//Don't let the user screw up the game
 	if(delta.sound && typeof delta.sound==='string')
-	{
 		playSound(config.sounds[delta.sound])
-	}
+	deltas.pour(tween._initialDelta,{scene:{transitions:{auto:null}}})//This saves us from having to rewrite 'scene	transitions	auto	null' all over the place (otherwise, if we enter some delta with auto, by default (if that delta doesnt set scene	transitions	auto	null), we'll be stuck there forever.)
+	deltas.pour(tween._targetDelta,{scene:{transitions:{auto:null}}})
 	tween.time=time
 	tween.delta=delta
 }
-
-const blocked_deltas=new Set
-
 
 let itemIDUnderCursor//Can be undefined if there is no item under the cursor
 function updateItemIDUnderCursor()//Can be cached with respect to state and cursor position. 
@@ -605,7 +602,9 @@ function getSimplifiedStateDeltaStack()
 }
 function setStateFromDeltaIDArray(deltaIdsAsArray)
 {
+	tween._initialDelta=tween.delta
 	tween._targetDelta=deltaCompositionFromIdArray(deltaIdsAsArray)
+
 	// requestTween(deltaCompositionFromIdArray(deltaIdsAsArray),time,true,true)
 }
 function setStateFromDeltaIDSpaceSplitString(deltaIdsSeparatedBySpaces)
@@ -615,19 +614,22 @@ function setStateFromDeltaIDSpaceSplitString(deltaIdsSeparatedBySpaces)
 function refreshStateFromConfig()
 {
 	setStateFromDeltaIDArray(getSimplifiedStateDeltaStack())
-	printDeltaStack()
+	// printDeltaStack()
 }
 function printDeltaStack()
 {
 	console.log(stateDeltaStack.join('\n'))
 }
 
+//Settings
+let autoAutonull=false//THIS BREAKS THE SAD VIOLIN DOG. I DONT KNOW WHY. WHEN I USE IT IT FREEZES. THIS ENGINE HAS TO BE REWRITTEN CLEANLY. If we should automatically set auto to 'null' after finishing an auto-sequence
+
 //This section is to save battery life (my laptop's battery is terrible, so I'm optimizing this site for energy consumption as well) (only render when the items' state changes)
 let prevState =undefined//For further efficiency; we don't need to comparre strings every frame
 let prevWidth =undefined//When undefined will force to render even if batterysavingmode is true
 let prevHeight=undefined
 let batterySavingMode=true//Only render frames when tween.delta changes. (Fire/stuff wont work if this is turned on but that's OK because i think not-having my laptop die is more important)
-let renderRequested  =false
+let renderRequested  =false//NOT a config item
 function requestRender()
 {
 	if(!renderRequested)
@@ -656,7 +658,8 @@ function render()
 		camera.updateProjectionMatrix()//Lets you update camera FOV and aspect ratio
 		renderer.setSize(prevWidth,prevHeight)
 		renderer.render(scene, camera)
-		if(JSON.stringify(currentState)!==JSON.stringify(prevState))//If tween recycled a state (and didn't bother calculating a new one), it means
+		if(JSON.stringify(currentState)!==JSON.stringify(prevState)||tween.time)//If tween recycled a state (and didn't bother calculating a new one), it means
+			//The ||tween.time is because we need to be able to wait-out timed deltas even if they don't change anything (as it might turn out; for ex emptying an empty flask)  (its purpose is very subtle, but very real; please dont remove it)
 		{
 			requestRender()//IF STATE HASNT CHANED; SOmebody must call render() again in order to make the program continue to render things. THis is because requestAnimationFrame(render) is skipped (because we're returning NOW)
 			setWaitingCursor()

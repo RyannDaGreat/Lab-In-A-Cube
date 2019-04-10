@@ -54,7 +54,7 @@ deltas	blueBackground
 	scene	background	color	r 0	g 0	b 0.31
 	//sound woof
 	scene	transitions	auto null
-	overlay	text "Blue\n\nCube\nYou\nknow,\ndoggos\nLOVE\nblue\nthings!\n\\n\\n\\n"	 <--- YEAH that's right, we can even use newlines! (this is a comment)
+	overlay	text "Blue\\n\\nCube\\nYou\\nknow,\\ndoggos\\nLOVE\\nblue\\nthings!\\n\\n\\n\\n"	 <--- YEAH that's right, we can even use newlines! (this is a comment)
 	camx	transform	position	x 0
 	scene	transitions	drag	dog	dog	time 1	delta blueDoggo-0
 
@@ -62,7 +62,7 @@ deltas
 	blueDoggo-0
 		dog	transform	rotation	x -90
 		sound woof
-		overlay	text "THE DOGE THANKS YOU FOR YOUR SERVICE!\n(Click the doggy!)"	size 40
+		overlay	text "THE DOGE THANKS YOU FOR YOUR SERVICE!\\n(Click the doggy!)"	size 40
 		scene	transitions	auto	time 3	delta blueDoggo-1
 	blueDoggo-1
 		dog	transform	position	x 0	y -500
@@ -310,6 +310,8 @@ function loadConfigFromLocalStorage()
 			playSound('./Assets/Sounds/ShortBells/E.mp3')//This got annoying, but it was here to 
 			deltas.pour(config,newConfig)
 			refreshStateFromConfig()
+			console.log(tween.delta)
+			// tween.time=1
 		}
 		previousLoadedConfigString=storedItem
 	}
