@@ -2,20 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="135bb503-6ec1-462c-9f44-1d512427b351" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/Editor/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/Editor/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tools/assert.js" beforeDir="false" afterPath="$PROJECT_DIR$/Tools/assert.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tools/deltas.js" beforeDir="false" afterPath="$PROJECT_DIR$/Tools/deltas.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tools/djson.js" beforeDir="false" afterPath="$PROJECT_DIR$/Tools/djson.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tools/gloves.js" beforeDir="false" afterPath="$PROJECT_DIR$/Tools/gloves.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tools/keyPath.js" beforeDir="false" afterPath="$PROJECT_DIR$/Tools/keyPath.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tools/macros.js" beforeDir="false" afterPath="$PROJECT_DIR$/Tools/macros.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tools/proxies.js" beforeDir="false" afterPath="$PROJECT_DIR$/Tools/proxies.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Configs/DemoLabPouring1" beforeDir="false" afterPath="$PROJECT_DIR$/Configs/DemoLabPouring1" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Three/three.js" beforeDir="false" afterPath="$PROJECT_DIR$/Three/three.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Tools/r.js" beforeDir="false" afterPath="$PROJECT_DIR$/Tools/r.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/attributes.js" beforeDir="false" afterPath="$PROJECT_DIR$/attributes.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/config.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/engine.js" beforeDir="false" afterPath="$PROJECT_DIR$/engine.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/loader.js" beforeDir="false" afterPath="$PROJECT_DIR$/loader.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/modules.js" beforeDir="false" afterPath="$PROJECT_DIR$/modules.js" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
@@ -28,7 +20,17 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/engine.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="9450">
+              <caret line="630" selection-start-line="630" selection-end-line="630" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
@@ -69,14 +71,14 @@
         <option value="$PROJECT_DIR$/Editor/index.html" />
         <option value="$PROJECT_DIR$/Tools/r.js" />
         <option value="$PROJECT_DIR$/modules.js" />
-        <option value="$PROJECT_DIR$/engine.js" />
         <option value="$PROJECT_DIR$/loader.js" />
         <option value="$PROJECT_DIR$/Tools/proxies.js" />
+        <option value="$PROJECT_DIR$/engine.js" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6" fullScreen="true">
-    <option name="width" value="714" />
+  <component name="ProjectFrameBounds" fullScreen="true">
+    <option name="width" value="1440" />
     <option name="height" value="900" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -87,6 +89,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -118,7 +121,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -163,19 +165,21 @@
       <workItem from="1552802359723" duration="19349000" />
       <workItem from="1554351466567" duration="1669000" />
       <workItem from="1554353183657" duration="7608000" />
+      <workItem from="1554955467597" duration="534000" />
+      <workItem from="1555032882852" duration="122000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="28626000" />
+    <option name="totallyTimeSpent" value="29282000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1440" height="900" extended-state="6" />
+    <frame x="0" y="0" width="1440" height="900" extended-state="0" />
     <layout>
-      <window_info id="Favorites" order="0" side_tool="true" />
-      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.12875536" />
-      <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="0" visible="true" weight="0.44578314" />
+      <window_info id="Structure" order="0" sideWeight="0.50125" side_tool="true" visible="true" weight="0.3040057" />
+      <window_info id="Favorites" order="1" side_tool="true" />
+      <window_info content_ui="combo" id="Project" order="2" sideWeight="0.49875" weight="0.13018598" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="0" visible="true" weight="0.036144577" />
       <window_info anchor="bottom" id="Event Log" order="1" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="2" />
       <window_info anchor="bottom" id="Docker" order="3" show_stripe_button="false" />
@@ -186,10 +190,10 @@
       <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="9" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="10" />
-      <window_info anchor="right" id="make" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="make" order="3" />
     </layout>
     <layout-to-restore>
       <window_info id="Favorites" order="0" side_tool="true" />
@@ -291,13 +295,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/engine.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="351">
-          <caret line="26" column="23" selection-start-line="26" selection-start-column="23" selection-end-line="26" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/index.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="240">
@@ -305,13 +302,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Tools/macros.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="1" column="47" selection-start-line="1" selection-start-column="17" selection-end-line="1" selection-end-column="47" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/Tools/macros.js" />
     <entry file="file://$PROJECT_DIR$/attributes.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1020">
@@ -344,6 +335,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="225">
           <caret line="15" column="26" selection-start-line="15" selection-start-column="26" selection-end-line="15" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/engine.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="9450">
+          <caret line="630" selection-start-line="630" selection-end-line="630" />
         </state>
       </provider>
     </entry>

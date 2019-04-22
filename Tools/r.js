@@ -362,3 +362,9 @@ function parsedSimpleMathFromString(string)
 		return undefined
 	return sum
 }
+function closestPowerOfTwo(n)
+{
+	//Round neither up nor down, but instead gets the closest
+	//From: https://bocoup.com/blog/find-the-closest-power-of-2-with-javascript
+	return Math.pow( 2, Math.round( Math.log( n ) / Math.log( 2 ) ) ); 
+}

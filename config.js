@@ -54,7 +54,7 @@ deltas	blueBackground
 	scene	background	color	r 0	g 0	b 0.31
 	//sound woof
 	scene	transitions	auto null
-	overlay	text "Blue\\n\\nCube\\nYou\\nknow,\\ndoggos\\nLOVE\\nblue\\nthings!\\n\\n\\n\\n"	 <--- YEAH that's right, we can even use newlines! (this is a comment)
+	overlay	text "Blue\n\nCube\nYou\nknow,\ndoggos\nLOVE\nblue\nthings!\n\n\n\n"	 <--- YEAH that's right, we can even use newlines! (this is a comment)
 	camx	transform	position	x 0
 	scene	transitions	drag	dog	dog	time 1	delta blueDoggo-0
 
@@ -62,7 +62,7 @@ deltas
 	blueDoggo-0
 		dog	transform	rotation	x -90
 		sound woof
-		overlay	text "THE DOGE THANKS YOU FOR YOUR SERVICE!\\n(Click the doggy!)"	size 40
+		overlay	text "THE DOGE THANKS YOU FOR YOUR SERVICE!\n(Click the doggy!)"	size 40
 		scene	transitions	auto	time 3	delta blueDoggo-1
 	blueDoggo-1
 		dog	transform	position	x 0	y -500
@@ -120,7 +120,7 @@ deltas
 
 
 deltas	initial
-	skybox	transform	scale	overall 200
+	skybox	transform	scale	overall 200*700
 	skybox	material	mode basic	modes	basic
 		color	r 1	g 1	b 1
 		transparent true
@@ -145,9 +145,9 @@ deltas	initialCamera
 	scene	transitions	auto null
 
 deltas	resetcamboxes
-	camx	transform	scale	overall 0.1
-	camy	transform	scale	overall 0.1
-	camz	transform	scale	overall 0.1
+	camx	transform	scale	overall 0.1*700
+	camy	transform	scale	overall 0.1*700
+	camz	transform	scale	overall 0.1*700
 
 deltas	autonull	scene	transitions	auto null
 
@@ -190,7 +190,7 @@ deltas	main
 	box	transform
 			position	x 500	y  0	z  0
 			rotation	x  0	y  0	z  0
-			scale		x  1	y  1	z  1	overall .3
+			scale		x  1	y  1	z  1	overall .3*700
 	
 	// Camera X
 	camx
@@ -212,8 +212,8 @@ deltas	main
 		material	mode standard	modes	standard	color	r 0	g 0	b 1
 		transform	position	y 400	z -100	x -100
 	scene	transitions	drag	camz	camz	time 1	delta camz
-	scene	transitions	enter	camz	time 0	delta blueBackground
-	scene	transitions	leave	camz	time 0	delta blueBackground
+	scene	transitions	enter	camz			time 0	delta blueBackground
+	scene	transitions	leave	camz			time 0	delta blueBackground
 	
 	// Transitions
 	scene	transitions
@@ -228,23 +228,23 @@ deltas	camx
 	camera	transform
 		position	x 1000	y    0	z    0
 		rotation	x    0	y   90	z    0
-	camx	transform	scale	overall 0.15
-	camy	transform	scale	overall 0.1
-	camz	transform	scale	overall 0.1
+	camx	transform	scale	overall 0.15*700
+	camy	transform	scale	overall 0.1*700
+	camz	transform	scale	overall 0.1*700
 deltas	camy
 	camera	transform
 		position	x    0	y 1000	z    0
 		rotation	x   -90	y    0	z    0
-	camx	transform	scale	overall 0.1
-	camy	transform	scale	overall 0.15
-	camz	transform	scale	overall 0.1
+	camx	transform	scale	overall 0.1*700
+	camy	transform	scale	overall 0.15*700
+	camz	transform	scale	overall 0.1*700
 deltas	camz
 	camera	transform
 		position	x    0	y    0	z 1000
 		rotation	x    0	y    0	z    0
-	camx	transform	scale	overall 0.1
-	camy	transform	scale	overall 0.1
-	camz	transform	scale	overall 0.15
+	camx	transform	scale	overall 0.1*700
+	camy	transform	scale	overall 0.1*700
+	camz	transform	scale	overall 0.15*700
 
 deltas	pour_0
 	dog	transform	position	y 200

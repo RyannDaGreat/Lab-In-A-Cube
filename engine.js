@@ -206,7 +206,7 @@ renderer.domElement.addEventListener("mousemove", updateMousePosition, true)
 
 function requestTransition(transition,ignoreBlocking=false,isAuto=false)
 {
-	// requestRender()
+	requestRender()
 	//Handle conditions
 	console.assert(arguments.length>=1,'Wrong number of arguments.')
 	function t(id)//t is for Tween
@@ -219,7 +219,7 @@ function requestTransition(transition,ignoreBlocking=false,isAuto=false)
 	}
 	let d=transition.delta
 	assert.isString(d)
-	d=d.trim().split(/\ +/)
+	d=d.trim().split(/ +/)
 	assert.isPureArray(d)
 	if(d.length===0)
 	{
@@ -464,7 +464,7 @@ function getArrayOfDeltaIDsFromString(deltaIdsSeparatedBySpaces)
 	console.assert(!deltaIdsSeparatedBySpaces.includes('\t'),'deltaRawCompositionFromIdsString error: Dont feed tabs into deltaRawCompositionFromIdsString! Your string: '+repr(deltaIdsSeparatedBySpaces))
 	console.assert(!deltaIdsSeparatedBySpaces.includes('\n'),'deltaRawCompositionFromIdsString error: Dont feed more than one line into deltaRawCompositionFromIdsString! Your string: '+repr(deltaIdsSeparatedBySpaces))
 	//
-	const deltaIds=deltaIdsSeparatedBySpaces.trim().split(/\ +/)//We split by spaces, because there is a rule that no deltaID can contain spaces (because no djson keys can contain whitespace). We forget the 'edge case' where we have a deltaID that is an empty string, because that's not allowed either (which is why we use .trim() and split by any number of spaces at a time, AKA /\ +/ instead of just /\ /)
+	const deltaIds=deltaIdsSeparatedBySpaces.trim().split(/ +/)//We split by spaces, because there is a rule that no deltaID can contain spaces (because no djson keys can contain whitespace). We forget the 'edge case' where we have a deltaID that is an empty string, because that's not allowed either (which is why we use .trim() and split by any number of spaces at a time, AKA /\ +/ instead of just /\ /)
 	assert.isPureArray(deltaIds)
 	return deltaIds
 }
@@ -480,7 +480,7 @@ function deltaRawCompositionFromIdsString(deltaIdsSeparatedBySpaces)
 
 function deltaRawCompositionFromIdArray(deltaIdsAsArray)
 {
-	console.assert(arguments.length==1,'Wrong number of arguments.')
+	console.assert(arguments.length===1, 'Wrong number of arguments.')
 	assert.isPureArray(deltaIdsAsArray)
 	for(const deltaID of deltaIdsAsArray)
 		console.assert(deltaID in config.deltas,'deltaRawCompositionFromIdsString error: '+repr(deltaID)+' is not a real delta!\ndeltaIdsSeparatedBySpaces = '+repr(deltaIdsAsArray.join(' ')))
@@ -488,7 +488,7 @@ function deltaRawCompositionFromIdArray(deltaIdsAsArray)
 }
 function deltaCompositionFromIdArray(deltaIdsAsArray)
 {
-	console.assert(arguments.length==1,'Wrong number of arguments.')
+	console.assert(arguments.length===1, 'Wrong number of arguments.')
 	assert.isPureArray(deltaIdsAsArray)
 	for(const deltaID of deltaIdsAsArray)
 		console.assert(deltaID in config.deltas,'deltaRawCompositionFromIdsString error: '+repr(deltaID)+' is not a real delta!\ndeltaIdsSeparatedBySpaces = '+repr(deltaIdsAsArray.join(' ')))
@@ -515,6 +515,11 @@ function print_current_state()
 
 function requestTweenByID(deltaID,time=0,ignoreBlocking=false,isAuto=false)
 {
+	if(deltaID==='none')
+	{
+		console.log('requestTweenByID("none") skips a transition. This is an alternative for setting this transition to null.')
+		return
+	}
 	console.assert(arguments.length>=1,'Wrong number of arguments.')
 	if(!deltaIDContainedInState(deltaID))
 	{
@@ -623,7 +628,7 @@ function printDeltaStack()
 }
 
 //Settings
-let autoAutonull=false//THIS BREAKS THE SAD VIOLIN DOG. I DONT KNOW WHY. WHEN I USE IT IT FREEZES. THIS ENGINE HAS TO BE REWRITTEN CLEANLY. If we should automatically set auto to 'null' after finishing an auto-sequence
+//THIS BREAKS THE SAD VIOLIN DOG. I DONT KNOW WHY. WHEN I USE IT IT FREEZES. THIS ENGINE HAS TO BE REWRITTEN CLEANLY. If we should automatically set auto to 'null' after finishing an auto-sequence
 
 //This section is to save battery life (my laptop's battery is terrible, so I'm optimizing this site for energy consumption as well) (only render when the items' state changes)
 let prevState =undefined//For further efficiency; we don't need to comparre strings every frame

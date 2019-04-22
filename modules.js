@@ -91,27 +91,34 @@ let modules={
 		const texture=new THREE.Texture(canvas,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined) 
 		const spriteMaterial=new THREE.SpriteMaterial({map:texture, useScreenCoordinates: false ,depthTest:false})
 		const sprite = new THREE.Sprite( spriteMaterial )
+		//From https://stackoverflow.com/questions/23514274/three-js-2d-text-sprite-labels
+		var fontface       = 'Quicksand'
+		// var fontsize       = size
+		var fontsize=80
+		var borderThickness= 1
+
+		//If our image doesnt' have dimensions that are powers of two, THREE.js will resize the image to match those dimensions (and you'll see a warning in the console.)
+		//However, when it does this, for some reason this seems to flip it upside-down. I have no idea why. Changing dpi to 256 and aspect to 8 appears to have fixed this problem for now.
+		let dpi=128//Higher --> better resolution
+		let aspect=8//Bigger = skinnier image --> more text can fit
+		let smallness=30//OPPOSITE OF Phyical sprite size
+		function updateSpriteSize()
+		{
+			sprite.scale.set(size*aspect/2/1/smallness * fontsize, size*-1/2/smallness* fontsize, size*-0.75/smallness * fontsize)
+		}
 		function updateSpriteText()
 		{
 			let message=text
-			//From https://stackoverflow.com/questions/23514274/three-js-2d-text-sprite-labels
-			var fontface       = 'Quicksand'
-			// var fontsize       = size
-			var fontsize=80
-			var borderThickness= 4
-
-			let dpi=200//Higher --> better resolution
-			let aspect=10//Bigger = skinnier image --> more text can fit
-			let smallness=30//OPPOSITE OF Phyical sprite size
 			canvas.width=aspect*dpi
 			canvas.height=dpi
-			var middleX= canvas.width/2
+			var middleX=canvas.width/2
 			var middleY=canvas.height/2
-			// canvas.style.height=1000+'px'
 
-			ctx.font = 'Bold ' + fontsize + 'px ' + fontface
+			ctx.font = 
+			//'Bold ' +
+			 fontsize + 'px ' + fontface
 
-			ctx.shadowBlur = 40;
+			ctx.shadowBlur = 30;
 			ctx.shadowColor = 'black';
 
 			// ctx.fillStyle = 'white';
@@ -121,9 +128,10 @@ let modules={
 			ctx.textAlign='center'
 			ctx.lineWidth = borderThickness
 
-			let scale=dpi/100
-			ctx.translate(middleX,-middleY/scale);
-			ctx.scale(scale,scale*-1)//Mirror it about the y-axis
+			let scale=dpi/128
+			ctx.translate(middleX,-middleY*.15);
+			// ctx.scale(scale,scale*-1)//Mirror it about the y-axis (Used to be needed when I got power-of-two-image-dimension warnings from THREE.js)
+			ctx.scale(scale,scale)//Mirror it about the y-axis
 			ctx.strokeStyle = 'rgba(000,000,000,1)'
 			ctx.strokeText(message, 0, 0 );
 			ctx.strokeText(message, 0, 0 );//Second stroke to emphasize shadow
@@ -131,12 +139,11 @@ let modules={
 			ctx.fillText( message, 0, 0)
  
 			texture.needsUpdate = true
-
-			sprite.scale.set(size*aspect/2/1/smallness * fontsize, size*-1/2/smallness* fontsize, size*-0.75/smallness * fontsize)
 		}
 		let text='Example'
 		let size=1
 		updateSpriteText()
+		updateSpriteSize()
 		scene.add(sprite)
 		let parent
 		const item={
@@ -147,8 +154,10 @@ let modules={
 			set xray(x) { spriteMaterial.depthTest=!x },
 			set visible(x){sprite.visible=x},
 			get visible(){return sprite.visible},
-			set text(x){if(x!==text)text=x;updateSpriteText()},
-			set size(x){if(x!==size)size=x;updateSpriteText()},
+			set text(x){if(x!==text){text=x;updateSpriteText()}},
+			set size(x){if(x!==size){size=x;updateSpriteSize()}},
+			get size(){return size},
+			get text(){return text},
 			set parent(itemID)
 			{
 				sprite.parent=items[itemID].threeObject//MAKE SOME ASSERTIONS HERE
