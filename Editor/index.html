@@ -191,27 +191,27 @@
     }
 </style>
 <script>
-	var config={linenumbers: true, json: false}
+	var preview={linenumbers: true, json: false}
 
 	function Process(string)
 	{
 		// string=string.replace(/    /g,'\t')
 		parsed=djson.parse(string)
-		if(parsed.preview)
-			config=parsed.preview
+		if(is_object(parsed.preview))
+			preview=parsed.preview
 		//console.log("config is "+JSON.stringify(parsed,null,4))
 		//console.log(config)
 		try
 		{
-			if('height' in config)
+			if('height' in preview)
 			{
-				let h=config.height
+				let h=preview.height
 				if(typeof JSON.parse(h)=='number')
 				{
 					h                                                    =JSON.parse(h)
 					h                                                    =clamp(h, 0, 100)
-					document.getElementById('previewiframe').style.height=config.height+'%'
-					document.getElementById('previewtext').style.height  =(100-config.height)+'%'
+					document.getElementById('previewiframe').style.height=preview.height+'%'
+					document.getElementById('previewtext').style.height  =(100-preview.height)+'%'
 				}
 			}
 			else
@@ -225,12 +225,12 @@
 			document.getElementById('previewiframe').style.height='50%'
 			document.getElementById('previewtext').style.height  ='50%'
 		}
-		if(config.type==='none')
+		if(preview.type==='none')
 			string='Preview type is set to none, so this area wont show a preview. This can make the editor run faster if you use a browser with a slower javascript engine. (I personally found Firefox to be slower than Safari slower than Chrome)'
-		else if(config.type==='json')
+		else if(preview.type==='json')
 
-			string=config.min ? JSON.stringify(parsed) : JSON.stringify(parsed, null, 4)
-		else if(config.type==='state')
+			string=preview.min ? JSON.stringify(parsed) : JSON.stringify(parsed, null, 4)
+		else if(preview.type==='state')
 			string=localStorage.getItem('state')
 		else
 			string=djson.stringify(parsed)
@@ -425,28 +425,28 @@ it won't refresh the whole page. Instead, it will just refresh the game view.
 This lets you refresh the game view without losing your edit history.
 </pre>`)
 
-    function setText(text)//this is the text in the text editor
-    {
-    	// assert.isString(text)
-    	editor.setValue(text)
-		localStorage.setItem('config',text)
-    }
-    function getText()
-    {
-    	return editor.getValue()
-    }
-    function getConfigDjson()//Returns a string
-    {
+	function setText(text)//this is the text in the text editor
+	{
+		// assert.isString(text)
+		editor.setValue(text)
+		localStorage.setItem('config', text)
+	}
+	function getText()
+	{
+		return editor.getValue()
+	}
+	function getConfigDjson()//Returns a string
+	{
 		return localStorage.getItem('config')
 	}
 	function refresh()
-    {
-    	//Void
-    	let configDjson=getConfigDjson()
-		if(getText()!==configDjson)
-    		setText(configDjson)
-    }
-    setInterval(refresh,.2)//Keep the editor in sync with the localstorage file so that the game can modify it and we see changes in the editor, or you can have two editors open, etc.
+	{
+		//Void
+		let configDjson=getConfigDjson()
+		// if(getText()!==configDjson)
+		// 	setText(configDjson)
+	}
+	setInterval(refresh, .2)//Keep the editor in sync with the localstorage file so that the game can modify it and we see changes in the editor, or you can have two editors open, etc.
 
 	document.getElementById("editorTextArea").innerHTML=getConfigDjson() || ""
 
@@ -483,31 +483,32 @@ This lets you refresh the game view without losing your edit history.
 	editor.on("change", (cm, change)=>
 	{
 		const value            =cm.getValue()
-		cm.options.lineWrapping=Boolean(config.wrap)
+		cm.options.lineWrapping=Boolean(preview.wrap)
 		//
-		if('mode' in config)
-			if(config.mode in {vim: {}, sublime: {}})
-				cm.options.keyMap=config.mode
+		if('mode' in preview)
+			if(preview.mode in {vim: {}, sublime: {}})
+				cm.options.keyMap=preview.mode
 			else cm.options.keyMap='default'
 		//
-		cm.options.vimMode=config.mode==='vim'
+		cm.options.vimMode=preview.mode==='vim'
 		//
-		if('nogame' in config)
+		if('nogame' in preview)
 			document.getElementById('previewiframe').innerHTML=`preview\n\tnogame\n\n(unset and refresh game preview the game)`
 		//
 		var str=Process(value)
 		localStorage.setItem('config', value)
 		localStorage.setItem('configChanged', 'true') //This is nessecary for efficiency's sake. THe engine won't reload the config without this.
-		if(config.numbers) str=numbered_lines_string(str, i=>i+'\t')
+        console.log("ASOIDSOIDJAIOJSD")
+		if(preview.numbers) str=numbered_lines_string(str, i=>i+'\t')
 		document.getElementById('previewtext').innerHTML="<pre>"+str+"</pre>"
 	})
 
 	function refreshState()
 	{
 		let string=Process("")
-		if(config.numbers)
+		if(preview.numbers)
 			string=numbered_lines_string(string)
-		if(config.type==='state') document.getElementById('previewtext').innerHTML="<pre>"+string+"</pre>"
+		if(preview.type==='state') document.getElementById('previewtext').innerHTML="<pre>"+string+"</pre>"
 	}
 	setInterval(refreshState, .1)
 
