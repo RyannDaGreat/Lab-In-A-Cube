@@ -2,13 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="135bb503-6ec1-462c-9f44-1d512427b351" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Configs/DemoLabPouring1" beforeDir="false" afterPath="$PROJECT_DIR$/Configs/DemoLabPouring1" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Three/three.js" beforeDir="false" afterPath="$PROJECT_DIR$/Three/three.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tools/r.js" beforeDir="false" afterPath="$PROJECT_DIR$/Tools/r.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/engine.js" beforeDir="false" afterPath="$PROJECT_DIR$/engine.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules.js" beforeDir="false" afterPath="$PROJECT_DIR$/modules.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Editor/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/Editor/index.html" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -20,12 +14,12 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+    <leaf>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/engine.js">
+        <entry file="file://$PROJECT_DIR$/Editor/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="9450">
-              <caret line="630" selection-start-line="630" selection-end-line="630" />
+            <state relative-caret-position="629">
+              <caret line="448" column="129" selection-start-line="448" selection-start-column="129" selection-end-line="448" selection-end-column="129" />
             </state>
           </provider>
         </entry>
@@ -50,6 +44,8 @@
       <find>deltaContainedInState_Cache</find>
       <find>get_indent_level</find>
       <find>is_def</find>
+      <find>interval</find>
+      <find>getItem</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -68,12 +64,12 @@
         <option value="$PROJECT_DIR$/Tools/gloves.js" />
         <option value="$PROJECT_DIR$/attributes.js" />
         <option value="$PROJECT_DIR$/index.html" />
-        <option value="$PROJECT_DIR$/Editor/index.html" />
         <option value="$PROJECT_DIR$/Tools/r.js" />
         <option value="$PROJECT_DIR$/modules.js" />
         <option value="$PROJECT_DIR$/loader.js" />
         <option value="$PROJECT_DIR$/Tools/proxies.js" />
         <option value="$PROJECT_DIR$/engine.js" />
+        <option value="$PROJECT_DIR$/Editor/index.html" />
       </list>
     </option>
   </component>
@@ -167,19 +163,21 @@
       <workItem from="1554353183657" duration="7608000" />
       <workItem from="1554955467597" duration="534000" />
       <workItem from="1555032882852" duration="122000" />
+      <workItem from="1555957798406" duration="1598000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="29282000" />
+    <option name="totallyTimeSpent" value="30880000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info id="Structure" order="0" sideWeight="0.50125" side_tool="true" visible="true" weight="0.3040057" />
+      <window_info id="Structure" order="0" sideWeight="0.5025" side_tool="true" weight="0.13018598" />
       <window_info id="Favorites" order="1" side_tool="true" />
-      <window_info content_ui="combo" id="Project" order="2" sideWeight="0.49875" weight="0.13018598" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="0" visible="true" weight="0.036144577" />
+      <window_info content_ui="combo" id="Project" order="2" sideWeight="0.4975" weight="0.13018598" />
+      <window_info anchor="bottom" id="Terminal" order="0" weight="0.036144577" />
       <window_info anchor="bottom" id="Event Log" order="1" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="2" />
       <window_info anchor="bottom" id="Docker" order="3" show_stripe_button="false" />
@@ -196,10 +194,10 @@
       <window_info anchor="right" id="make" order="3" />
     </layout>
     <layout-to-restore>
-      <window_info id="Favorites" order="0" side_tool="true" />
-      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.12875536" />
-      <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Terminal" order="0" weight="0.036144577" />
+      <window_info id="Structure" order="0" sideWeight="0.5025" side_tool="true" visible="true" weight="0.13018598" />
+      <window_info id="Favorites" order="1" side_tool="true" />
+      <window_info active="true" content_ui="combo" id="Project" order="2" sideWeight="0.4975" visible="true" weight="0.13018598" />
+      <window_info anchor="bottom" id="Terminal" order="0" visible="true" weight="0.036144577" />
       <window_info anchor="bottom" id="Event Log" order="1" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="2" />
       <window_info anchor="bottom" id="Docker" order="3" show_stripe_button="false" />
@@ -210,10 +208,10 @@
       <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="9" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="10" />
-      <window_info anchor="right" id="make" order="0" />
-      <window_info anchor="right" id="Commander" order="1" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="2" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="3" weight="0.25" />
+      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="make" order="3" />
     </layout-to-restore>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -331,17 +329,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Editor/index.html">
+    <entry file="file://$PROJECT_DIR$/engine.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="15" column="26" selection-start-line="15" selection-start-column="26" selection-end-line="15" selection-end-column="26" />
+        <state relative-caret-position="2019">
+          <caret line="601" column="1" selection-start-line="601" selection-start-column="1" selection-end-line="601" selection-end-column="1" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/engine.js">
+    <entry file="file://$PROJECT_DIR$/Editor/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9450">
-          <caret line="630" selection-start-line="630" selection-end-line="630" />
+        <state relative-caret-position="629">
+          <caret line="448" column="129" selection-start-line="448" selection-start-column="129" selection-end-line="448" selection-end-column="129" />
         </state>
       </provider>
     </entry>
