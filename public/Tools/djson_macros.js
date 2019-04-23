@@ -236,6 +236,7 @@ var djson_macros=proxies.argumentCountChecker({
 		if('~' in object)
 		{
 			let macrosets=object['~']
+			macrosets=djson_macros.macroized(macrosets)
 			if(is_object(macrosets))
 			{
 				console.log(macrosets)
@@ -243,12 +244,13 @@ var djson_macros=proxies.argumentCountChecker({
 				{
 					if(typeof value!=='object')
 					{
-						macrosets[key]={[Symbol()]:value}
+						alert(key,value)
+						macrosets[Symbol()]={[key]:value}
 					}
 				}
 				macrosets=dictProduct(macrosets)
 			}
-			out=djson_macros.composedMacros(out,djson_macros.macroized(macrosets))
+			out=djson_macros.composedMacros(out,macrosets)
 		}
 		return out
 	}

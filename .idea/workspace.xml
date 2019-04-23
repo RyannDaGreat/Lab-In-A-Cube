@@ -2,14 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="135bb503-6ec1-462c-9f44-1d512427b351" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/public/Experiments/DictionaryProduct.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/Editor/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/Editor/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/Tools/assert.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/Tools/assert.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/Tools/deltas.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/Tools/deltas.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/Tools/djson_macros.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/Tools/djson_macros.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/Tools/r.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/Tools/r.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/index.html" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -22,20 +15,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/public/Tools/djson_macros.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="668">
-              <caret line="248" column="31" selection-start-line="248" selection-start-column="31" selection-end-line="248" selection-end-column="31" />
+            <state relative-caret-position="429">
+              <caret line="238" column="55" selection-start-line="238" selection-start-column="55" selection-end-line="238" selection-end-column="55" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/Tools/r.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="99">
-              <caret line="390" column="17" selection-end-line="455" selection-end-column="1" />
+            <state relative-caret-position="485">
+              <caret line="428" column="9" lean-forward="true" selection-start-line="428" selection-start-column="9" selection-end-line="428" selection-end-column="9" />
             </state>
           </provider>
         </entry>
@@ -146,8 +139,8 @@
       <find>djson.parse(.*,)</find>
       <find>console.assert</find>
       <find>entries</find>
-      <find>unique</find>
       <find>isPureO</find>
+      <find>unique</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -186,8 +179,8 @@
         <option value="$PROJECT_DIR$/public/index.html" />
         <option value="$PROJECT_DIR$/public/Tools/assert.js" />
         <option value="$PROJECT_DIR$/public/Experiments/DictionaryProduct.js" />
-        <option value="$PROJECT_DIR$/public/Tools/djson_macros.js" />
         <option value="$PROJECT_DIR$/public/Tools/r.js" />
+        <option value="$PROJECT_DIR$/public/Tools/djson_macros.js" />
       </list>
     </option>
   </component>
@@ -318,7 +311,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="49382000" />
+    <option name="totallyTimeSpent" value="49580000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
@@ -685,17 +678,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/Tools/djson_macros.js">
+    <entry file="file://$PROJECT_DIR$/public/Tools/r.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="668">
-          <caret line="248" column="31" selection-start-line="248" selection-start-column="31" selection-end-line="248" selection-end-column="31" />
+        <state relative-caret-position="485">
+          <caret line="428" column="9" lean-forward="true" selection-start-line="428" selection-start-column="9" selection-end-line="428" selection-end-column="9" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/Tools/r.js">
+    <entry file="file://$PROJECT_DIR$/public/Tools/djson_macros.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="99">
-          <caret line="390" column="17" selection-end-line="455" selection-end-column="1" />
+        <state relative-caret-position="429">
+          <caret line="238" column="55" selection-start-line="238" selection-start-column="55" selection-end-line="238" selection-end-column="55" />
         </state>
       </provider>
     </entry>
