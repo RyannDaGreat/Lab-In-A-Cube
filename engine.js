@@ -14,9 +14,6 @@ const camera = new THREE.PerspectiveCamera(75,10,1,999999)
 camera.fov=75
 // camera.position.z = 0
 
-//This is yucky. I shouldn't have to pass the name through a parameter...but I can't think of a cleaner way yet. Same problem as any item in an object tree knowing its path.
-// deltas={}
-
 engineModules={
 	//These modules cannot be instantiated from a djson file. There's only one of each of them. But we're using funcitons to keep some variables private.
 }

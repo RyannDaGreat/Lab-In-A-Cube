@@ -443,8 +443,8 @@ This lets you refresh the game view without losing your edit history.
 	{
 		//Void
 		let configDjson=getConfigDjson()
-		// if(getText()!==configDjson)
-		// 	setText(configDjson)
+		if(getText()!==configDjson)
+			setText(configDjson)
 	}
 	setInterval(refresh, .2)//Keep the editor in sync with the localstorage file so that the game can modify it and we see changes in the editor, or you can have two editors open, etc.
 
@@ -498,7 +498,7 @@ This lets you refresh the game view without losing your edit history.
 		var str=Process(value)
 		localStorage.setItem('config', value)
 		localStorage.setItem('configChanged', 'true') //This is nessecary for efficiency's sake. THe engine won't reload the config without this.
-        console.log("ASOIDSOIDJAIOJSD")
+        // console.log("ASOIDSOIDJAIOJSD")
 		if(preview.numbers) str=numbered_lines_string(str, i=>i+'\t')
 		document.getElementById('previewtext').innerHTML="<pre>"+str+"</pre>"
 	})
