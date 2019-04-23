@@ -53,6 +53,10 @@ const assert=proxies.argumentCountChecker({
 	{
 		assert.isPrototypeOf(variable,String)
 	},
+	isFunction(variable)
+	{
+		assert.isPrototypeOf(variable,Function)
+	},
 	isNumber(variable)
 	{
 		assert.isPrototypeOf(variable,Number)

@@ -2,6 +2,7 @@ let modules={
 	get boxItem(){return modules.mesh},//This is legacy from a few tests we did when I first put the engine together. If you don't need it you can delete it in the future.
 	mesh(ID)
 	{
+		//We don't require ID as an argument, because this method might be called simply to get its structure
 		const materials ={
 			basic:new THREE.MeshBasicMaterial({color: 0xfffff, wireframe: true }),//color.r/g/b, wireframe,
 			phong:new THREE.MeshPhongMaterial(),//color.r/g/b
@@ -14,8 +15,19 @@ let modules={
 		let mesh=new THREE.Mesh(geometries[geometry], materials[material])
 		scene.add(mesh)
 		const item= {
-			//NEW STYLE: Should only be able to get directories; not values. It's Unidirectional now. 
+			//NEW STYLE: Should only be able to get directories; not values. It's Unidirectional now.
 			//Convention: The name of the function is the name of the threeObject, which is always put in item (for some hackability-->faster dev time but more messy)
+			get __structure__()
+			{
+				return djson.parse_handwritten(`
+transform	position,rotation	x,y,z 0
+geometry String
+
+
+
+`)
+			}
+			,
 			get ID(){return ID},
 			transform:attributes.transform(mesh),
 			get material(){return{
@@ -83,12 +95,12 @@ let modules={
 	},
 	sprite(ID)
 	{
-		//Currently, sprites only show text. This can change later, but for now let's KISS. 
+		//Currently, sprites only show text. This can change later, but for now let's KISS.
 		//NOTE: ctx stands for 'canvas.context'
 		// function for drawing rounded rectangles
 		const canvas   = document.createElement('canvas')
 		const ctx  = canvas.getContext('2d')
-		const texture=new THREE.Texture(canvas,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined) 
+		const texture=new THREE.Texture(canvas,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined)
 		const spriteMaterial=new THREE.SpriteMaterial({map:texture, useScreenCoordinates: false ,depthTest:false})
 		const sprite = new THREE.Sprite( spriteMaterial )
 		//From https://stackoverflow.com/questions/23514274/three-js-2d-text-sprite-labels
@@ -114,7 +126,7 @@ let modules={
 			var middleX=canvas.width/2
 			var middleY=canvas.height/2
 
-			ctx.font = 
+			ctx.font =
 			//'Bold ' +
 			 fontsize + 'px ' + fontface
 
@@ -137,7 +149,7 @@ let modules={
 			ctx.strokeText(message, 0, 0 );//Second stroke to emphasize shadow
     		ctx.fillStyle = 'white';
 			ctx.fillText( message, 0, 0)
- 
+
 			texture.needsUpdate = true
 		}
 		let text='Example'

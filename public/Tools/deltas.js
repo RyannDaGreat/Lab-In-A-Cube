@@ -2,7 +2,7 @@ const deltas=proxies.argumentCountChecker({//Idk if it's safe to call this delta
 	none:null,//Sometimes you might want to use undefined instead, or some Symbol. But it probably shouldn't change more than once per project...
 	copied(d)
 	{
-		console.assert(arguments.length==1,'deltas.copied error: wrong number of arguments')
+		console.assert(arguments.length===1, 'deltas.copied error: wrong number of arguments')
 		//Copies an object tree
 		if(!d||Object.getPrototypeOf(d)!==Object.prototype)
 			return d
@@ -48,7 +48,7 @@ const deltas=proxies.argumentCountChecker({//Idk if it's safe to call this delta
 	{
 		//Return whether d is in o (also returns true if they're completely equal)
 		//This is the most important function for conditions
-		console.assert(arguments.length==2,'deltas.contains error: wrong number of arguments')
+		console.assert(arguments.length===2, 'deltas.contains error: wrong number of arguments')
 		assert.isPureObject(d)//All deltas are object trees
 		// let out=true
 		// function f(o,d)
@@ -106,7 +106,7 @@ const deltas=proxies.argumentCountChecker({//Idk if it's safe to call this delta
 	},
 	composed(deltaArray)
 	{
-		console.assert(arguments.length==1,'deltas.composed error: wrong number of arguments')
+		console.assert(arguments.length===1, 'deltas.composed error: wrong number of arguments')
 		//Pure function: sums a list of deltas together, essentially creating the equivalent of multiple 
 		//If efficiency is an issue, this function might be cached later (somehow we'd have to hash the deltas)
 		assert.isPureArray(deltaArray)
@@ -117,7 +117,7 @@ const deltas=proxies.argumentCountChecker({//Idk if it's safe to call this delta
 	},
 	soak(o,d)
 	{
-		console.assert(arguments.length==2,'deltas.soak error: wrong number of arguments')
+		console.assert(arguments.length===2, 'deltas.soak error: wrong number of arguments')
 		//This just mutates 'd', in the same way a normal deltas.apply would.
 		//Returns nothing, just like deltas.apply.
 		//The visualization is that we 'soak' the delta shape 'd' in the object 'o', to get a delta that would make something more like 'o'
@@ -128,7 +128,7 @@ const deltas=proxies.argumentCountChecker({//Idk if it's safe to call this delta
 	},
 	pour(o,d)
 	{
-		console.assert(arguments.length==2,'deltas.pour error: wrong number of arguments')
+		console.assert(arguments.length===2, 'deltas.pour error: wrong number of arguments')
 		//Opposite of deltas.soak
 		//This just mutates 'o', in the same way a normal deltas.apply would.
 		//Returns nothing, just like deltas.apply.
@@ -139,7 +139,7 @@ const deltas=proxies.argumentCountChecker({//Idk if it's safe to call this delta
 	poured(o,d)
 	{
 		//This should return the resulting object of a deltas.pour action, without mutating either 'o' or 'd'
-		console.assert(arguments.length==2,'deltas.poured error: wrong number of arguments')
+		console.assert(arguments.length===2, 'deltas.poured error: wrong number of arguments')
 		o=deltas.copied(o)
 		deltas.pour(o,d)
 		return o
@@ -148,10 +148,21 @@ const deltas=proxies.argumentCountChecker({//Idk if it's safe to call this delta
 	soaked(o,d)
 	{
 		//This should return the resulting object of a deltas.soak action, without mutating either 'o' or 'd'
-		console.assert(arguments.length==2,'deltas.soaked error: wrong number of arguments')
+		console.assert(arguments.length===2, 'deltas.soaked error: wrong number of arguments')
 		d=deltas.copied(d)
 		deltas.soak(o,d)
 		return d
 		//(Untested)
 	},
+	withNoneAs(value,func,...args)
+	{
+		assert.isFunction(func)
+		assert.isPureArray(args)
+		//When we don't want to delete null values (for example, when using djson macros)
+		const original=deltas.none
+		deltas.none=value
+		const out=func(...args)
+		deltas.none=original
+		return out
+	}
 })

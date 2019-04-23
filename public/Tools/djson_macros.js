@@ -225,38 +225,18 @@ var djson_macros=proxies.argumentCountChecker({
 	,macroized(object)
 	{
 		if(!is_object(object))
-		{
 			return object
-		}
 		let out={}
 		for(let [key,value] of Object.entries(object))
-		{
 			if(key!=='~')//Get through all the non-macros first...
-			{
 				for(const KEY of key.split(','))
-				{
-					if(is_object(value) && KEY!==''&&KEY[0]=='~')
-					{
-						const oldNone=deltas.none
-						deltas.none=Symbol()
-						deltas.pour(out,djson_macros.macroized(value))//We're in a scope
-						deltas.none=oldNone
-					}
-					else
-					{
-						const oldNone=deltas.none
-						deltas.none=Symbol()
-						deltas.pour(out,{[KEY]:djson_macros.macroized(value)})
-						deltas.none=oldNone
-					}
-				}
-			}
-		}
+					if(is_object(value) && KEY!==''&&KEY[0]==='~')
+						 deltas.withNoneAs(Symbol(),deltas.pour,out,       djson_macros.macroized(value) )//We're in a scope
+					else deltas.withNoneAs(Symbol(),deltas.pour,out,{[KEY]:djson_macros.macroized(value)})
 		if('~' in object)
 		{
 			const macrosets=object['~']
-			out=djson_macros.composedMacros(out,macrosets)
-			// delete out['~']//Perhaps usefull for debugging??
+			out=djson_macros.composedMacros(out,djson_macros.macroized(macrosets))
 		}
 		return out
 	}

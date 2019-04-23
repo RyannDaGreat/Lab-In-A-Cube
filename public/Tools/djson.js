@@ -22,7 +22,7 @@ const djson=proxies.argumentCountChecker({
 	parse_handwritten(lines)
 	{
 		//Removes trailing whitespace and empty lines (that just have whitespace) It's really just to help when we're actually writing them
-		console.assert(arguments.length==1,'djson.parse_handwritten takes exactly one argument')
+		console.assert(arguments.length===1, 'djson.parse_handwritten takes exactly one argument')
 		if(typeof lines==='string')
 			lines=lines.split('\n')
 		assert.isPureArray(lines)
@@ -36,8 +36,16 @@ const djson=proxies.argumentCountChecker({
 		}
 		return djson.parse(out)
 	},
-	parse(lines,level=-1,leaf_parser=djson.parse_leaf,macros=true,delete_emptystring_keys=true)
+	parse(lines,kwargs={})
 	{
+		const {
+				  level                  =-1,
+				  leaf_parser            =djson.parse_leaf,
+				  macros                 =true,
+				  delete_emptystring_keys=true,
+				  baseCase               =true,
+			  }=kwargs
+
 		//TODO: refactor macros, leaf_parser, and delete_emptystring_keys into some 'post-processing' method
 		if(typeof lines==='string')
 			lines=lines.split('\n')
@@ -64,7 +72,8 @@ const djson=proxies.argumentCountChecker({
 						applyDjsonDelta(o[key],d[key])
 					else
 					{
-						console.assert(!is_defined(o[key])||(is_object(o[key])===is_object(d[key])),'djson.parse error at line '+current_line_number+': Youre trying to overwrite a '+typeof o[key]+' with a '+typeof d[key]+' at line '+current_line_number+' at key '+JSON.stringify(key)+'. This is not allowed, as it could erase your previous entry of '+JSON.stringify(key)+' instead of merging them together.\nThe full line that caused the error: '+JSON.stringify(line)+'\nWhole djson shown below this line:\n'+numbered_lines_string(originalString))
+						// Very important warning, but even this got annoying...
+						// console.assert(!is_defined(o[key])||(is_object(o[key])===is_object(d[key])),'djson.parse error at line '+current_line_number+': Youre trying to overwrite a '+typeof o[key]+' with a '+typeof d[key]+' at line '+current_line_number+' at key '+JSON.stringify(key)+'. This is not allowed, as it could erase your previous entry of '+JSON.stringify(key)+' instead of merging them together.\nThe full line that caused the error: '+JSON.stringify(line)+'\nWhole djson shown below this line:\n'+numbered_lines_string(originalString))
 						o[key] = d[key]
 					}
 			}
@@ -106,7 +115,7 @@ const djson=proxies.argumentCountChecker({
 				}
 			}
 
-			applyDjsonDelta(out,nested_path(path,djson.parse(lines,line_level)))
+			applyDjsonDelta(out,nested_path(path,djson.parse(lines,{level:line_level,baseCase:false})))
 
 			//I disabled the below warnings simply because I found them annoying. But you might find them useful...so I didn't delete them
 			//	if(false && key==='')   console.warn('djson.parse warning at line '+current_line_number+': key==="", which means you have a blank line somewherere')
@@ -114,34 +123,40 @@ const djson=proxies.argumentCountChecker({
 			//	console.assert(is_object(out))
 		}
 
-		//POST PROCESSING SECTION UNTIL END OF FUNCTION
 		if(delete_emptystring_keys)
 		{
 			out=djson_macros.deletedEmptyKeys(out)
 		}
-		if(macros)
+		if(baseCase)
 		{
-			// return out
-			out=djson_macros.macroized(out)
-		}
-		function parse_leaves(object)
-		{
-			if(is_object(object))
+			if(macros && baseCase)
 			{
-				const out={}
-				for(const [key,value] of Object.entries(object))
+				// return out
+				// console.log("BEFOREOUT",out)
+				out=djson_macros.macroized(out)
+				// console.log("AFTEROUT",out)
+				// console.log()
+			}
+			//POST PROCESSING SECTION UNTIL END OF FUNCTION
+			function parse_leaves(object)
+			{
+				if(is_object(object))
 				{
-					out[key]=parse_leaves(value)
+					const out={}
+					for(const [key, value] of Object.entries(object))
+					{
+						out[key]=parse_leaves(value)
+					}
+					return out
 				}
-				return out
+				else
+				{
+					return leaf_parser(object)
+				}
 			}
-			else
-			{
-				return leaf_parser(object)
-			}
+			// console.log('pre-parseley: ',out)
+			out=parse_leaves(out)
 		}
-		// console.log('pre-parseley: ',out)
-		out=parse_leaves(out)
 		return out
 	},
 	stringify(object,level=0,out=[])
@@ -179,6 +194,7 @@ const djson=proxies.argumentCountChecker({
 	},
 	test(_djson)
 	{
+		//djson is SO important to this project that I HAVE to write at least SOME kind of tests for it...
 		_djson=_djson||`test
 1 
 	2
