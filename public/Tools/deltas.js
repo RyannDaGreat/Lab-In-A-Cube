@@ -164,5 +164,10 @@ const deltas=proxies.argumentCountChecker({//Idk if it's safe to call this delta
 		const out=func(...args)
 		deltas.none=original
 		return out
+	},
+	withoutDeletions(func,...args)
+	{
+		//Simply dont ever delete anything...Symbol() is anonymous unless we have seriously messy proxy shenanigans (which I wont ever make) (But the point remains that even that could be avoided if none was passed as a parameter instead, thus confining its scope and making it thread safe)
+		return deltas.withNoneAs(Symbol(),func,...args)
 	}
 })

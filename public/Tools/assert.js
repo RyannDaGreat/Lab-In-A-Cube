@@ -18,8 +18,8 @@ const assert=proxies.argumentCountChecker({
 		assert.rightArgumentLength(arguments)
 		console.assert(variable!==undefined,'assertDefinedType: variable is undefined, and therefore does not have a prototype')
 		console.assert(variable!==null     ,'assertDefinedType: variable is null, and therefore does not have a prototype'     )
-		if(type!=undefined)
-			console.assert(Object.getPrototypeOf(variable)==type.prototype,'assertDefinedType: variable has wrong prototype')
+		if(type!==undefined&&type!==null)
+			console.assert(Object.getPrototypeOf(variable)===type.prototype, 'assertDefinedType: variable has wrong prototype')
 	},
 	defined(variable)
 	{

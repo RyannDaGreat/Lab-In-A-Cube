@@ -1,4 +1,4 @@
-//All generalizable functions that don't really fit anywhere else, but that I'd like to reuse for other projects in the future...
+e//All generalizable functions that don't really fit anywhere else, but that I'd like to reuse for other projects in the future...
 function weAreInAnIframe()
 {
 	console.assert(arguments.length===0,'Wrong number of arguments.')
@@ -367,4 +367,88 @@ function closestPowerOfTwo(n)
 	//Round neither up nor down, but instead gets the closest
 	//From: https://bocoup.com/blog/find-the-closest-power-of-2-with-javascript
 	return Math.pow( 2, Math.round( Math.log( n ) / Math.log( 2 ) ) ); 
+}
+function equalsShallow(a,b)
+{
+	//By default, this is a SHALLOW equality check
+	//(This avoids possible infinite loops) (it is possible, with memoization, to create a deep equality checker that can handle such infinite loops. I'll make that another day.)
+	if(a===b||!a||!b||typeof a!=='object'||typeof b!=='object')return a===b
+	for(const [i,e] of Object.entries(a))if(e!==b[i])   return false
+	for(const [i,e] of Object.entries(b))if(e!==a[i])   return false
+	return true
+}
+function containsValueShallow(o,x,equal=equalsShallow)
+{
+	for(const value of o)
+		if(equalsShallow(x,value))
+			return true
+	return false
+}
+function dictProduct(dicts)
+{
+	console.log("DCIIC",dicts)
+	console.log("DCIIC",{...dicts})
+	//Takes a set of (dicts of variable length) and returns a set of (dicts of uniform length)
+	//Equivalent to returning every permutation of delta-concatenations of these dicts (which has >n! complexity)
+	//(Result will be that every dict has same length)
+	//EXAMPLE:
+	//	(Product of three dicts where keys are indices)
+	//	dictProduct([{0:1,1:1,2:1,3:1},{1:2,2:2},{0:3,2:3,3:3}])
+	//
+	//	1	1	1	1
+	//	?	2	2	?
+	//	3	?	3	3
+	//
+	//		  |
+	//		  V
+	//
+	//	1	1	1	1
+	//	1	2	2	1
+	//	3	1	3	3
+	//	3	2	3	3
+	//	3	2	2	3
+	//
+	//This function is part of the secret sauce behind djson's macros
+	//
+	//To calculate this I use a depth-first search with memoization. The equality functions are bad because I dont want to make hashing algorithms for dicts in JS.
+	const seen=[]
+	function isSeen(dict)
+	{
+		if(!containsValueShallow(seen,dict))
+		{
+			seen.push(dict)
+			return false
+		}
+		return true
+	}
+	function helper(dict)
+	{
+		if(isSeen(dict))
+		{
+			return
+		}
+		for(const key in dicts)
+		{
+			helper({...dict,...dicts[key]})
+		}
+	}
+	helper({})
+	let maxLength=0
+	for(const dict of seen)
+	{
+		const length=Object.keys(dict).length
+		if(length>maxLength)
+		{
+			maxLength=length
+		}
+	}
+	const out=[]
+	for(const dict of seen)
+	{
+		if(Object.keys(dict).length===maxLength)
+		{
+			out.push(dict)
+		}
+	}
+	return out
 }
