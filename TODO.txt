@@ -1,3 +1,4 @@
+Migrate this project to webpack with create-react-app
 Notes:
 	*In general, my function names work like this: If it's a verb, it probably mutates something (which is more efficient generally). Examples: copy, apply. Else, it probably is a pure function that returns something Example: copied, blended etc. If it's 
 	*Javascript is REALLY annoying. It doesn't even check to make sure I gave functions the right number of arguments. I have been trying to mitigate mysterious 'undefined' errors that I spent hours debugging just to find out I forgot to put an assertion like "console.assert(arguments.length===2,'Wrong number of arguments.')" into one of my functions. Keep this in mind. (IDE's can help with this somewhat with autocompletion though)
