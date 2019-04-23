@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="135bb503-6ec1-462c-9f44-1d512427b351" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/Editor/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/Editor/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/engine.js" beforeDir="false" afterPath="$PROJECT_DIR$/engine.js" afterDir="false" />
-    </list>
+    <list default="true" id="135bb503-6ec1-462c-9f44-1d512427b351" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
     <ignored path="$PROJECT_DIR$/tmp/" />
@@ -194,7 +191,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="32305000" />
+    <option name="totallyTimeSpent" value="32427000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
