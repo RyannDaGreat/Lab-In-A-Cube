@@ -1,4 +1,4 @@
-e//All generalizable functions that don't really fit anywhere else, but that I'd like to reuse for other projects in the future...
+//All generalizable functions that don't really fit anywhere else, but that I'd like to reuse for other projects in the future...
 function weAreInAnIframe()
 {
 	console.assert(arguments.length===0,'Wrong number of arguments.')
@@ -26,8 +26,8 @@ function uniqueFromRight(array)
 }
 function getRequest(url,callback=console.log)
 {
-	console.assert(arguments.length===2,'Wrong number of arguments.')
 	// Example usage: getRequest(url,response=>{console.log(response)})
+	console.assert(arguments.length===2,'Wrong number of arguments.')
 	var Http = new XMLHttpRequest()
 	Http.open("GET", url)
 	Http.send()
@@ -206,6 +206,11 @@ function is_function(x)
 {
 	console.assert(arguments.length===1,'Wrong number of arguments.')
 	return is_prototype_of(x,Function)
+}
+function is_symbol(x)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	return is_prototype_of(x,Symbol)
 }
 function is_array(x)
 {
@@ -451,4 +456,16 @@ function dictProduct(dicts)
 		}
 	}
 	return out
+}
+function transformObjectTreeLeaves(objectTree,leafTransform)
+{
+	//Mutates objectTree in-place using leafTransform and returns undefined
+	assert.rightArgumentLength(arguments)
+	assert.isFunction(leafTransform)
+	assert.isPureObject(objectTree)
+	for(const [index,value] of Object.entries(objectTree))
+		if(is_object(value))
+			transformObjectTreeLeaves(value,leafTransform)
+		else
+			objectTree[index]=leafTransform(value)
 }

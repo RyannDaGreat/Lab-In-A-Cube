@@ -441,14 +441,22 @@ function getRawDeltaFromConfigByID(deltaID)
 	}
 }
 
-function getDeltaByID(deltaID)
+function getDeltaByIDWithInheritance(deltaID)
 {
-	//Unlike getRawDeltaFromConfigByID, this function takes into account deltas' inheritance chains, and any other preprocessing that may have to be done (if I add more things in the future)
-	//THIS FUNCTION SHOULD BE CACHED (a task for another day if its too slow).
-	//	But right now it isn't, because in the Editor, we can change the config without reloading the whole page...and that would mean I would have to hook config's changes into clearing the cache.
 	console.assert(arguments.length>=1,'Wrong number of arguments.')
 	let out=deltaRawCompositionFromIdsString(getDeltaInheritanceChainString(deltaID))
 	delete out.inherit//We don't want this variable hanging around when we compare the deltas to the state
+	return out
+}
+
+function getDeltaByID(deltaID)
+{
+	//I KNOW THIS FUNCTION LOOKS LIKE A DUMMY BUT PLEASE DONT DELETE IT FOR FUTURE EXPANSION PURPOSES
+	//This function is allowed to have schenenangins
+	//Unlike getRawDeltaFromConfigByID, this function takes into account deltas' inheritance chains, and any other preprocessing that may have to be done (if I add more things in the future)
+	//THIS FUNCTION SHOULD BE CACHED (a task for another day if its too slow).
+	//	But right now it isn't, because in the Editor, we can change the config without reloading the whole page...and that would mean I would have to hook config's changes into clearing the cache.
+	const out=getDeltaByIDWithInheritance(deltaID)
 	// delete out.sound//We don't want this variable hanging around when we compare the deltas to the state
 	return out
 }

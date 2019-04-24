@@ -309,6 +309,9 @@ function loadConfigFromLocalStorage()
 		{
 			playSound('./Assets/Sounds/ShortBells/E.mp3')//This got annoying, but it was here to 
 			deltas.pour(config,newConfig)
+			deltas.pour(config,deltas.poured({deltas:{initial:deltas.poured(getDefaultInitialDelta(),getDeltaByIDWithInheritance('initial'))}},newConfig))
+			// deltas.pour(config,{deltas:{initial:getDefaultInitialDelta()}})
+
 			refreshStateFromConfig()
 			console.log(tween.delta)
 			// tween.time=1

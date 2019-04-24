@@ -33,9 +33,8 @@ var djson_macros=proxies.argumentCountChecker({
 			console.error('This function should be called on pure-djson output (AKA all-strings)')
 			return false
 		}
-	}
-
-	,appliedMacros(object,macros,otherMacros)
+	},
+	appliedMacros(object,macros,otherMacros)
 	{
 		console.assert(arguments.length===3,'Wrong number of arguments')
 		assert.isPureObject(macros)
@@ -45,6 +44,8 @@ var djson_macros=proxies.argumentCountChecker({
 		{
 			for(let [key,value] of Object.entries(object))
 			{
+				if(djson.is_symbol(key))
+					key=djson.random_symbol()//This line lets use symbold effectively in macros
 				key  =djson_macros.appliedMacros(key,macros,otherMacros)
 				value=djson_macros.appliedMacros(value,macros,otherMacros)
 				// console.log(key,value)
@@ -72,10 +73,8 @@ var djson_macros=proxies.argumentCountChecker({
 			console.error('This function should be called on pure-djson output (AKA all-strings)')
 			return object
 		}
-	}
-
-
-	,transposed(object)
+	},
+	transposed(object)
 	{
 		const out={}
 		for(const [key1,value1] of Object.entries(object))
@@ -85,9 +84,8 @@ var djson_macros=proxies.argumentCountChecker({
 				else
 					out[key2]={[key1]:value2}
 		return out
-	}
-
-	,purgeable(string,otherMacros)
+	},
+	purgeable(string,otherMacros)
 	{
 		console.assert(arguments.length===2,'Wrong number of arguments')
 		assert.isString(string)
@@ -100,9 +98,8 @@ var djson_macros=proxies.argumentCountChecker({
 			}
 		}
 		return false
-	}
-
-	,purgedUnexpandedMacros(object,otherMacros)
+	},
+	purgedUnexpandedMacros(object,otherMacros)
 	{
 		console.assert(arguments.length===2,'Wrong number of arguments')
 		if(!is_object(object))
@@ -136,9 +133,8 @@ var djson_macros=proxies.argumentCountChecker({
 			}
 		}
 		return out
-	}
-
-	,otherMacros(macros,allMacros)
+	},
+	otherMacros(macros,allMacros)
 	{
 		const out={}
 		for(const macro of Object.values(allMacros))
@@ -152,9 +148,8 @@ var djson_macros=proxies.argumentCountChecker({
 			}
 		}
 		return out
-	}
-
-	,deletedEmptyKeys(object)
+	},
+	deletedEmptyKeys(object)
 	{
 		if(!is_object(object))
 			return object
@@ -167,9 +162,8 @@ var djson_macros=proxies.argumentCountChecker({
 			}
 		}
 		return out
-	}
-
-	,composedMacros(object,macrosets)
+	},
+	composedMacros(object,macrosets)
 	{
 		console.assert(arguments.length===2,'Wrong number of arguments')
 		assert.isPureObject(macrosets)
@@ -219,20 +213,23 @@ var djson_macros=proxies.argumentCountChecker({
 			}
 		}
 		return out
-	}
-
-
-	,macroized(object)
+	},
+	macroized(object)
 	{
 		if(!is_object(object))
 			return object
 		let out={}
 		for(let [key,value] of Object.entries(object))
+		{
+			// if(djson.is_symbol(key))
+				// key=djson.random_symbol()
+
 			if(key!=='~')//Get through all the non-macros first...
 				for(const KEY of key.split(','))
 					if(is_object(value) && KEY!==''&&KEY[0]==='~')//We're in a scope
 						 deltas.withoutDeletions(deltas.pour, out, djson_macros.macroized(value) )
 					else deltas.withoutDeletions(deltas.pour, out, {[KEY]:djson_macros.macroized(value)})
+		}
 		if('~' in object)
 		{
 			let macrosets=object['~']
@@ -244,7 +241,7 @@ var djson_macros=proxies.argumentCountChecker({
 				{
 					if(typeof value!=='object')
 					{
-						alert(key,value)
+						// alert(key,value)
 						macrosets[Symbol()]={[key]:value}
 					}
 				}

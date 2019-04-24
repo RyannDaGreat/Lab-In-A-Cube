@@ -1,6 +1,18 @@
 import React from 'react'
 import logo from './logo.svg'
 import './App.css'
+import Split from 'react-split'
+
+import AddIcon from '@material-ui/icons/Add'
+import Button from '@material-ui/core/Button'
+import DeleteIcon from '@material-ui/icons/Delete'
+import Fab from '@material-ui/core/Fab'
+import IconButton from '@material-ui/core/IconButton'
+import NavigationIcon from '@material-ui/icons/Navigation'
+import PropTypes from 'prop-types'
+import { withStyles } from '@material-ui/core/styles'
+
+
 
 function getKeys(moduleTypeName)
 {
@@ -35,24 +47,32 @@ function Leaf({})
 
 function App()
 {
-	return (
-		<div className="App">
-			<header className="App-header">
-				<img src={logo} className="App-logo" alt="logo"/>
-				<p>
-					Edit <code>src/App.js</code> and save to reload.
-				</p>
-				<a
-					className="App-link"
-					href="https://reactjs.org"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					Learn React
-				</a>
-			</header>
-		</div>
-	)
+	return <Split style={{display:'flex',flexDirection:'horizontal',width:'100%',height:'100%'}}>
+			<div style={{flexGrow:4}}>
+				<iframe src="scene.html" style={{width: '100%',height: '100%',border:'0'}}></iframe>
+			</div>
+			<div className="App" style={{flexGrow:4,display:'flex',flexDirection:'column'}}>
+				{/*<header className="App-header">*/}
+					{/*<img src={logo} className="App-logo" alt="logo"/>*/}
+					{/*<p>*/}
+						{/*Edit <code>src/App.js</code> and save to reload.*/}
+					{/*</p>*/}
+					{/*<a*/}
+						{/*className="App-link"*/}
+						{/*href="https://reactjs.org"*/}
+						{/*target="_blank"*/}
+						{/*rel="noopener noreferrer"*/}
+					{/*>*/}
+						{/*Learn React*/}
+					{/*</a>*/}
+				{/*</header>*/}
+				<h1 style={{color:'white'}}>Config</h1>
+				<Button variant="contained" size="small" color="primary"> Undo </Button>
+				<Button variant="contained" size="small" color="primary"> Redo </Button>
+				<Button variant="contained" size="small" color="primary"> Add Item </Button>
+				<Button variant="contained" size="small" color="primary"> Add Delta </Button>
+			</div>
+		</Split>
 }
 
 export default App

@@ -17,17 +17,6 @@ let modules={
 		const item= {
 			//NEW STYLE: Should only be able to get directories; not values. It's Unidirectional now.
 			//Convention: The name of the function is the name of the threeObject, which is always put in item (for some hackability-->faster dev time but more messy)
-			get __structure__()
-			{
-				return djson.parse_handwritten(`
-transform	position,rotation	x,y,z 0
-geometry String
-
-
-
-`)
-			}
-			,
 			get ID(){return ID},
 			transform:attributes.transform(mesh),
 			get material(){return{
@@ -88,8 +77,8 @@ geometry String
 		// geometries.simpleBeakerFluid ='./Assets/Models/SimpleBeaker/Fluid.obj'
 		simpleBeaker.fluid=fluidItem
 		simpleBeaker.geometry='simpleBeakerBeaker'
-		fluidItem .geometry='simpleBeakerFluid'
-		fluidItem .threeObject.parent=simpleBeaker.threeObject
+		fluidItem.geometry='simpleBeakerFluid'
+		fluidItem.threeObject.parent=simpleBeaker.threeObject
 		// simpleBeaker.materials.basic.color.r=1
 		return simpleBeaker
 	},
@@ -183,3 +172,81 @@ geometry String
 }
 modules=proxies.argumentCountChecker(modules)
 modules=proxies.tryGetter(modules,()=>modules.mesh)
+
+function getInterfaces()
+{
+	//Specifies all default values
+	// assert.isPureObject(config.items     )
+	// assert.isPureObject(config.geometries)
+	// assert.isPureObject(config.textures  )
+	return djson.parse(`
+mesh
+	texture default:TEXTURES
+	geometry box:GEOMETRIES
+	parent scene:ITEMS
+	visible true
+	material
+		mode  basic:basic,standard,phong
+		modes		basic,standard,phong
+			color	r,g,b 1:0,1
+			opacity       1:0,1
+			transparent false
+			depthWrite  true
+			wireframe   false
+	transform
+		position,rotation	x,y,z 0
+		scale				x,y,z,overall 1
+
+overlay
+	size 30:0,
+	text Overlay
+
+light
+	intensity 1
+	visible true
+	position	x,y,z 0
+
+scene
+	background	r,g,b .5:0,1
+	transitions
+		drag	ITEMS	ITEMS	delta none:none,ITEMS	time 0:0,
+		enter,leave		ITEMS	delta none:none,ITEMS	time 0:0,
+		auto					delta none:none,ITEMS	time 0:0,
+
+camera
+	transform	position,rotation	x,y,z 0
+	fov 40
+
+label
+	transform
+		position	x,y,z 0
+		scale		x,y,z,overall 1
+	visible true
+	xray    true
+	parent scene:ITEMS
+	text Label
+	size 1
+`.replace(/ITEMS/g     ,Object.keys(config.items     ||{}).join(','))
+ .replace(/GEOMETRIES/g,Object.keys(config.geometries||{}).join(','))
+ .replace(/TEXTURES/g  ,Object.keys(config.textures  ||{}).join(',')))
+}
+function getDefaultInitialDelta()
+{
+	const interfaces=getInterfaces()
+	function leafTransform(leaf)
+	{
+		if(is_string(leaf))
+			leaf=leaf.split(':')[0].trim()
+		return djson.parse_leaf(leaf)
+	}
+	transformObjectTreeLeaves(interfaces,leafTransform)
+	assert.isPureObject(config.items)
+	out={}
+	for(const index of 'camera scene overlay'.split(' '))
+	{
+		out[index]=interfaces[index]
+	}
+	for(const [index,value] of Object.entries(config.items))
+		out[index]=interfaces[value]||{}
+	return out
+}

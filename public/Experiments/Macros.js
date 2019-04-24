@@ -159,7 +159,8 @@ function deletedEmptyKeys(object)
 	const out={}
 	for(const [key,value] of Object.entries(object))
 	{
-		if(key.trim())
+		console.log(key)
+		if(is_symbol(key)||key.trim())
 		{
 			out[key]=deletedEmptyKeys(value)
 		}

@@ -2,6 +2,16 @@
 //	Don't use blank lines! It can be dangerous. If you use a COMPLETELY blank line (no whitespace), it will erase the rest of the current scope until the next unindented entry (this is because a blank line can be interpereted as a key called "". So, if you use another blank line later on, it will erase the previous value, and it will look as though values have been deleted.) They can be fine when written by a machine, but they're dangerous to try writing by hand (watch out for duplicate value warnings! Those are why thigns get overwritten)
 //	We can make warnings about duplicate values
 const djson=proxies.argumentCountChecker({
+	symbol:'@',//If symbols are enabled, this is the key name that will represent them
+	symbols_enabled:true,
+	random_symbol()
+	{
+		return '!!'+Math.random()//We use this because for some stupid reason symbols are not enumerable by default
+	},
+	is_symbol(key)
+	{
+		return key.startsWith('!!')
+	},
 	parse_leaf(leaf)
 	{
 		if(!(typeof leaf==='string'))
@@ -36,6 +46,20 @@ const djson=proxies.argumentCountChecker({
 		}
 		return djson.parse(out)
 	},
+	applyDjsonDelta(o,d)//A simpler variant of deltas.apply that lets you rewrite deltas, making djson potentially very readable if written by hand
+	{
+		for(let key of Object.keys(d))
+		{
+			if(are_objects(o,d[key]) && key in o)
+				djson.applyDjsonDelta(o[key],d[key])
+			else
+			{
+				// Very important warning, but even this got annoying...
+				// console.assert(!is_defined(o[key])||(is_object(o[key])===is_object(d[key])),'djson.parse error at line '+current_line_number+': Youre trying to overwrite a '+typeof o[key]+' with a '+typeof d[key]+' at line '+current_line_number+' at key '+JSON.stringify(key)+'. This is not allowed, as it could erase your previous entry of '+JSON.stringify(key)+' instead of merging them together.\nThe full line that caused the error: '+JSON.stringify(line)+'\nWhole djson shown below this line:\n'+numbered_lines_string(originalString))
+				o[key] = d[key]
+			}
+		}
+	},
 	parse(lines,kwargs={})
 	{
 		const {
@@ -44,6 +68,8 @@ const djson=proxies.argumentCountChecker({
 				  macros                 =true,
 				  delete_emptystring_keys=true,
 				  baseCase               =true,
+				  symbols_enabled        =djson.symbols_enabled,
+				  symbol                 =djson.symbol
 			  }=kwargs
 
 		//TODO: refactor macros, leaf_parser, and delete_emptystring_keys into some 'post-processing' method
@@ -65,18 +91,6 @@ const djson=proxies.argumentCountChecker({
 			///////////////////////////////////////////////////////////////////
 
 			const current_line_number=originalNumberOfLines-(lines.length)
-			function applyDjsonDelta(o,d)//A simpler variant of deltas.apply that lets you rewrite deltas, making djson potentially very readable if written by hand
-			{
-				for(const key of Object.keys(d))
-					if(are_objects(o,d[key]) && key in o)
-						applyDjsonDelta(o[key],d[key])
-					else
-					{
-						// Very important warning, but even this got annoying...
-						// console.assert(!is_defined(o[key])||(is_object(o[key])===is_object(d[key])),'djson.parse error at line '+current_line_number+': Youre trying to overwrite a '+typeof o[key]+' with a '+typeof d[key]+' at line '+current_line_number+' at key '+JSON.stringify(key)+'. This is not allowed, as it could erase your previous entry of '+JSON.stringify(key)+' instead of merging them together.\nThe full line that caused the error: '+JSON.stringify(line)+'\nWhole djson shown below this line:\n'+numbered_lines_string(originalString))
-						o[key] = d[key]
-					}
-			}
 
 			const trimmed=line.replace(/^\t*/,'')//Remove all tabs at the beginning of the line
 			const entries=trimmed.split(/\t+/)//Split at every contiguous cluster of tabs
@@ -98,26 +112,37 @@ const djson=proxies.argumentCountChecker({
 				}
 			}
 
-			for(const entry of entries)
+			for(let entry of entries)
 			{
 				console.assert(!entry.includes('\t'),'This is impossible unless djson.parse is broken.',entry)
 				if(entry.includes(' '))
 				{
-					const [key,value]=split_on_first_space(entry)
+					let [key,value]=split_on_first_space(entry)
+					if(symbols_enabled&&key===symbol)
+					{
+						key=djson.random_symbol()
+						// key=Math.random()+''
+						// key=Symbol("ASODIJA")
+					}
 					//I disabled the below warnings simply because I found them annoying. But you might find them useful...so I didn't delete them
 					//	if(false)if(value&&value!==value.trimLeft())console.warn('djson.parse warning at line '+current_line_number+': value starts with whitespace, which means you might have tried using spaces as indents: value==='+JSON.stringify(value))
 					//	if(!value)                                  console.warn('djson.parse warning at line '+current_line_number+': value is empty! You must have had some line ending with key followed by a single space before the end of the line')
-					applyDjsonDelta(out,nested_path(path,{[key]:value}))
+					djson.applyDjsonDelta(out,nested_path(path,{[key]:value}))
 				}
 				else
 				{
+					//if we're here, then entry IS a (purple) key that points to an object (as opposed to a string)
+					if(symbols_enabled&&entry===symbol)
+					{
+						entry=djson.random_symbol()
+					}
 					path.push(entry)//Burrow deeper down the rabbit hole...
 				}
 			}
 
-			applyDjsonDelta(out,nested_path(path,djson.parse(lines,{level:line_level,baseCase:false})))
+			djson.applyDjsonDelta(out,nested_path(path,djson.parse(lines,{...kwargs,level:line_level,baseCase:false})))
 
-			//I disabled the below warnings simply because I found them annoying. But you might find them useful...so I didn't delete them
+			//I disabled the below warnings simply because I found them annoying. But you might find them useful for debugging (they're not obsolete or anything)...so I didn't delete them
 			//	if(false && key==='')   console.warn('djson.parse warning at line '+current_line_number+': key==="", which means you have a blank line somewherere')
 			//	if(false && key in out) console.warn('djson.parse warning at line '+current_line_number+': key is not unique! key==='+JSON.stringify(key))
 			//	console.assert(is_object(out))
@@ -159,11 +184,15 @@ const djson=proxies.argumentCountChecker({
 		}
 		return out
 	},
-	stringify(object,level=0,out=[])
+	stringify(object,level=0,out=[],{symbols_enabled=djson.symbols_enabled,symbol=djson.symbol}={})
 	{
 		console.assert(is_object(object),'you can only djson-stringify objects, but argument "object" was of type '+typeof object)
 		for(let [key,value] of Object.entries(object))
 		{
+			if(djson.is_symbol(key)&&symbols_enabled)
+			{
+				key=symbol
+			}
 			if(is_object(value))
 			{
 				out.push(multiply_string('\t',level)+key)
