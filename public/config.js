@@ -284,6 +284,11 @@ deltas	pour_5
 	overlay	text 
 	`
 
+function getConfigFromLocalStorageAsString()
+{
+	return localStorage.getItem('config')
+}
+
 let previousLoadedConfigString
 function loadConfigFromLocalStorage()
 {
@@ -297,7 +302,7 @@ function loadConfigFromLocalStorage()
 	}
 	if(!tween.time && !autoIsPending())
 	{
-		let storedItem=localStorage.getItem('config')
+		let storedItem=getConfigFromLocalStorageAsString()
 		if(!storedItem)
 		{
 			console.warn("Failed to load 'config' from localStorage")
@@ -340,7 +345,7 @@ const config={
 }
 loadConfigFromLocalStorage()
 
-if(weAreInAnIframe())
+if(weAreInAnIframe()||window.editorMode||true)
 {
 	setInterval(loadConfigFromLocalStorage, 100)
 	setInterval(saveStateToLocalStorage, 100)

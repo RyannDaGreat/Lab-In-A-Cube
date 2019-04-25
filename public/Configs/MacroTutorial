@@ -1,0 +1,114 @@
+x
+~
+	@
+		x a
+
+IS
+
+a
+
+-------------------
+
+x
+~
+	@
+		x a
+	@
+		x b
+
+IS
+
+a
+b
+
+-------------------
+
+x
+y
+~
+	@
+		x a
+
+IS
+
+a
+y
+
+-------------------
+
+x
+y
+~
+	@
+		x a
+		y b
+
+IS
+
+a
+b
+
+-------------------
+
+x Hello
+y World
+~
+	@
+		x a
+		y b
+
+IS
+
+a Hello
+b World
+
+-------------------
+
+x Hello
+y World
+~
+	@
+		x a
+		y b
+	@
+		x c
+		y d
+
+IS
+
+a Hello
+b World
+c Hello
+d World
+
+-------------------
+
+(Joining two macros into the same key with the ~ operator)
+
+x~y Hello
+~
+	@
+		x a
+		y b
+
+IS
+
+ab Hello
+
+-------------------
+
+x~y Hello
+~
+	@
+		x a
+		y b
+	@
+		x c
+		y d
+
+IS
+
+ab Hello
+cd Hello
+
+-------------------

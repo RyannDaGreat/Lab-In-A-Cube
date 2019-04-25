@@ -56,4 +56,24 @@ const keyPath=proxies.argumentCountChecker({
 			object=object[key]
 		object[path_end]=value
 	},
+	getAllPaths(objectTree)
+	{
+		const out=[]
+		function helper(root,path=[])
+		{
+			if(is_object(root))
+			{
+				for(const [index,value] of Object.entries(root))
+				{
+					helper(value,path.concat(index))
+				}
+			}
+			else
+			{
+				out.push(path.concat(root))
+			}
+		}
+		helper(objectTree)
+		return out
+	},
 })

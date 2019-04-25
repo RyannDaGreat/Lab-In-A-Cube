@@ -45,13 +45,49 @@ function Leaf({})
 
 }
 
+
+function GetSimpleGui()
+{
+	// try{
+	const instance=window.getGuiArchitectureInstance()
+	const labels=[]
+	for(const i of instance)
+	{
+		labels.push(<Button variant="contained" onClick={
+			function()
+
+			{
+				const value=prompt("Enter the new value for "+(i.path.join(' '))+' at delta '+(i.delta))
+				if(value==null)
+					return//Canceled
+				else
+					{
+						let configString=localStorage.getItem('config')
+						configString+='\n'+'deltas	'+i.delta+'	'+i.path.join('	')+' '+value
+						localStorage.setItem('config',configString)
+
+					}
+			}
+
+
+		}size="small" color="primary">{'deltas '+i.delta+' '+i.path.join(' ')}</Button>)
+	}
+	return <div style={{flexGrow:4,display:'flex',flexDirection:'column'}}>
+		{labels}
+	</div>
+// }
+	// catch{}
+	return <div></div>
+}
+window.editorMode=true
+
 function App()
 {
 	return <Split style={{display:'flex',flexDirection:'horizontal',width:'100%',height:'100%'}}>
 			<div style={{flexGrow:4}}>
 				<iframe src="scene.html" style={{width: '100%',height: '100%',border:'0'}}></iframe>
 			</div>
-			<div className="App" style={{flexGrow:4,display:'flex',flexDirection:'column'}}>
+			<div style={{flexGrow:4,display:'flex',flexDirection:'column',overflowY:'scroll'}}>
 				{/*<header className="App-header">*/}
 					{/*<img src={logo} className="App-logo" alt="logo"/>*/}
 					{/*<p>*/}
@@ -71,6 +107,7 @@ function App()
 				<Button variant="contained" size="small" color="primary"> Redo </Button>
 				<Button variant="contained" size="small" color="primary"> Add Item </Button>
 				<Button variant="contained" size="small" color="primary"> Add Delta </Button>
+			<GetSimpleGui/>
 			</div>
 		</Split>
 }

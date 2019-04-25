@@ -180,7 +180,7 @@ function getInterfaces()
 	// assert.isPureObject(config.geometries)
 	// assert.isPureObject(config.textures  )
 	return djson.parse(`
-mesh
+mesh,boxItem
 	texture default:TEXTURES
 	geometry box:GEOMETRIES
 	parent scene:ITEMS
@@ -201,7 +201,7 @@ overlay
 	size 30:0,
 	text Overlay
 
-light
+light,lightItem
 	intensity 1
 	visible true
 	position	x,y,z 0
@@ -228,8 +228,139 @@ label
 	size 1
 `.replace(/ITEMS/g     ,Object.keys(config.items     ||{}).join(','))
  .replace(/GEOMETRIES/g,Object.keys(config.geometries||{}).join(','))
- .replace(/TEXTURES/g  ,Object.keys(config.textures  ||{}).join(',')))
+ .replace(/TEXTURES/g  ,Object.keys(config.textures  ||{}).join(',')),
+ {leaf_parser:x=>x.trim()})
 }
+
+function getInterfacesGuiArchitecture()
+{
+	const interfaces=getInterfaces()
+	const paths=keyPath.getAllPaths(interfaces)
+	function processPaths(paths)
+	{
+		//Mutates input and returns nothing
+		//EXAMPLE:
+		//processPaths([[1,2,3],[4,5,6],[7,8,9]])  --->  [[[1,2],[3]],[[4,5],[6]],[[7,8],[9]]]
+			// console.log(paths)
+		for(const [index,path] of Object.entries(paths))
+		{
+			// console.log(index,path)
+			paths[index]=[path,path.pop()]
+		}
+	}
+	processPaths(paths)
+	// function 
+	const out=[]
+	for(const [path,leaf] of paths)
+	{
+		assert.isString(leaf)
+		const colonSplit=leaf.split(':')
+		console.assert(colonSplit.length>0,'Common sense when splitting a string...this should be impossible to fail.')
+		if     (colonSplit.length===1)
+		{
+			const [value]=colonSplit
+			const parsed=djson.parse_leaf(value)
+			if(typeof parsed==='number')
+			{
+				out.push({path,type:'number'})
+			}
+			else if(typeof parsed==='boolean')
+			{
+				out.push({path,type:'boolean'})
+			}
+			else if(typeof parsed==='string')
+			{
+				out.push({path,type:'string'})
+			}
+			else
+			{
+				console.error('There is no syntax defined for this leaf:',leaf,'at path:',path)
+			}
+		}
+		else if(colonSplit.length===2)
+		{
+			const [beforeColon,afterColon]=leaf.split(':')
+			const parsedBeforeColon=djson.parse_leaf(beforeColon)
+			if(typeof parsedBeforeColon==='number')
+			{
+				console.assert(afterColon.includes(','))
+				const commaSplit=afterColon.split(',')
+				console.assert(commaSplit.length===2)
+				let [min,max]=commaSplit
+				min=min.trim()
+				max=max.trim()
+				out.push({path,type:'number',...(min?{min:Number(min)}:{}),
+				                             ...(max?{max:Number(max)}:{})})
+			}
+			else if(typeof parsedBeforeColon==='string')
+			{
+				out.push({path,type:'select',values:afterColon.split(',')})
+			}
+			else
+			{
+				console.error('There is no syntax defined for this leaf:',leaf,'at path:',path)
+			}
+		}
+		else
+		{
+			console.error('There is no syntax defined for this leaf:',leaf,'at path:',path)
+		}
+	}
+	return out
+	//TYPES: select,number,boolean,string
+	//EXAMPLE OUTPUT:
+	//	[{"path":["mesh","texture"],"type":"select","values":[""]},
+	//	 {"path":["mesh","geometry"],"type":"select","values":[""]},
+	//	 {"path":["mesh","parent"],"type":"select","values":[""]},
+	//	 {"path":["mesh","visible"],"type":"boolean"},
+	//	 {"path":["mesh","material","mode"],"type":"select","values":["basic","standard","phong"]},
+	//	 {"path":["mesh","material","modes","basic","color","r"],"type":"number","min":0,"max":1},
+	//	 {"path":["mesh","material","modes","basic","color","g"],"type":"number","min":0,"max":1},
+	//	 {"path":["mesh","material","modes","basic","color","b"],"type":"number","min":0,"max":1},
+	//	 {"path":["mesh","material","modes","basic","opacity"],"type":"number","min":0,"max":1},
+	//	 ...(etc)...]
+}
+
+function getGuiItemsArchitectureInstance(config=djson.parse(localStorage.getItem('config')))
+{
+	//Filled out item type names with item names
+	//Crummy complexity in this function but whatever who cares with my kind of time limits
+	const architecture=getInterfacesGuiArchitecture()
+	const out=[]
+	const items=config.items
+	for(const [name,type] of Object.entries(items))
+	{
+		// console.log('AOISHDIOASD',name,type)
+		for(const thing of architecture)
+		{
+			if(type===thing.path[0])
+			{
+				out.push({...thing,path:[name,...thing.path.slice(1)]})
+			}
+		}
+	}
+	return out
+}
+
+function getGuiArchitectureInstance()
+{
+	const config=djson.parse(localStorage.getItem('config'))
+	// alert(JSON.stringify(Object.keys(config.deltas)))
+	const itemsArchitecture=getGuiItemsArchitectureInstance(config)
+	const out=[]
+	for(const delta in config.deltas)
+	{
+		for(const item of itemsArchitecture)
+		{
+			out.push({delta,...item})
+		}
+	}
+	return out
+}
+
+
+window.getGuiArchitectureInstance=getGuiArchitectureInstance
+
 function getDefaultInitialDelta()
 {
 	const interfaces=getInterfaces()
