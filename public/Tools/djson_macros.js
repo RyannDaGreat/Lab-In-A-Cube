@@ -1,4 +1,5 @@
 //Meant to be used for djson post-processing. Really the only important function in here is djson_macros.macroized.
+used_keys={}
 var djson_macros=proxies.argumentCountChecker({
 	containsMacro(object,key)
 	{
@@ -44,29 +45,18 @@ var djson_macros=proxies.argumentCountChecker({
 		{
 			for(let [key,value] of Object.entries(object))
 			{
-				if(djson.is_symbol(key))
-					key=djson.random_symbol()//This line lets use symbold effectively in macros
+				if(key in used_keys && djson.is_symbol(key))
+					key=djson.random_symbol()
+				used_keys[key]={}//TODO FIX BUG HERE
 				key  =djson_macros.appliedMacros(key,macros,otherMacros)
 				value=djson_macros.appliedMacros(value,macros,otherMacros)
-				// console.log(key,value)
-				if(typeof value==='string')
-				{
-					if(djson_macros.purgeable(value,otherMacros))
-					{
-						continue
-					}
-				}
-				if(djson_macros.purgeable(key,otherMacros))
-				{
-					continue
-				}
 				out[key]=value
 			}
 			return out
 		}
 		else if(typeof object==='string')
 		{
-			return object.split('~').map(x=>x in macros&&(!is_object(macros[x]))?macros[x]:x).join('')
+			return ''+djson.parse_leaf(object.split('~').map(x=>x in macros&&(!is_object(macros[x]))?macros[x]:x).join(''))
 		}
 		else
 		{
@@ -220,16 +210,11 @@ var djson_macros=proxies.argumentCountChecker({
 			return object
 		let out={}
 		for(let [key,value] of Object.entries(object))
-		{
-			// if(djson.is_symbol(key))
-				// key=djson.random_symbol()
-
 			if(key!=='~')//Get through all the non-macros first...
 				for(const KEY of key.split(','))
 					if(is_object(value) && KEY!==''&&KEY[0]==='~')//We're in a scope
 						 deltas.withoutDeletions(deltas.pour, out, djson_macros.macroized(value) )
 					else deltas.withoutDeletions(deltas.pour, out, {[KEY]:djson_macros.macroized(value)})
-		}
 		if('~' in object)
 		{
 			let macrosets=object['~']

@@ -154,6 +154,7 @@ const djson=proxies.argumentCountChecker({
 		}
 		if(baseCase)
 		{
+			used_keys={}
 			if(macros && baseCase)
 			{
 				// return out
