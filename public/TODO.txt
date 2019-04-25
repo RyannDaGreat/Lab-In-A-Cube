@@ -11,6 +11,8 @@ Notes:
 	*I added mouse-over transitions. I would reccomend never setting the time too high on them though, because async transitions aren't a thing right now.
 	*In JSON's, .3 is an invalid number. In DJSON, it is. (Also, -.5 is invalid JSON but valid DJSON)
 
+	*OPTIMIZE DICT MULTIPLICATION in macros. Make them check against results, not just dicts (this will prevent the exponential explosions when the output isn't explosive)
+
 	Later I'd like to make the background of the scene clickable, but right now this would require a lot of refactoring...this is a problem for another day. (April 1)
 
 	Currently auto-transition doesn't work with simple conditions. This must be fixed. (April 1)

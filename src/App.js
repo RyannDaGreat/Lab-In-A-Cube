@@ -64,8 +64,7 @@ function GetSimpleGui()
 					{
 						let configString=localStorage.getItem('config')
 						configString+='\n'+'deltas	'+i.delta+'	'+i.path.join('	')+' '+value
-						localStorage.setItem('config',configString)
-
+						window.setConfigDjsonInLocalStorage(configString)
 					}
 			}
 

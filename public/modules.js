@@ -37,8 +37,13 @@ let modules={
 			get threeObject() {return mesh },
 			set parent(itemID)
 			{
-				mesh.parent=items[itemID].threeObject//MAKE SOME ASSERTIONS HERE
-				parent=itemID
+				if(parent===itemID)return
+				const item=items[itemID]
+				if(item===undefined)
+					console.error(repr(itemID),'is not a valid parent! (Failed to set parent of '+repr(ID)+')')
+				else
+					mesh.parent=item.threeObject//MAKE SOME ASSERTIONS HERE
+				parent=itemID//Even if we did error, we're going to pretend we succedded to we don't spam the console (it would try setting that parent again and agian every frame otherwise)
 			},
 			get parent() {return parent },
 			set visible(x){mesh.visible=x},
@@ -161,8 +166,13 @@ let modules={
 			get text(){return text},
 			set parent(itemID)
 			{
-				sprite.parent=items[itemID].threeObject//MAKE SOME ASSERTIONS HERE
-				parent=itemID
+				if(parent===itemID)return
+				const item=items[itemID]
+				if(item===undefined)
+					console.error(repr(itemID),'is not a valid parent! (Failed to set parent of '+repr(ID)+')')
+				else
+					sprite.parent=item.threeObject//MAKE SOME ASSERTIONS HERE
+				parent=itemID//Even if we did error, we're going to pretend we succedded to we don't spam the console (it would try setting that parent again and agian every frame otherwise)
 			},
 			get parent() {return parent },
 		}
@@ -172,6 +182,18 @@ let modules={
 }
 modules=proxies.argumentCountChecker(modules)
 modules=proxies.tryGetter(modules,()=>modules.mesh)
+
+function setParent(threeObject,itemID)
+{
+	const newParent=keyPath.getAndSquelch(items,[itemID,'threeObject'])
+	if(newParent===undefined)
+	{
+		console.error('Cannot set parent to',itemID,' from threeObject',threeObject,'! Aborting...')
+		return
+	}
+	mesh.parent=newParent
+	parent=itemID
+}
 
 function getInterfaces()
 {
@@ -346,13 +368,24 @@ function getGuiArchitectureInstance()
 {
 	const config=djson.parse(localStorage.getItem('config'))
 	// alert(JSON.stringify(Object.keys(config.deltas)))
+	if(!('deltas' in config))config.deltas={}//Avoid errors when trying to access things in config.deltas
+	if(!('items'  in config))config.items ={}//Avoid errors when trying to access things in config.items
 	const itemsArchitecture=getGuiItemsArchitectureInstance(config)
 	const out=[]
-	for(const delta in config.deltas)
+	for(const deltaId in config.deltas)
 	{
 		for(const item of itemsArchitecture)
 		{
-			out.push({delta,...item})
+			const thing={delta:deltaId,...item}
+			const path=item.path
+			const delta=config.deltas[deltaId]
+			assert.isPureArray(path)
+			if(keyPath.exists(delta,path))
+			{
+				console.log("WOOHOOO!!!",path)
+				thing.valueInConfig=keyPath.get(delta,path)
+			}
+			out.push(thing)
 		}
 	}
 	return out

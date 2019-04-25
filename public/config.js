@@ -289,6 +289,16 @@ function getConfigFromLocalStorageAsString()
 	return localStorage.getItem('config')
 }
 
+
+function setConfigDjsonInLocalStorage(djsonString)
+{
+	assert.isString(djsonString)
+	localStorage.setItem('config',djsonString)
+	localStorage.setItem('configChanged','true')
+}
+window.setConfigDjsonInLocalStorage=setConfigDjsonInLocalStorage
+
+
 let previousLoadedConfigString
 function loadConfigFromLocalStorage()
 {
@@ -323,6 +333,7 @@ function loadConfigFromLocalStorage()
 		}
 		previousLoadedConfigString=storedItem
 	}
+	config.deltas.none={}//This is a valid delta, and it does absolutely nothing. THis is here to prevent errors such as 'none is not a valid delta' from cluttering the console
 	requestRender()//Aand the game begins...
 }
 

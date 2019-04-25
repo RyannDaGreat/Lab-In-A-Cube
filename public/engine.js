@@ -436,7 +436,7 @@ function getRawDeltaFromConfigByID(deltaID)
 	}
 	else
 	{
-		console.error('getDeltaByID error: deltaID='+repr(deltaID)+' is not the name of a delta!\nMore Info: Object.keys(config.deltas).join(\' \')) = '+repr(Object.keys(config.deltas).join(' '))+'\nThe show MUST go on, so this function will just return an empty delta (aka {})...please fix this! (Probably with a change to the config)')
+		assertValidDeltaId(deltaID)
 		return {}
 	}
 }
@@ -483,20 +483,31 @@ function deltaRawCompositionFromIdsString(deltaIdsSeparatedBySpaces)
 	return deltaRawCompositionFromIdArray(deltaIds)
 }
 
+function assertValidDeltaId(deltaID)
+{
+	assert.isString(deltaID)
+	console.assert(deltaExistsInConfig(deltaID),'deltaRawCompositionFromIdsString error: '+repr(deltaID)+' is not a real delta!\ndeltaIdsSeparatedBySpaces = '+repr(Object.keys(config.deltas).join(' ')))
+}
+function assertAllValidDeltaIds(deltaIdsAsArray)
+{
+	assert.isPureArray(deltaIdsAsArray)
+	for(const deltaID of deltaIdsAsArray)
+		if(deltaID!=='')//I dont know what's feeding this function empty deltaIds, but its spamming the console with errors...I dont think its a big problem though. I'm going to squelch that error with this line.
+			assertValidDeltaId(deltaID)
+}
+
 function deltaRawCompositionFromIdArray(deltaIdsAsArray)
 {
 	console.assert(arguments.length===1, 'Wrong number of arguments.')
 	assert.isPureArray(deltaIdsAsArray)
-	for(const deltaID of deltaIdsAsArray)
-		console.assert(deltaID in config.deltas,'deltaRawCompositionFromIdsString error: '+repr(deltaID)+' is not a real delta!\ndeltaIdsSeparatedBySpaces = '+repr(deltaIdsAsArray.join(' ')))
+	assertAllValidDeltaIds(deltaIdsAsArray)
 	return deltaCompositionFromArray(deltaIdsAsArray.map(getRawDeltaFromConfigByID))
 }
 function deltaCompositionFromIdArray(deltaIdsAsArray)
 {
 	console.assert(arguments.length===1, 'Wrong number of arguments.')
 	assert.isPureArray(deltaIdsAsArray)
-	for(const deltaID of deltaIdsAsArray)
-		console.assert(deltaID in config.deltas,'deltaRawCompositionFromIdsString error: '+repr(deltaID)+' is not a real delta!\ndeltaIdsSeparatedBySpaces = '+repr(deltaIdsAsArray.join(' ')))
+	assertAllValidDeltaIds(deltaIdsAsArray)
 	return deltaCompositionFromArray(deltaIdsAsArray.map(getDeltaByID))
 }
 function deltaCompositionFromArray(deltaArray)

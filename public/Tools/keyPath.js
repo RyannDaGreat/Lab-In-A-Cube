@@ -11,6 +11,7 @@ const keyPath=proxies.argumentCountChecker({
 		//Returns true, even if the end result is null or undefined. Returns false if accessing would give an error.
 		assert.rightArgumentLength(arguments)
 		assert.isPureArray(path)
+		if(object===undefined||object===null)return false//Not iterable, will cause errors if we continue
 		for(const key of path)
 		{
 			if(object===null||object===undefined)
@@ -30,6 +31,19 @@ const keyPath=proxies.argumentCountChecker({
 		for(const key of path)
 			object=object[key]
 		return object
+	},
+	getAndSquelch(object,path)
+	{
+		//Returns undefined where keyPath.get would throw an error
+		//Essentially, 'squelching' any 'cannot access key of undefined' errors etc
+		if(keyPath.valid(object,path))
+		{
+			return keyPath.get(object,path)
+		}
+		else
+		{
+			return undefined
+		}
 	},
 	pave(object,path)
 	{
