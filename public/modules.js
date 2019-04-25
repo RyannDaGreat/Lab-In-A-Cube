@@ -382,7 +382,6 @@ function getGuiArchitectureInstance()
 			assert.isPureArray(path)
 			if(keyPath.exists(delta,path))
 			{
-				console.log("WOOHOOO!!!",path)
 				thing.valueInConfig=keyPath.get(delta,path)
 			}
 			out.push(thing)

@@ -310,7 +310,7 @@ function loadConfigFromLocalStorage()
 	{
 		return
 	}
-	if(!tween.time && !autoIsPending())
+	if(window.tween&&!tween.time && !autoIsPending())
 	{
 		let storedItem=getConfigFromLocalStorageAsString()
 		if(!storedItem)
@@ -333,7 +333,9 @@ function loadConfigFromLocalStorage()
 		}
 		previousLoadedConfigString=storedItem
 	}
-	config.deltas.none={}//This is a valid delta, and it does absolutely nothing. THis is here to prevent errors such as 'none is not a valid delta' from cluttering the console
+	// if(config.deltas===undefined)config.deltas={}
+	// if(config.items ===undefined)config.items ={}
+	// config.deltas.none={}//This is a valid delta, and it does absolutely nothing. THis is here to prevent errors such as 'none is not a valid delta' from cluttering the console
 	requestRender()//Aand the game begins...
 }
 
