@@ -254,6 +254,7 @@ label
  {leaf_parser:x=>x.trim()})
 }
 
+
 function getInterfacesGuiArchitecture()
 {
 	const interfaces=getInterfaces()
@@ -366,7 +367,9 @@ function getGuiItemsArchitectureInstance(config=djson.parse(localStorage.getItem
 
 function getGuiArchitectureInstance()
 {
-	const config=djson.parse(localStorage.getItem('config'))
+	// const config=djson.parse(localStorage.getItem('config'))
+	// const config=window.config
+	const config=JSON.parse(localStorage.getItem('readOnlyConfig'))||{}
 	// alert(JSON.stringify(Object.keys(config.deltas)))
 	if(!('deltas' in config))config.deltas={}//Avoid errors when trying to access things in config.deltas
 	if(!('items'  in config))config.items ={}//Avoid errors when trying to access things in config.items

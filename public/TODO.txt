@@ -1,3 +1,19 @@
+PRIORITITES:
+	Efficiently link react to the game state (no localstorage should be needed)
+	Cache djson from lines 0 to N (will make things faster)
+	
+PAIN POINTS:
+	How changing config ---> changing state is handled (makes me cringe a bit. it's the WRONG way. This problem goes all the way down to the tween level, though, and )
+	How the GUI and default delta info is contained outside of each item 
+	How none of the components use webpack
+	Using localSttorage for communication is yuck
+	
+
+
+	Try monaco editor???
+	Smell:Games should be modular (there should be able to have more than 1 game instance open at once)
+
+
 Migrate this project to webpack with create-react-app
 Notes:
 	*In general, my function names work like this: If it's a verb, it probably mutates something (which is more efficient generally). Examples: copy, apply. Else, it probably is a pure function that returns something Example: copied, blended etc. If it's 

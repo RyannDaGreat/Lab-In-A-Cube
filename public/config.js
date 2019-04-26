@@ -310,7 +310,7 @@ function loadConfigFromLocalStorage()
 	{
 		return
 	}
-	if(window.tween&&!tween.time && !autoIsPending())
+	if(!tween.time && !autoIsPending())
 	{
 		let storedItem=getConfigFromLocalStorageAsString()
 		if(!storedItem)
@@ -322,7 +322,7 @@ function loadConfigFromLocalStorage()
 		const newConfig=djson.parse(storedItem)
 		if(previousLoadedConfigString!==storedItem && !deltas.contains(config, newConfig))
 		{
-			playSound('./Assets/Sounds/ShortBells/E.mp3')//This got annoying, but it was here to 
+			playSound('./Assets/Sounds/ShortBells/E.mp3')//This got annoying, but it was here to
 			deltas.pour(config,newConfig)
 			deltas.pour(config,deltas.poured({deltas:{initial:deltas.poured(getDefaultInitialDelta(),getDeltaByIDWithInheritance('initial'))}},newConfig))
 			// deltas.pour(config,{deltas:{initial:getDefaultInitialDelta()}})
@@ -332,10 +332,11 @@ function loadConfigFromLocalStorage()
 			// tween.time=1
 		}
 		previousLoadedConfigString=storedItem
+		localStorage.setItem('readOnlyConfig',JSON.stringify(config))//Hack because this is an iframe. Sadness. Needs to communicate to the gui.
 	}
-	// if(config.deltas===undefined)config.deltas={}
+	// if(/config.deltas===undefined)config.deltas={}
 	// if(config.items ===undefined)config.items ={}
-	// config.deltas.none={}//This is a valid delta, and it does absolutely nothing. THis is here to prevent errors such as 'none is not a valid delta' from cluttering the console
+	config.deltas.none={}//This is a valid delta, and it does absolutely nothing. THis is here to prevent errors such as 'none is not a valid delta' from cluttering the console
 	requestRender()//Aand the game begins...
 }
 
@@ -356,6 +357,7 @@ const config={
 	}
 	//...more items will be added...
 }
+window.config=config
 loadConfigFromLocalStorage()
 
 if(weAreInAnIframe()||window.editorMode||true)

@@ -12,48 +12,25 @@ import NavigationIcon from '@material-ui/icons/Navigation'
 import PropTypes from 'prop-types'
 import {withStyles} from '@material-ui/core/styles'
 
-function getKeys(moduleTypeName)
-{
-	// assert.isString(moduleTypeName)
+import { useState } from 'react';
 
-}
-
-function generate(config)
-{
-	// assert.isPureObject(config)
-	const items =config.items
-	const deltas=config.deltas
-	// assert.isPureObject(items)
-	// assert.isPureObject(deltas)
-	for(const deltaId of deltas)
-	{
-		// assert.isString(deltaId)
-		for(const [name, type] of Object.entries(items))
-		{
-			// assert.isString(name)
-			// assert.isString(type)
-			const paths=window.modules[type]().gui
-
-		}
-	}
-}
-
-function Leaf({})
-{
-
-}
+setInterval(window.getGuiArchitectureInstance,.5)
 
 function GetSimpleGui()
 {
 	// try{
-	const instance=window.getGuiArchitectureInstance()
+	// const instance=window.getGuiArchitectureInstance()
 	const labels  =[]
-	for(const i of instance)
+	let [instance, setInstance] = useState({});
+	timerEvents[0]=()=>{setInstance(window.getGuiArchitectureInstance());}
+
+	for(const [index,i] of Object.entries(instance))
 	{
-		labels.push(<Button variant="contained" onClick={
+		if(i.path.includes('color'))
+		labels.push(<Button key={index}variant="contained" onClick={
 			function()
 			{
-				const value=prompt("Enter the new value for "+(i.path.join(' '))+' at delta '+(i.delta)+'\n\nCurrent Value: '+i.con)
+				const value=prompt("Enter the new value for "+(i.path.join(' '))+'\n\n at delta '+(i.delta)+'\n\nCurrent Value: '+i.valueInConfig)
 				if(value==null)
 					return//Canceled
 				else
@@ -64,7 +41,7 @@ function GetSimpleGui()
 				}
 			}
 		}
-							size="small" color="primary">{'deltas '+i.delta+' '+i.path.join(' ')}</Button>)
+		size="small" color={i.valueInConfig===undefined?"primary":"secondary"}>{'deltas '+i.delta+' '+i.path.join(' ')}</Button>)
 	}
 	return <div style={{flexGrow: 4, display: 'flex', flexDirection: 'column'}}>
 		{labels}
@@ -82,20 +59,6 @@ function App()
 			<iframe src="scene.html" style={{width: '100%', height: '100%', border: '0'}}></iframe>
 		</div>
 		<div style={{flexGrow: 4, display: 'flex', flexDirection: 'column', overflowY: 'scroll'}}>
-			{/*<header className="App-header">*/}
-			{/*<img src={logo} className="App-logo" alt="logo"/>*/}
-			{/*<p>*/}
-			{/*Edit <code>src/App.js</code> and save to reload.*/}
-			{/*</p>*/}
-			{/*<a*/}
-			{/*className="App-link"*/}
-			{/*href="https://reactjs.org"*/}
-			{/*target="_blank"*/}
-			{/*rel="noopener noreferrer"*/}
-			{/*>*/}
-			{/*Learn React*/}
-			{/*</a>*/}
-			{/*</header>*/}
 			<h1 style={{color: 'white'}}>Config</h1>
 			<Button variant="contained" size="small" color="primary"> Undo </Button>
 			<Button variant="contained" size="small" color="primary"> Redo </Button>
@@ -105,5 +68,13 @@ function App()
 		</div>
 	</Split>
 }
+
+const timerEvents=[()=>{}]//Calls each one of these on a timer
+function doTimerEvents()
+{
+	for(const event of timerEvents)
+		event()
+}
+setInterval(doTimerEvents,1000)
 
 export default App
