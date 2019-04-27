@@ -2,10 +2,18 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="135bb503-6ec1-462c-9f44-1d512427b351" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/public/Three/three_not_minified.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/game.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/modules.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/modules.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/Three/three.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/Three/three.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/attributes.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/Game/attributes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/Game/config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/engine.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/Game/engine.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/loader.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/Game/loader.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/modules.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/Game/modules.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/scene.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/shelved/TODO.txt" beforeDir="false" afterPath="$PROJECT_DIR$/shelved/TODO.txt" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -19,37 +27,79 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="true" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/public/modules.js">
+        <entry file="file://$PROJECT_DIR$/public/Game/modules.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="503">
-              <caret line="381" column="24" lean-forward="true" selection-start-line="381" selection-start-column="24" selection-end-line="381" selection-end-column="24" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="true" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/public/config.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="324">
-              <caret line="306" column="53" selection-start-line="306" selection-start-column="8" selection-end-line="306" selection-end-column="53" />
+            <state relative-caret-position="5715">
+              <caret line="381" column="24" selection-start-line="381" selection-start-column="24" selection-end-line="381" selection-end-column="24" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/public/engine.js">
+        <entry file="file://$PROJECT_DIR$/public/game.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="7473">
-              <caret line="528" column="20" selection-start-line="528" selection-start-column="20" selection-end-line="528" selection-end-column="20" />
+            <state relative-caret-position="510">
+              <caret line="34" column="42" selection-start-line="34" selection-start-column="42" selection-end-line="34" selection-end-column="42" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/public/style.css">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/shelved/Docs/Notes/ConditionUnderConstruction.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="75">
+              <caret line="5" column="7" selection-start-line="5" selection-start-column="7" selection-end-line="5" selection-end-column="7" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/App.js">
+        <entry file="file://$PROJECT_DIR$/shelved/README">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/public/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="938">
-              <caret line="77" column="30" selection-start-line="77" selection-start-column="30" selection-end-line="77" selection-end-column="30" />
+            <state relative-caret-position="165">
+              <caret line="11" column="9" selection-start-line="11" selection-start-column="9" selection-end-line="11" selection-end-column="9" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/shelved/Docs/Notes/README">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/shelved/TODO.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="750">
+              <caret line="50" column="59" lean-forward="true" selection-start-line="50" selection-start-column="59" selection-end-line="50" selection-end-column="59" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/public/Three/three_not_minified.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="369782">
+              <caret line="24704" lean-forward="true" selection-start-line="24704" selection-end-line="24704" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="true" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/public/Game/config.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="4590">
+              <caret line="306" column="53" selection-start-line="306" selection-start-column="8" selection-end-line="306" selection-end-column="53" />
             </state>
           </provider>
         </entry>
@@ -100,6 +150,9 @@
     <replaceStrings>
       <replace />
     </replaceStrings>
+    <dirStrings>
+      <dir>$PROJECT_DIR$/public/Three</dir>
+    </dirStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -144,6 +197,12 @@
         <option value="$PROJECT_DIR$/public/modules.js" />
         <option value="$PROJECT_DIR$/public/config.js" />
         <option value="$PROJECT_DIR$/src/App.js" />
+        <option value="$PROJECT_DIR$/public/scene.html" />
+        <option value="$PROJECT_DIR$/public/Game/scene.html" />
+        <option value="$PROJECT_DIR$/public/game.html" />
+        <option value="$PROJECT_DIR$/shelved/TODO.txt" />
+        <option value="$PROJECT_DIR$/public/Three/three.js" />
+        <option value="$PROJECT_DIR$/public/Three/three_not_minified.js" />
       </list>
     </option>
   </component>
@@ -170,67 +229,35 @@
         <subPane>
           <expand>
             <path>
-              <item name="ThreeJS" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ThreeJS" type="462c0819:PsiDirectoryNode" />
+              <item name="Lab-In-A-Cube" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Lab-In-A-Cube" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="ThreeJS" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ThreeJS" type="462c0819:PsiDirectoryNode" />
+              <item name="Lab-In-A-Cube" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Lab-In-A-Cube" type="462c0819:PsiDirectoryNode" />
               <item name="public" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="ThreeJS" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ThreeJS" type="462c0819:PsiDirectoryNode" />
-              <item name="public" type="462c0819:PsiDirectoryNode" />
-              <item name="Configs" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="ThreeJS" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ThreeJS" type="462c0819:PsiDirectoryNode" />
-              <item name="public" type="462c0819:PsiDirectoryNode" />
-              <item name="Docs" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="ThreeJS" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ThreeJS" type="462c0819:PsiDirectoryNode" />
-              <item name="public" type="462c0819:PsiDirectoryNode" />
-              <item name="Docs" type="462c0819:PsiDirectoryNode" />
-              <item name="Notes" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="ThreeJS" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ThreeJS" type="462c0819:PsiDirectoryNode" />
+              <item name="Lab-In-A-Cube" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Lab-In-A-Cube" type="462c0819:PsiDirectoryNode" />
               <item name="public" type="462c0819:PsiDirectoryNode" />
               <item name="Editor" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="ThreeJS" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ThreeJS" type="462c0819:PsiDirectoryNode" />
+              <item name="Lab-In-A-Cube" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Lab-In-A-Cube" type="462c0819:PsiDirectoryNode" />
               <item name="public" type="462c0819:PsiDirectoryNode" />
-              <item name="Experiments" type="462c0819:PsiDirectoryNode" />
+              <item name="Game" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="ThreeJS" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ThreeJS" type="462c0819:PsiDirectoryNode" />
-              <item name="public" type="462c0819:PsiDirectoryNode" />
-              <item name="Three" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="ThreeJS" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ThreeJS" type="462c0819:PsiDirectoryNode" />
+              <item name="Lab-In-A-Cube" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Lab-In-A-Cube" type="462c0819:PsiDirectoryNode" />
               <item name="public" type="462c0819:PsiDirectoryNode" />
               <item name="Three" type="462c0819:PsiDirectoryNode" />
-              <item name="Plugins" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="ThreeJS" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ThreeJS" type="462c0819:PsiDirectoryNode" />
-              <item name="public" type="462c0819:PsiDirectoryNode" />
-              <item name="Tools" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="ThreeJS" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ThreeJS" type="462c0819:PsiDirectoryNode" />
+              <item name="Lab-In-A-Cube" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Lab-In-A-Cube" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
@@ -249,6 +276,11 @@
     <property name="settings.editor.selected.configurable" value="editor.preferences.smartKeys" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/shelved" />
+      <recent name="$PROJECT_DIR$/public" />
+      <recent name="$PROJECT_DIR$/public/Game" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/public/Configs" />
     </key>
@@ -269,7 +301,7 @@
     <configuration name="index.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/Test1/index.html" useBuiltInWebServerPort="true">
       <method v="2" />
     </configuration>
-    <configuration name="modules.js" type="NodeJSConfigurationType" temporary="true" nameIsGenerated="true" path-to-js-file="$PROJECT_DIR$/public/modules.js" working-dir="$PROJECT_DIR$">
+    <configuration name="modules.js" type="NodeJSConfigurationType" temporary="true" nameIsGenerated="true" path-to-js-file="$PROJECT_DIR$/public/Game/modules.js" working-dir="$PROJECT_DIR$">
       <method v="2" />
     </configuration>
     <recent_temporary>
@@ -297,20 +329,21 @@
       <workItem from="1555957798406" duration="1598000" />
       <workItem from="1556070112495" duration="8961000" />
       <workItem from="1556231023969" duration="526000" />
+      <workItem from="1556407463111" duration="1006000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="64283000" />
+    <option name="totallyTimeSpent" value="65289000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
-    <editor active="true" />
     <layout>
+      <window_info id="npm" side_tool="true" />
       <window_info id="Structure" order="0" sideWeight="0.17590362" side_tool="true" weight="0.22031474" />
       <window_info id="Favorites" order="1" side_tool="true" />
-      <window_info active="true" content_ui="combo" id="Project" order="2" sideWeight="0.8240964" visible="true" weight="0.22031474" />
-      <window_info anchor="bottom" id="Terminal" order="0" weight="0.2" />
+      <window_info active="true" content_ui="combo" id="Project" order="2" sideWeight="0.8240964" visible="true" weight="0.22317597" />
+      <window_info anchor="bottom" id="Terminal" order="0" visible="true" weight="0.2" />
       <window_info anchor="bottom" id="Event Log" order="1" side_tool="true" weight="0.32891566" />
       <window_info anchor="bottom" id="Version Control" order="2" />
       <window_info anchor="bottom" id="Docker" order="3" show_stripe_button="false" />
@@ -381,17 +414,9 @@
     <entry file="file://$PROJECT_DIR$/React/editor.html" />
     <entry file="file://$PROJECT_DIR$/engine.js" />
     <entry file="file://$PROJECT_DIR$/config.js" />
-    <entry file="file://$PROJECT_DIR$/public/favicon.ico">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/TODO.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1635">
-          <caret line="109" column="31" selection-start-line="109" selection-start-column="31" selection-end-line="109" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/loader.js">
+    <entry file="file://$PROJECT_DIR$/public/favicon.ico" />
+    <entry file="file://$PROJECT_DIR$/public/TODO.txt" />
+    <entry file="file://$PROJECT_DIR$/public/Game/loader.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="210">
           <caret line="14" column="9" lean-forward="true" selection-start-line="14" selection-start-column="9" selection-end-line="14" selection-end-column="9" />
@@ -408,55 +433,20 @@
     <entry file="file://$PROJECT_DIR$/public/manifest.json">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/logo.svg">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/Configs/BinaryDemo.djson">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/Configs/BinaryCombinationDemo.djson">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/Configs/BeakerLevelDemo">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="20" column="21" selection-start-line="20" selection-start-column="21" selection-end-line="20" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/Configs/HypotheticalPracticalMacroDemo.djson">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="195">
-          <caret line="13" column="12" selection-start-line="13" selection-start-column="12" selection-end-line="13" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/Configs/TrippyDoggo.djson">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/Configs/SimpleMacroExample.djson">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="21" column="6" lean-forward="true" selection-end-line="50" selection-end-column="38" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/serviceWorker.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="17" column="19" selection-start-line="17" selection-start-column="19" selection-end-line="17" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/logo.svg" />
+    <entry file="file://$PROJECT_DIR$/public/Configs/BinaryDemo.djson" />
+    <entry file="file://$PROJECT_DIR$/public/Configs/BinaryCombinationDemo.djson" />
+    <entry file="file://$PROJECT_DIR$/public/Configs/BeakerLevelDemo" />
+    <entry file="file://$PROJECT_DIR$/public/Configs/HypotheticalPracticalMacroDemo.djson" />
+    <entry file="file://$PROJECT_DIR$/public/Configs/TrippyDoggo.djson" />
+    <entry file="file://$PROJECT_DIR$/public/Configs/SimpleMacroExample.djson" />
+    <entry file="file://$PROJECT_DIR$/src/serviceWorker.js" />
     <entry file="file://$PROJECT_DIR$/public/Editor/index.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="270">
           <caret line="18" column="42" selection-start-line="18" selection-start-column="42" selection-end-line="18" selection-end-column="42" />
         </state>
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/index.html">
-      <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/index.js">
       <provider selected="true" editor-type-id="text-editor" />
@@ -468,13 +458,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/untitled.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="9" selection-start-column="9" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/public/untitled.js" />
     <entry file="file://$PROJECT_DIR$/public/Tools/proxies.js">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -485,13 +469,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/Configs/WorkingMacro4">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="19" column="3" selection-start-line="19" selection-start-column="3" selection-end-line="19" selection-end-column="3" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/public/Configs/WorkingMacro4" />
     <entry file="file://$PROJECT_DIR$/public/Tools/assert.js">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -506,44 +484,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/Experiments/DictionaryProduct.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="435">
-          <caret line="29" column="6" selection-start-line="29" selection-start-column="6" selection-end-line="29" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/Configs/GUI">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret selection-end-line="45" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/Configs/DictProductScopeDemo">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" column="11" selection-start-line="7" selection-start-column="11" selection-end-line="7" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/Configs/WorkingMacro3">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="465">
-          <caret line="31" column="56" selection-start-line="31" selection-start-column="56" selection-end-line="31" selection-end-column="56" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/Configs/WorkingMacro1">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/Configs/DemoLabPouring1">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="435">
-          <caret line="29" column="42" selection-end-line="108" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/public/Experiments/DictionaryProduct.js" />
+    <entry file="file://$PROJECT_DIR$/public/Configs/GUI" />
+    <entry file="file://$PROJECT_DIR$/public/Configs/DictProductScopeDemo" />
+    <entry file="file://$PROJECT_DIR$/public/Configs/WorkingMacro3" />
+    <entry file="file://$PROJECT_DIR$/public/Configs/WorkingMacro1" />
+    <entry file="file://$PROJECT_DIR$/public/Configs/DemoLabPouring1" />
     <entry file="file://$PROJECT_DIR$/public/Tools/r.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3240">
@@ -568,13 +514,7 @@
     <entry file="file://$PROJECT_DIR$/public/Tools/gloves.js">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/App.test.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" selection-start-line="9" selection-end-line="9" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/App.test.js" />
     <entry file="file://$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external/lib.dom.d.ts">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="7893">
@@ -582,31 +522,73 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/engine.js">
+    <entry file="file://$PROJECT_DIR$/src/App.js" />
+    <entry file="file://$PROJECT_DIR$/public/Game/modules.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="7473">
-          <caret line="528" column="20" selection-start-line="528" selection-start-column="20" selection-end-line="528" selection-end-column="20" />
+        <state relative-caret-position="5715">
+          <caret line="381" column="24" selection-start-line="381" selection-start-column="24" selection-end-line="381" selection-end-column="24" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/config.js">
+    <entry file="file://$PROJECT_DIR$/public/Game/config.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="324">
+        <state relative-caret-position="4590">
           <caret line="306" column="53" selection-start-line="306" selection-start-column="8" selection-end-line="306" selection-end-column="53" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/modules.js">
+    <entry file="file://$PROJECT_DIR$/public/Game/engine.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="503">
-          <caret line="381" column="24" lean-forward="true" selection-start-line="381" selection-start-column="24" selection-end-line="381" selection-end-column="24" />
+        <state relative-caret-position="7920">
+          <caret line="528" column="20" selection-start-line="528" selection-start-column="20" selection-end-line="528" selection-end-column="20" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/App.js">
+    <entry file="file://$PROJECT_DIR$/public/Three/three.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="938">
-          <caret line="77" column="30" selection-start-line="77" selection-start-column="30" selection-end-line="77" selection-end-column="30" />
+        <state relative-caret-position="-8082">
+          <caret line="17" column="51" selection-start-line="17" selection-start-column="51" selection-end-line="17" selection-end-column="51" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/Three/three_not_minified.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="369782">
+          <caret line="24704" lean-forward="true" selection-start-line="24704" selection-end-line="24704" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/shelved/Docs/Notes/README">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/shelved/TODO.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="750">
+          <caret line="50" column="59" lean-forward="true" selection-start-line="50" selection-start-column="59" selection-end-line="50" selection-end-column="59" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="11" column="9" selection-start-line="11" selection-start-column="9" selection-end-line="11" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/game.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="510">
+          <caret line="34" column="42" selection-start-line="34" selection-start-column="42" selection-end-line="34" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/style.css">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/shelved/Docs/Notes/ConditionUnderConstruction.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="5" column="7" selection-start-line="5" selection-start-column="7" selection-end-line="5" selection-end-column="7" />
         </state>
       </provider>
     </entry>

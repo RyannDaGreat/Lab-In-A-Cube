@@ -1,3 +1,5 @@
+NOTES: The Game is completely untethered from React: it has no idea react exists. None of it is written in JSX, and none of it needs to be transpiled.
+
 PRIORITITES:
 	Efficiently link react to the game state (no localstorage should be needed)
 	Cache djson from lines 0 to N (will make things faster)
