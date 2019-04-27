@@ -1,0 +1,570 @@
+<!-- This is a really hacky realtime-editor for djson files that I threw together in an hour -->
+<!-- UPDATE: as of april 5 it's DEFINATELY been more than an hour lolol BUT still quite messy. But SOOO useful... -->
+<!-- It can be VERY useful though -->
+<!-- Hints: The entire page is inverted because I like dark schemes > light schemes. The game preview area is also inverted, to invert it back again -->
+<!-- This isn't separated into JS, HTML, CSS files because honestly this is a secondary part of my project, its not used in production so it doesnt matter that much -->
+<head>
+    <meta charset="UTF-8">
+</head>
+<script src="./downloaded/showdown.min.js"></script>
+<script src="./downloaded/codemirror.min.js"></script>
+<script src="./downloaded/markdown.min.js"></script>
+<script src="./downloaded/vim.js"></script>
+<script src="./downloaded/sublime.js"></script>
+<script src="./downloaded/search.js"></script>
+<script src="./downloaded/searchcursor.js"></script>
+<script src="./downloaded/jump-to-line.js"></script>
+<script src="../Tools/proxies.js"></script>
+<script src="../Tools/r.js"></script>
+<script src="../Tools/assert.js"></script>
+<script src="../Tools/djson_macros.js"></script>
+<script src="../Tools/djson.js"></script>
+<script src="../Tools/deltas.js"></script>
+<script src="../Tools/gloves.js"></script>
+<script src="../Tools/keyPath.js"></script>
+<link href="./downloaded/dialog.css" rel="stylesheet">
+<style>
+    @font-face
+    {
+        font-family: 'PT Mono';
+        font-style: normal;
+        font-weight: 400;
+        src: local('PT Mono'), local('PTMono-Regular'), url(ptmono.ttf) format('truetype');
+    }
+
+    *
+    {
+        padding: 0;
+        margin: 0;
+    }
+
+    body
+    {
+        /* position: fixed; */
+        /* overflow: hidden; */
+        overscroll-behavior-y: none;
+        overscroll-behavior-x: none;
+
+    }
+
+    pre
+    {
+        background: white;
+        color: black;
+        /* padding: 10px 16px; */
+        border-radius: 2px;
+        border-top: 4px solid #00AEEF;
+        /* -moz-box-shadow: inset 0 0 10px #000; */
+        /* box-shadow: inset 0 0 10px #000; */
+    }
+
+    *
+    {
+        tab-size: 4;
+        font-family: 'PT Mono', monospace;
+        font-size: 10pt;
+
+    }
+
+    body
+    {
+        filter: invert(1);
+    }
+    div
+    {
+        color: #101000;
+        background-color: white;
+    }
+
+    .cm-tab
+    {
+        background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAMCAYAAAAkuj5RAAAAAXNSR0IArs4c6QAAAGFJREFUSMft1LsRQFAQheHPowAKoACx3IgEKtaEHujDjORSgWTH/ZOdnZOcM/sgk/kFFWY0qV8foQwS4MKBCS3qR6ixBJvElOobYAtivseIE120FaowJPN75GMu8j/LfMwNjh4HUpwg4LUAAAAASUVORK5CYII=);
+        background-position: right;
+        background-repeat: no-repeat;
+    }
+</style>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.40.2/codemirror.css">
+<div id="container" style=''>
+    <div id="editor">
+		<textarea id="editorTextArea">
+		</textarea>
+    </div>
+    <div id="splitbar"></div>
+    <div id="preview" style='overflow:scroll;'>
+        <div id='previewtext' style='height:50%;overflow:scroll;'>
+        </div>
+        <div id='previewiframe' style='height:50%'>
+            <iframe id='iframeid' style='filter:invert(1);' src="../index.html" width="100%" height="100%"></iframe>
+        </div>
+    </div>
+</div>
+<style>
+    html,
+    body
+    {
+
+        padding: 0;
+        margin: 0;
+        height: 100%;
+
+    }
+
+    #container
+    {
+
+        box-sizing: border-box;
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        top: 0px;
+    }
+
+    #editor
+    {
+
+        box-sizing: border-box;
+        width: 49.5%;
+        float: left;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+
+        /* box-shadow: 1px 1px 10px #000;*/
+        border-right: double black;
+
+        z-index: 999;
+
+    }
+
+    iframe
+    {
+        outline: 2px solid red;
+        outline-offset: -2px;
+        margin: 0;
+        border: none;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+    }
+
+    #splitbar:hover
+    {
+        background-color: yellow;
+    }
+
+    #splitbar
+    {
+
+        box-sizing: border-box;
+        padding: 0;
+        width: 10px;
+        height: 100%;
+        float: left;
+
+        cursor: w-resize;
+
+        margin: 0;
+
+        /* background-color: #f00; */
+        color: green;
+
+        z-index: -1;
+
+    }
+
+    #preview
+    {
+
+        box-sizing: border-box;
+        /* padding: 1em; */
+        width: 49.5%;
+        height: 100%;
+        float: left;
+
+        margin: 0;
+        overflow-y: scroll;
+
+        z-index: -1;
+
+    }
+</style>
+<script>
+	var preview={linenumbers: true, json: false}
+
+	function Process(string)
+	{
+		// string=string.replace(/    /g,'\t')
+		parsed=djson.parse(string)
+		if(is_object(parsed.preview))
+			preview=parsed.preview
+		//console.log("config is "+JSON.stringify(parsed,null,4))
+		//console.log(config)
+		try
+		{
+			if('height' in preview)
+			{
+				let h=preview.height
+				if(typeof JSON.parse(h)=='number')
+				{
+					h                                                    =JSON.parse(h)
+					h                                                    =clamp(h, 0, 100)
+					document.getElementById('previewiframe').style.height=preview.height+'%'
+					document.getElementById('previewtext').style.height  =(100-preview.height)+'%'
+				}
+			}
+			else
+			{
+				document.getElementById('previewiframe').style.height='50%'
+				document.getElementById('previewtext').style.height  ='50%'
+			}
+		}
+		catch
+		{
+			document.getElementById('previewiframe').style.height='50%'
+			document.getElementById('previewtext').style.height  ='50%'
+		}
+		if(preview.type==='none')
+			string='Preview type is set to none, so this area wont show a preview. This can make the editor run faster if you use a browser with a slower javascript engine. (I personally found Firefox to be slower than Safari slower than Chrome)'
+		else if(preview.type==='json')
+
+			string=preview.min ? JSON.stringify(parsed) : JSON.stringify(parsed, null, 4)
+		else if(preview.type==='state')
+			string=localStorage.getItem('state')
+		else
+			string=djson.stringify(parsed)
+
+		return string
+	}
+
+	/*
+        TODO:
+            - This entire file Needs HEAVY Refactoring. Appologies, future reader...
+    */
+
+	colors={
+		cyan  : 'string',
+		blue  : 'comment',
+		purple: 'tag',
+		strike: 'strikethrough',
+	}
+
+	//Below is where the syntax highlighting magic happens...
+	// CodeMirror.defineMode('simplemode', function()
+	// {
+	// 	let leaf = false
+	// 	let keyWithSpaces=false
+	// 	let sotl=false//start of trimmed line
+	// 	return {
+	// 		token: function(stream, state)
+	// 		{
+	// 			const current_line=stream.lookAhead(0)
+	// 			const next_line=stream.lookAhead(1)||''
+	// 			// console.log(current_line)
+	// 			let current_level=get_indent_level(current_line)
+	// 			let next_level=get_indent_level(next_line)
+	// 			if(stream.sol())
+	// 				sotl=true
+	// 			stream.match(/\t*/)
+	// 			if(leaf)
+	// 			{
+	// 				stream.match(/[^\t]*/, true)
+	// 				leaf = false
+	// 				if(keyWithSpaces)
+	// 				{
+	// 					keyWithSpaces=false
+	// 					return
+	// 				}
+	// 				sotl=false
+	// 				return colors.blue
+	// 			}
+	// 			if (stream.match(/[^\t ]*[ ][^\t]*/, false))
+	// 			{
+	// 				stream.match(/[^\t ]* /, true)
+	// 				leaf = true
+	// 				const trilly=current_line.trimLeft().split('\t')
+	// 				if(next_level>current_level)
+	// 				{
+	// 					keyWithSpaces=true
+	// 					sotl=false
+	// 					return
+	// 				}
+	// 				sotl=false
+	// 				return colors.cyan
+	// 			}
+	// 			if (stream.match(/[\t]*[^\t ]*[\t]*/))
+	// 			{
+	// 				sotl=false
+	// 				return colors.purple
+	// 			}
+	// 			return //Uncolored
+	// 		}
+	// 	}
+	// })
+
+	// CodeMirror.defineMode('simplemode', function()
+	// {
+	// 	let leaf = false
+	// 	return {
+	// 		token: function(stream, state)
+	// 		{
+	// 			const current_line=stream.lookAhead(0)
+	// 			const next_line=stream.lookAhead(1)
+	// 			console.log(current_line)
+	// 			if(leaf)
+	// 			{
+	// 				stream.match(/[^\t]*/, true)
+	// 				leaf = false
+	// 				return colors.blue
+	// 			}
+	// 			stream.match(/\t*/)
+	// 			if (stream.match(/[^\t ]*[ ][^\t]*/, false))
+	// 			{
+	// 				stream.match(/[^\t ]* /, true)
+	// 				leaf = true
+	// 				return colors.cyan
+	// 			}
+	// 			if (stream.match(/[\t]*[^\t ]*[\t]*/))
+	// 			{
+	// 				return colors.purple
+	// 			}
+	// 			return //Uncolored
+	// 		}
+	// 	}
+	// })
+
+	/*
+        TODO:
+            - Needs Refactoring
+
+            */
+
+	colors={
+		purple : 'string',
+		leafKey: 'string',
+		blue   : 'comment',
+		cyan   : 'tag',
+		strike : 'strikethrough',
+	}
+
+	let bunky=false
+	CodeMirror.defineMode('simplemode', function()
+	{
+		return {
+			token: function(stream, state)
+			{
+				if(bunky)
+				{
+					stream.match(/[^\t]*/, true)
+					bunky=false
+					return colors.blue
+				}
+				stream.match(/\t*/)
+				if(stream.match(/[^\t ]*[ ][^\t]*/, false))
+				{
+					stream.match(/[^\t ]* /, true)
+					if(!stream.eol())
+						bunky=true
+					return colors.leafKey
+				}
+				if(stream.match(/[ ][^\t]*/, true))
+				{
+					return colors.blue
+				}
+				if(stream.match(/ /, true))
+				{
+					return colors.blue
+				}
+				if(stream.match(/[^\t]* /))
+				{
+					return
+				}
+				if(stream.match(/[\t]*[^\t ]*[\t]*/))
+				{
+					// [colors.blue,colors.purple]=[colors.purple,colors.blue]
+					return colors.cyan
+				}
+				// stream.eat(/[\t]*/,false)
+				// stream.next()
+
+				return//Uncolored
+
+			}
+		}
+	})
+
+	var PREVIEW=document.getElementById('preview')
+
+	var converter=new showdown.Converter()
+
+	/* Set Default Text */
+	document.getElementById("previewtext")
+		.innerHTML=converter.makeHtml(`<pre>Welcome to the DJSON (Delta JSON) Editor!
+
+Your progress is always saved in localStorage (on every keystroke), so if you reload the page you should be fine.
+To preview your DJSON as a JSON file, set that in the 'preview' settings (example shown below).
+You can make this somewhere in your djson:
+
+preview
+	type json       (Shows the normalized json form of your current djson)
+	type djson      (Shows the djson you're currently working on after it's been normalized)
+	type state      (Show the current state of the game in djson format, realtime)
+	type none       (Doesnt really do anything...saves a little CPU though)
+	min true
+	min false       (whether to minify if we're looking at a JSON)
+	numbers true
+	numbers false   (Whether to show line numbers)
+	mode vim        (YEAH! My editor supports VIM thanks to codemirror plugins)
+	mode sublime    (This is my personal favorite mode)
+	mode default    (Boring but useful)
+	height 75       (Specify the height percent of the game preview pane)
+
+When you're EDITING text (AKA, the text editor is in focus), and you press control+r (or command+r on a mac),
+it won't refresh the whole page. Instead, it will just refresh the game view.
+This lets you refresh the game view without losing your edit history.
+</pre>`)
+
+	function setText(text)//this is the text in the text editor
+	{
+		// assert.isString(text)
+		editor.setValue(text)
+		localStorage.setItem('config', text)
+	}
+	function getText()
+	{
+		return editor.getValue()
+	}
+	function getConfigDjson()//Returns a string
+	{
+		return localStorage.getItem('config')
+	}
+	function refresh()
+	{
+		//Void
+		let configDjson=getConfigDjson()
+		if(getText()!==configDjson)
+			setText(configDjson)
+	}
+	setInterval(refresh, .2)//Keep the editor in sync with the localstorage file so that the game can modify it and we see changes in the editor, or you can have two editors open, etc.
+
+	document.getElementById("editorTextArea").innerHTML=getConfigDjson() || ""
+
+	var initialconfig=getConfigDjson()
+	//console.log(initialconfig)
+	var initialconfig=djson.parse(initialconfig || "").preview //<---- sloppy code here. No need for this variable
+	var keymap       ='default'
+	//console.log(initialconfig)
+	if(initialconfig && initialconfig.mode in {vim: {}, sublime: {}})
+		keymap=initialconfig.mode
+
+	function refreshGame()
+	{
+		document.getElementById('previewiframe').innerHTML=`<iframe id='iframeid' style='filter:invert(1);' src="../index.html" width="100%" height="100%"></iframe>`
+	}
+	var editor=CodeMirror.fromTextArea(editorTextArea, {
+		extraKeys     : {
+			"Ctrl-R": refreshGame,
+			"Ctrl-S": ()=>{},
+			"Cmd-R" : refreshGame,
+			"Cmd-S" : ()=>{},
+		},
+		lineNumbers   : true,
+		indentWithTabs: true,
+		indentUnit    : 4,
+		undoDepth     : 10000,
+		mode          : 'simplemode',
+		autofocus     : true,
+		keyMap        : keymap,
+	})
+
+	editor.setSize("100%", "100%")
+
+	editor.on("change", (cm, change)=>
+	{
+		const value            =cm.getValue()
+		cm.options.lineWrapping=Boolean(preview.wrap)
+		//
+		if('mode' in preview)
+			if(preview.mode in {vim: {}, sublime: {}})
+				cm.options.keyMap=preview.mode
+			else cm.options.keyMap='default'
+		//
+		cm.options.vimMode=preview.mode==='vim'
+		//
+		if('nogame' in preview)
+			document.getElementById('previewiframe').innerHTML=`preview\n\tnogame\n\n(unset and refresh game preview the game)`
+		//
+		var str=Process(value)
+		localStorage.setItem('config', value)
+		localStorage.setItem('configChanged', 'true') //This is nessecary for efficiency's sake. THe engine won't reload the config without this.
+        // console.log("ASOIDSOIDJAIOJSD")
+		if(preview.numbers) str=numbered_lines_string(str, i=>i+'\t')
+		document.getElementById('previewtext').innerHTML="<pre>"+str+"</pre>"
+	})
+
+	function refreshState()
+	{
+		let string=Process("")
+		if(preview.numbers)
+			string=numbered_lines_string(string)
+		if(preview.type==='state') document.getElementById('previewtext').innerHTML="<pre>"+string+"</pre>"
+	}
+	setInterval(refreshState, .1)
+
+
+	/*
+        Simple Split Pane Implementation
+    */
+	preview_div      =document.getElementById("editor")
+	editor_div       =document.getElementById("preview")
+	split            =document.getElementById("splitbar")
+	split.onmousedown=function(event)
+	{
+		var t        =event.target
+		var xCord    =event.clientX
+		var xPercent =xCord/window.innerWidth
+		t.ondragstart=function()
+		{
+			return false
+		}
+		moveAt(xPercent)
+		function moveAt(xPercent)
+		{
+			var p=(xPercent*100).toFixed(2)
+			if(p<5)
+			{
+				p=5
+			}
+			if(p>95)
+			{
+				p=95
+			}
+			editor_div.style.width =(100-p-1)+"%"
+			preview_div.style.width=p+"%"
+			//console.log(p)
+		}
+		function onMouseMove(event)
+		{
+			var xCord   =event.clientX
+			// var yCord = event.clienty
+			var xPercent=xCord/window.innerWidth
+			// var yPercent = yCord / window.innerHeight
+			moveAt(xPercent)
+		}
+		document.addEventListener('mousemove', onMouseMove)
+		//console.log(t)
+		t.onmouseup=function()
+		{
+			document.removeEventListener('mousemove', onMouseMove)
+			document.removeEventListener('mouseup', onMouseMove)
+			t.onmouseup=null
+		}
+		// Added InCase The Handle Get Orphaned
+		document.addEventListener('mouseup', ()=>
+		{
+			document.removeEventListener('mouseup', onMouseMove)
+			document.removeEventListener('mousemove', onMouseMove)
+		})
+	}
+</script>
