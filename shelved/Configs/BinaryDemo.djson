@@ -1,0 +1,108 @@
+preview
+	height 50
+	mode sublime
+	numbers
+	type state 
+textures
+	dog ./Assets/dog.jpg
+	weird ./Assets/weird.jpg
+	blank ./Assets/blank.png
+sounds
+	woof ./Assets/Sounds/Woof.mp3
+	nyan ./Assets/Sounds/Nyan.mp3
+	sadness ./Assets/Sounds/Sadviolin.mp3
+geometries
+	dog ./Assets/dog.obj
+	flask ./Assets/flask.obj
+items
+	light1 lightItem	light2 lightItem	light3 lightItem	light4 lightItem
+	light5 lightItem	light6 lightItem	light7 lightItem	light8 lightItem
+
+deltas	initialCamera
+	camera	transform
+			position	x 0	y 0	z 1000
+			rotation	x 0	y 0	z 0
+	camera	fov 75
+	scene	transitions	auto null
+
+deltas	autonull	scene	transitions	auto null
+
+items	box0 boxItem
+deltas	box0up	inherit autonull
+	box0	transform	position	y 500	x 0
+	scene	transitions	drag	box0	box0	delta box0down	time 1
+deltas	box0down	inherit autonull
+	box0	transform	position	y -500
+	scene	transitions	drag	box0	box0	delta box0up	time 1
+
+items	box1 boxItem
+deltas	box1up	inherit autonull
+	box1	transform	position	y 500	x 1000
+	scene	transitions	drag	box1	box1	delta box1down	time 1
+deltas	box1down	inherit autonull
+	box1	transform	position	y -500
+	scene	transitions	drag	box1	box1	delta box1up	time 1
+
+items	box2 boxItem
+deltas	box2up	inherit autonull
+	box2	transform	position	y 500	x 2000
+	scene	transitions	drag	box2	box2	delta box2down	time 1
+deltas	box2down	inherit autonull
+	box2	transform	position	y -500
+	scene	transitions	drag	box2	box2	delta box2up	time 1
+
+items	box3 boxItem
+deltas	box3up	inherit autonull
+	box3	transform	position	y 500	x 3000
+	scene	transitions	drag	box3	box3	delta box3down	time 1
+deltas	box3down	inherit autonull
+	box3	transform	position	y -500
+	scene	transitions	drag	box3	box3	delta box3up	time 1
+
+items	box4 boxItem
+deltas	box4up	inherit autonull
+	box4	transform	position	y 500	x 4000
+	scene	transitions	drag	box4	box4	delta box4down	time 1
+deltas	box4down	inherit autonull
+	box4	transform	position	y -500
+	scene	transitions	drag	box4	box4	delta box4up	time 1
+
+items	box5 boxItem
+deltas	box5up	inherit autonull
+	box5	transform	position	y 500	x 5000
+	scene	transitions	drag	box5	box5	delta box5down	time 1
+deltas	box5down	inherit autonull
+	box5	transform	position	y -500
+	scene	transitions	drag	box5	box5	delta box5up	time 1
+
+items	box6 boxItem
+deltas	box6up	inherit autonull
+	box6	transform	position	y 500	x 6000
+	scene	transitions	drag	box6	box6	delta box6down	time 1
+deltas	box6down	inherit autonull
+	box6	transform	position	y -500
+	scene	transitions	drag	box6	box6	delta box6up	time 1
+
+deltas	initial
+	inherit box0up box1up box2up box3up box4up box5up box6up
+
+deltas	initial
+	overlay	text Welcome to Lab In a Cube!
+	overlay	size 40
+	
+	scene	transitions	smooth 1
+	
+	// All lights
+	light1	intensity 0.1	transform	position	x -10000	y -10000	z -10000
+	light2	intensity 0.1	transform	position	x -10000	y -10000	z  10000
+	light3	intensity 0.1	transform	position	x -10000	y  10000	z -10000
+	light4	intensity 0.1	transform	position	x -10000	y  10000	z  10000
+	light5	intensity 0.1	transform	position	x  10000	y -10000	z -10000
+	light6	intensity 0.1	transform	position	x  10000	y -10000	z  10000
+	light7	intensity 0.1	transform	position	x  10000	y  10000	z -10000
+	light8	intensity 0.1	transform	position	x  10000	y  10000	z  10000
+	
+	// Scenery
+	scene	ambience	intensity 0.8	color	r 1	g 1	b 1
+	scene	transitions	auto	delta initial	time 1
+	camera	transform	position	z 5000	x 3000

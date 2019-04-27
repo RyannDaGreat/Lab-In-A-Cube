@@ -1,0 +1,24 @@
+preview	nogam 	height 90	type d	mode sublime	numbers
+items	b simpleBeaker
+
+
+geometries	simpleBeakerFluid ./Assets/Models/SimpleBeaker/Fluid.obj
+geometries	simpleBeakerBeaker ./Assets/Models/SimpleBeaker/Beaker.obj
+
+deltas	initial
+	b	transform	scale	overall 10
+	b	geometry simpleBeakerBeaker
+	b	fluid	geometry simpleBeakerFluid
+	b	material	modes	basic	color	r 1	g 1	b 1
+	b	fluid	material	modes	basic	g 0
+	b	material	mode basic
+	b	fluid	transform	scale	y 1
+	camera	transform	position	z 101	y 70
+	camera	transform	rotation	x -30
+	camera	fov 30
+	scene	ambience	intensity .4
+	scene	transitions	auto	delta unfill	time 1
+	b	transform	rotation	y 0
+deltas	unfill	b	fluid	transform	scale	y 0
+deltas	unfill	scene	transitions	auto	delta initial	time 1
+deltas	unfill	b	transform	rotation	y 180

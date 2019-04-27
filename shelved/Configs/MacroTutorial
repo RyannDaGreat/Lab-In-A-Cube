@@ -1,0 +1,410 @@
+x
+~
+	@
+		x a
+
+IS
+
+a
+
+-------------------
+
+x
+~
+	@
+		x a
+	@
+		x b
+
+IS
+
+a
+b
+
+-------------------
+
+x
+y
+~
+	@
+		x a
+
+IS
+
+a
+y
+
+-------------------
+
+x
+y
+~
+	@
+		x a
+		y b
+
+IS
+
+a
+b
+
+-------------------
+
+x Hello
+y World
+~
+	@
+		x a
+		y b
+
+IS
+
+a Hello
+b World
+
+-------------------
+
+x Hello
+y World
+~
+	@
+		x a
+		y b
+	@
+		x c
+		y d
+
+IS
+
+a Hello
+b World
+c Hello
+d World
+
+-------------------
+
+(Joining two macros into the same key with the ~ operator)
+
+x~y Hello
+~
+	@
+		x a
+		y b
+
+IS
+
+ab Hello
+
+-------------------
+
+x~y Hello
+~
+	@
+		x a
+		y b
+	@
+		x c
+		y d
+
+IS
+
+ab Hello
+cd Hello
+
+-------------------
+
+(Modifying string values, not just keys)
+
+x~y Hello
+~
+	@
+		x a
+		y b
+		Hello Goodbye
+	@
+		x c
+		y d
+		Hello World
+
+IS
+
+ab Goodbye
+cd World
+
+-------------------
+
+x~y
+	Hello
+~
+	@
+		Hello World
+	@
+		x a
+		y b
+	@
+		x c
+		y d
+
+IS
+
+ab
+	World
+cd
+	World
+
+-------------------
+
+x~y
+	Hello
+~
+	@
+		Hello World
+	@
+		Hello Goodbye
+	@
+		x a
+		y b
+	@
+		x c
+		y d
+
+ab
+	World
+	Goodbye
+cd
+	World
+	Goodbye
+
+-------------------
+
+x~y
+	Hello
+		x Yankee
+		y Doodle
+		x~y Yankee Doodle
+~
+	@
+		Hello World
+	@
+		Hello Goodbye
+	@
+		x a
+		y b
+	@
+		x c
+		y d
+
+IS
+
+ab
+	Goodbye
+		a Yankee
+		b Doodle
+		ab Yankee Doodle
+	World
+		a Yankee
+		b Doodle
+		ab Yankee Doodle
+cd
+	World
+		c Yankee
+		d Doodle
+		cd Yankee Doodle
+	Goodbye
+		c Yankee
+		d Doodle
+		cd Yankee Doodle
+
+-------------------
+
+x~y
+	Hello
+		x Y
+		y D
+		x~y Y~ and ~D
+~
+	@
+		Hello World
+	@
+		Hello Goodbye
+	@
+		Y Yankee
+	@
+		D Doodle
+	@
+		x a
+		y b
+	@
+		x c
+		y d
+
+IS
+
+
+ab
+	Goodbye
+		a Yankee
+		b Doodle
+		ab Yankee and Doodle
+	World
+		a Yankee
+		b Doodle
+		ab Yankee and Doodle
+cd
+	World
+		c Yankee
+		d Doodle
+		cd Yankee and Doodle
+	Goodbye
+		c Yankee
+		d Doodle
+		cd Yankee and Doodle
+
+---------------
+
+x~.~y
+~
+	@	x 0
+	@	x 1
+	@	x 2
+	@	y 0
+	@	y 1
+	@	y 2
+
+IS 
+
+2.0
+0.0
+1.0
+1.1
+0.1
+2.1
+2.2
+0.2
+1.2
+
+---------------
+
+(Nested Macros: the same as above but less redundant)
+
+x~.~y
+~
+	@	x n
+	@	y n
+	~
+		@	n 0
+		@	n 1
+		@	n 2
+
+IS
+
+
+0.0
+1.0
+1.1
+0.1
+2.1
+2.0
+2.2
+0.2
+1.2
+
+---------------
+
+(Nested macros: with a small change we can add another dimension: z)
+
+x~.~y~.~z
+~
+	@	x n
+	@	y n
+	@	z n
+	~
+		@	n 0
+		@	n 1
+		@	n 2
+
+IS
+
+0.0.0
+1.0.0
+1.1.0
+0.1.0
+0.1.1
+0.0.1
+1.0.1
+1.1.1
+2.1.1
+2.0.1
+2.0.0
+2.1.0
+2.2.0
+0.2.0
+1.2.0
+1.2.1
+0.2.1
+2.2.1
+2.2.2
+0.2.2
+0.0.2
+1.0.2
+1.1.2
+0.1.2
+2.1.2
+2.0.2
+1.2.2
+
+
+--------------------
+
+(Math expressions are ONLY parsed in leaves (not keys), but by using macros you can get around this)
+
+s
+~
+	@	s v~ +2* ~w~ +4* ~x~ +8* ~y~ +16* ~z
+	~
+		@	v n
+		@	w n
+		@	x n
+		@	y n
+		@	z n
+		~
+			@	n 0
+			@	n 1
+
+IS
+
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+
+
+

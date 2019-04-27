@@ -1,0 +1,17 @@
+scene	transitions	drag	tube_1	slot_1	tube_1_in_slot_1
+scene	transitions	drag	tube_1	slot_2	tube_1_in_slot_2
+...
+
+scene	transitions	drag	tube_~X	slot_~Y	tube_~X~_in_slot_~Y
+deltas	tube_~X~_in_slot_~Y	tube_~X	position	slot_pos
+~	Y			1 1		2 2		3 3		4 4		5 5		6 6
+~	slot_pos	1 posA	2 posB	3 posC	4 posD	5 posE	6 posF
+~	X _X_
+~	~	_X_
+			1	1
+			2	2
+			3	3
+			4	4
+			5	5
+			6	6
+

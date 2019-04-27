@@ -1,0 +1,185 @@
+@macro				(apply macro to scope it was declared in)  (STRICTLY post-processing. This does not modify the basic djson format.)
+	A.
+
+Q: Should macros JUST modify keys or should they modify strings too?
+Q: Should macros JUST edit tokens (space-separated creatures)?
+Q: Can we allow overwriting objects with strings and vice versa? (Yes, as long as the order (lost before postprocessing) doesn't matter)
+Q: Should macros completely replace every instance of space-separated keys? (MAaayyyybbeee? I'm going to say NO for now...)
+Q: Should macros modify whole scope they're declared in? (Yes, because macros are strictly post-processing, because BSON can transfer unexpanded macros faster)
+Q: Should we have a dedicated macro keyword? (Ideally no...perhaps rule: Cannot ever have empty-string keys. Problem then: what does '\t \t' (tab-space-tab) mean? Also, macros are a post-processed effect, so we can't break current syntax...)
+Q: Should macros be able to join keys together to make new keys? (YES because test-tubes to centrifuge n^2 pattern)
+Q: Can macros replace delta-inheritance? (YES but I don't know how we'd make a GUI for it)
+Q: Should macros be recursive?  (DON'T KNOW. But I think the answer is probably NO, beause we don't want to allow infinite loops. You can nest macros though.)
+Q: Should individual macros be defined in thier scope with a special character (preferable easy-to-read)
+Q: Should joining-character be different from macro character?
+Q: Should macros be defined by a key or a prefix? (KEY because then we can nest them.)
+Q: SHould the post-processor for macros be run BEFORE or AFTER running the to-json-value post-processor (I.e. converting to floats and bools etc)  (BEFORE)
+Q: Might macros never ACTUALLY be expanded? (Perhaps...which is why ~ as a delimiter might help a lot?)
+
+Spaces are the ONLY TRUE separators...
+
+
+@scope
+	items	box_ boxItem
+	deltas	box_up
+		box_	transform	position	y 500	x pos_x
+		scene	transitions
+			drag	box_	box_	time .3	delta suprise if secret else box_down
+	deltas	box0down
+		box0	transform	position	y -500
+		scene	transitions
+			drag	box_	box_	time .3	delta suprise if secret else box_up
+	@with
+		box_		0 box0		1 box1		2 box2		3 box3		4 box4		5 box5
+		box_up		0 box0up	1 box1up	2 box2up	3 box3up	4 box4up	5 box5up
+		box_down	0 box0down	1 box1down	2 box2down	3 box3down	4 box4down	5 box5down
+		pos_x		0    0000	1    1000	2    2000	3    3000	4    4000	5    5000
+
+
+
+
+
+
+@scope
+	@scope
+		items	box_ boxItem
+		deltas	box_up
+			box_	transform	position	y 500	x pos_x
+			scene	transitions
+				drag	box_	box_	time .3	delta suprise if secret else box_down
+		deltas	box_down
+			box_	transform	position	y -500
+			scene	transitions
+				drag	box_	box_	time .3	delta suprise if secret else box_up
+		@with
+			box_ box0
+			box_up box0up
+			box_down box0down
+			pos_x 0000
+
+
+
+
+@scope
+	items	box_ boxItem
+	deltas	box_up
+		box_	transform	position	y 500	x pos_x
+		scene	transitions
+			drag	box_	box_	time .3	delta suprise if secret else box_down
+	deltas	box0down
+		box0	transform	position	y -500
+		scene	transitions
+			drag	box_	box_	time .3	delta suprise if secret else box_up
+	@with
+		box_		N box~N
+		box_up		N box~N~up
+		box_down	N box~N~down
+		pos_x		N     N~000
+		N 0 1 2 3 4 5 6 7 8 9 10
+
+
+For every chunk in ~splits:
+	if(chunk in dict)
+		c
+
+
+NEW METHOD:
+
+items	box_ boxItem
+deltas	box_up
+	box_	transform	position	y 500	x pos_x
+	scene	transitions
+		drag	box_	box_	time .3	delta suprise if secret else box_down
+deltas	box0down
+	box0	transform	position	y -500
+	scene	transitions
+		drag	box_	box_	time .3	delta suprise if secret else box_up
+
+
+
+
+
+~ is a very special character as well as tabs and spaces and newlines. No string or key can have this character once post-processed.
+
+
+
+~	~	N 0 1 2 3 4 5 6 7
+~	box_		N box~N
+~	box_up		N box~N~up
+~	box_down	N box~N~down
+~	pos_x		N     N
+
+
+items	box_ boxItem
+deltas	box_up
+	box_	transform	position	y 500	x pos_x
+	scene	transitions
+		drag	box_	box_	time .3	delta suprise if secret else box_down
+deltas	box0down
+	box0	transform	position	y -500
+	scene	transitions
+		drag	box_	box_	time .3	delta suprise if secret else box_up
+
+
+
+Colons separate macros etc. They NEVER apply to strings. Unfortunately. 
+
+To declare macro, ':' must be at end of key.
+To join macros together (into a single key) put text to left of ':'. It will be replaced up to next ':' IFF that macro exists
+
+
+
+
+items	box_ boxItem
+deltas	box_up
+	box_	transform	position	y 500	x pos_x
+	scene	transitions
+		drag	box_	box_	time .3	delta suprise if secret else box_down
+deltas	box0down
+	box0	transform	position	y -500
+	scene	transitions
+		drag	box_	box_	time .3	delta suprise if secret else box_up
+
+
+
+@replace
+	@this
+		items	box_ boxItem
+		deltas	box_up
+			box_	transform	position	y 500	x pos_x
+			scene	transitions
+				drag	box_	box_	time .3	delta suprise if secret else box_down
+		deltas	box0down
+			box0	transform	position	y -500
+			scene	transitions
+				drag	box_	box_	time .3	delta suprise if secret else box_up
+	@with	@replace
+		@this
+			box_		N box+N
+			box_up		N box+N+up
+			box_down	N box+N+down
+			pos_x		N     N
+		@with
+			N 0 1 2 3 4 5
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@scope   (bump contents one-lower. This must be post-processing somehow...but it would mean overwriting in an undefined order....so I might have to abandon it.)

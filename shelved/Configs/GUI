@@ -1,0 +1,46 @@
+mesh
+	texture default
+	geometry box
+	parent scene:ITEMS
+	visible true
+	material
+		mode  basic:basic,standard,phong
+		modes		basic,standard,phong
+			color	r,g,b 1:0,1
+			opacity       1:0,1
+			transparent false
+			depthWrite  true
+			wireframe   true
+	transform
+		position,rotation	x,y,z 0
+		scale				x,y,z,overall 1
+
+overlay
+	size 30:0,
+	text Overlay
+
+light
+	intensity 1
+	visible true
+	position	x,y,z 0
+
+scene
+	background	r,g,b .5:0,1
+	transitions
+		drag	ITEMS	ITEMS	delta none:none,ITEMS	time 0:0,
+		enter,leave		ITEMS	delta none:none,ITEMS	time 0:0,
+		auto					delta none:none,ITEMS	time 0:0,
+
+camera
+	transform	position,rotation	x,y,z 0
+	fov 40
+
+label
+	transform
+		position	x,y,z 0
+		scale		x,y,z,overall 1
+	visible true
+	xray    true
+	parent scene:ITEMS
+	text Label
+	size 1

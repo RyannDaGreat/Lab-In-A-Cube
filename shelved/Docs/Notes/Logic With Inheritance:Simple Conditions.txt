@@ -1,0 +1,35 @@
+Deltas A,B,C,D,E
+
+Do delta Z if not A nor B nor C ...
+AKA not (A or B or C or D or E)
+
+
+Assume condition is a stack of deltas for 'or' and has an 'else' argument
+
+Z-if-A-or-B-or-C-or-D-or-E
+	inherit Z
+
+not-A	inherit impossible	condition A
+not-B	inherit impossible	condition B
+not-C	inherit impossible	condition C
+not-D	inherit impossible	condition D
+not-E	inherit impossible	condition E
+
+nor-A-B-C-D-E	inherit not-A not-B not-C not-D not-E
+
+Z-if-nor-A-B-C-D-E
+	
+
+or-A-B-C-D-E	inherit impossible	condition nor-A-B-C-D-E
+
+
+
+Z-if-nor-A-B-C-D-E
+	inherit Z
+	condition 
+
+
+
+Z-if-not-A
+	inherit Z
+	condition not-A

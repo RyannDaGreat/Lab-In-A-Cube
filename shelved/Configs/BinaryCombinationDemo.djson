@@ -1,0 +1,106 @@
+preview
+	height 50
+	mode sublime
+	numbers
+	type state 
+textures
+	dog ./Assets/dog.jpg
+	weird ./Assets/weird.jpg
+	blank ./Assets/blank.png
+sounds
+	woof ./Assets/Sounds/Woof.mp3
+	nyan ./Assets/Sounds/Nyan.mp3
+	sadness ./Assets/Sounds/Sadviolin.mp3
+geometries
+	dog ./Assets/dog.obj
+	flask ./Assets/flask.obj
+items
+	light1 lightItem	light2 lightItem	light3 lightItem	light4 lightItem
+	light5 lightItem	light6 lightItem	light7 lightItem	light8 lightItem
+
+items	box0 boxItem
+deltas	box0text	overlay	text Box0
+deltas	box0up		box0	transform	position	y  500	x 0
+deltas	box0down	box0	transform	position	y -500
+deltas	box0up		scene	transitions	drag	box0	box0	time .3	delta suprise if secret else box0down
+deltas	box0down	scene	transitions	drag	box0	box0	time .3	delta suprise if secret else box0up
+deltas	initial		scene	transitions	enter	box0	delta box0text
+deltas	initial		scene	transitions	leave	box0	delta noText
+
+items	box1 boxItem
+deltas	box1text	overlay	text Box1
+deltas	box1up		box1	transform	position	y  500	x 1000
+deltas	box1down	box1	transform	position	y -500
+deltas	box1up		scene	transitions	drag	box1	box1	time .3	delta suprise if secret else box1down
+deltas	box1down	scene	transitions	drag	box1	box1	time .3	delta suprise if secret else box1up
+deltas	initial		scene	transitions	enter	box1	delta box1text
+deltas	initial		scene	transitions	leave	box1	delta noText
+
+items	box2 boxItem
+deltas	box2text	overlay	text Box2
+deltas	box2up		box2	transform	position	y  500	x 2000
+deltas	box2down	box2	transform	position	y -500
+deltas	box2up		scene	transitions	drag	box2	box2	time .3	delta suprise if secret else box2down
+deltas	box2down	scene	transitions	drag	box2	box2	time .3	delta suprise if secret else box2up
+deltas	initial		scene	transitions	enter	box2	delta box2text
+deltas	initial		scene	transitions	leave	box2	delta noText
+
+items	box3 boxItem
+deltas	box3text	overlay	text Box3
+deltas	box3up		box3	transform	position	y  500	x 3000
+deltas	box3down	box3	transform	position	y -500
+deltas	box3up		scene	transitions	drag	box3	box3	time .3	delta suprise if secret else box3down
+deltas	box3down	scene	transitions	drag	box3	box3	time .3	delta suprise if secret else box3up
+deltas	initial		scene	transitions	enter	box3	delta box3text
+deltas	initial		scene	transitions	leave	box3	delta noText
+
+items	box4 boxItem
+deltas	box4text	overlay	text Box4
+deltas	box4up		box4	transform	position	y  500	x 4000
+deltas	box4down	box4	transform	position	y -500
+deltas	box4up		scene	transitions	drag	box4	box4	time .3	delta suprise if secret else box4down
+deltas	box4down	scene	transitions	drag	box4	box4	time .3	delta suprise if secret else box4up
+deltas	initial		scene	transitions	enter	box4	delta box4text
+deltas	initial		scene	transitions	leave	box4	delta noText
+
+items	box5 boxItem
+deltas	box5text	overlay	text Box5
+deltas	box5up		box5	transform	position	y  500	x 5000
+deltas	box5down	box5	transform	position	y -500
+deltas	box5up		scene	transitions	drag	box5	box5	time .3	delta suprise if secret else box5down
+deltas	box5down	scene	transitions	drag	box5	box5	time .3	delta suprise if secret else box5up
+deltas	initial		scene	transitions	enter	box5	delta box5text
+deltas	initial		scene	transitions	leave	box5	delta noText
+
+items	box6 boxItem
+deltas	box6text	overlay	text Box6
+deltas	box6up		box6	transform	position	y  500	x 6000
+deltas	box6down	box6	transform	position	y -500
+deltas	box6up		scene	transitions	drag	box6	box6	time .3	delta suprise if secret else box6down
+deltas	box6down	scene	transitions	drag	box6	box6	time .3	delta suprise if secret else box6up
+deltas	initial		scene	transitions	enter	box6	delta box6text
+deltas	initial		scene	transitions	leave	box6	delta noText
+
+deltas	secret	inherit box0down box1up box2down box3up box4down box5up box6down
+deltas	suprise	overlay	text YOU FOUND THE SECRET COMBO!!!
+
+deltas	autonull	scene	transitions	auto null
+deltas	noText	overlay	text 
+
+deltas	initial
+	inherit box0up box1up box2up box3up box4up box5up box6up noText
+	overlay	size 40	text Welcome to Lab In a Cube!
+	scene	ambience	intensity 0.8	color	r 1	g 1	b 1
+	camera	transform	position	z 5000	x 3000
+	
+	scene	transitions	smooth 1
+	
+	// All lights
+	light1	intensity 0.1	transform	position	x -10000	y -10000	z -10000
+	light2	intensity 0.1	transform	position	x -10000	y -10000	z  10000
+	light3	intensity 0.1	transform	position	x -10000	y  10000	z -10000
+	light4	intensity 0.1	transform	position	x -10000	y  10000	z  10000
+	light5	intensity 0.1	transform	position	x  10000	y -10000	z -10000
+	light6	intensity 0.1	transform	position	x  10000	y -10000	z  10000
+	light7	intensity 0.1	transform	position	x  10000	y  10000	z -10000
+	light8	intensity 0.1	transform	position	x  10000	y  10000	z  10000

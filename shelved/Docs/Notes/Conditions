@@ -1,0 +1,76 @@
+Here's how conditions are evaluated. This algoritm is a bit complicated because it has to handle the edge case where conditions depend upon each other in (possibly) circular loops
+DEFINITION of a condition(delta): if applying that delta to the state would have ANY effect at all, then it's false. Else, it's true. 
+Calculated by the qestion: if we let condition(delta) be true, would it be able to change state when applied to it?
+
+condition(id,s=new Set)
+	total={}	//Sum up deltas here
+	if s.has(id) return true	//Base case
+	for idi of inheritanceChain(id).reversed():												//Should this be reversed? IFF it's not, then we have to use 'x + total' wherever we use 'total + x' and vice versa. I think I accidently made the electron negative....oh well. Oops. I guess we can fix that with refactoring. inheritanceChain is conceptually backwards (not a technical problem, just an ugliness)??
+		if condition(idi,s|{idi})
+			if stateContains(getRawDeltaByID(idi) + total)
+				total = getRawDeltaByID(idi) + total
+			else return false
+		else continue
+	assert stateContains(total)
+	return true
+
+I THINK the above function is correct...ive spent a day or so working on it so I certainly hope it is......it still needs to be tested (as of march27,2019)
+
+//Question: Should we include 'vacuous truth'? This is a stange case where the size of the state dict changes with time....I don't think it really matters though.
+
+I have no idea what the complexity of this algorithm is, but it could be way better. We could cache condition with respect to ID's until things change etc. But that sonuds like premature optimization for now... 
+
+let a delta called 'impossible' exist
+
+How can I test this?
+
+
+Lets say that items state looks like this:
+	a
+		x 0
+		y 0
+
+Test cases:
+	delta empty
+	delta a
+		x 1
+		inherit b
+	delta b
+		x 0
+		inherit a
+	delta impossible
+		x 1
+	delta d
+		inherit a b
+	delta e
+		inherit b a
+	delta f
+		condition impossible
+	delta g
+		x 1
+		condition impossible
+	delta h
+		x 1
+		condition h
+	delta i
+		x 1
+		inherit i
+		condition i
+
+
+	Primitive conditions:
+		evalCondition(empty) should be true (because no-matter what, empty has no content)
+		evalCondition(a) should be false
+		evalCondition(b) should be false
+		evalCondition(impossible) should be false
+		evalCondition(d) should be true
+		evalCondition(e) should be false
+	Simple conditions: <have conditions on unconditional deltas>
+		evalCondition(f) should be true (because no-matter what c is, f has no content)
+		evalCondition(g) should be true (because c is false and so g's condition isn't met so g is empty)
+		evalCondition(h) SEEMS like a paradox at first glance...but it's definately false. Because, if we said it was true, and we applied it, it would have an effect (which would contradict that it was true). But, if we assumed it was false, that would be stable: 
+		evalCondition(i) Should be false....but shouldn't break condition with a recursion error...
+
+
+
+

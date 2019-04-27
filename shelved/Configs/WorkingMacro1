@@ -1,0 +1,25 @@
+preview	nogam 	height 50	type json	mode sublime	numbers
+
+
+~scope
+	 We're going to pour the beaker into the flask
+	items	beaker~n mesh
+	items	flask~n mesh
+	
+	deltas	initial	beaker~n	transform	position	x bx	y by	z bz
+	deltas	initial	flask~n		transform	position	x fx	y fy	z fz
+	deltas	pour~n	flask~n		transform	position	x bx	y by~+100	z bz
+	deltas	pour~n	scene	transitions	auto						delta initial	time 1
+	deltas	initial	scene	transitions	drag	beaker~n	flask~n	delta pour~n	time 1
+	deltas	initial	flask~n,beaker~n	transform	scale	overall .1
+	deltas	initial	camera	transform	position	z 300	y 100	x 0
+	deltas	initial	camera	transform	rotation	x -30
+	deltas	initial	flask~n	material	modes	basic	color	r 1	g 1	b 1
+	~
+		i	n i	bx i~00	by -50	bz 0	fx i~00	fy 0	fz -100
+		~
+			-2	i -2
+			-1	i -1
+			0	i 0
+			1	i 1
+			2	i 2

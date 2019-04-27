@@ -1,0 +1,51 @@
+ Macros Are NOT a complete feature yet. Please check bugs such as the '+1000' not turning into a number!
+
+preview	type djson	nogame true	height 0	numbers
+
+	light1	intensity 0.1	transform	position	x -10000	y -10000	z -10000
+	light2	intensity 0.1	transform	position	x -10000	y -10000	z  10000
+	light3	intensity 0.1	transform	position	x -10000	y  10000	z -10000
+	light4	intensity 0.1	transform	position	x -10000	y  10000	z  10000
+	light5	intensity 0.1	transform	position	x  10000	y -10000	z -10000
+	light6	intensity 0.1	transform	position	x  10000	y -10000	z  10000
+	light7	intensity 0.1	transform	position	x  10000	y  10000	z -10000
+	light8	intensity 0.1	transform	position	x  10000	y  10000	z  10000
+
+
+Commas
+	 Some syntactic sugar: use commas in key-names like this...
+	a,b,c
+		1,2,3 xyz
+	b,c
+		1,3 I'm a rebel!
+
+Heroes
+	~Scopey
+		 There is work to be done here...this section needs some debugging
+		Universal~Replacement
+		Universal~Income
+		YourNew~~~Replacement
+		~	Replacement Heroin	Income Money
+
+~Scoper
+	 Scopes can be used to make reuse macros that use the same variables for differnt purposes
+	 (This is because macros are local to scopes)
+	 Scopes essentially get evaluated, then bumped-down a level on the hierarchy
+
+~CartesianProductDerivation
+	light~#	intensity brightness	transform	position	x X~distance	y Y~distance	z Z~distance
+	~
+		 Still not perfect...I see 'light#' in the keys...
+		brightness .3
+		distance 10000
+		 Adding the Z-Component
+		x~y~-		X x		Y y		Z -		# x~y~-
+		x~y~+		X x		Y y		Z +		# x~y~+
+		~
+			X~-		x X		y -
+			X~+		x X		y +
+			~
+				-	X -
+				+	X +
+
+X,Y	X,Y	X,Y	X,Y Exponential Explosion!

@@ -1,0 +1,97 @@
+preview
+	height 0
+	mode sublime
+	numbers
+	type json
+	nogame
+ 
+ 
+// To prevent order from having any effect, 
+@replace
+	@this
+		items	box_ boxItem
+		deltas	box_up
+			box_	transform	position	y 500	x pos_x
+			scene	transitions
+				drag	box_	box_	time .3	delta suprise if secret else box_down
+		deltas	box0down
+			box0	transform	position	y -500
+			scene	transitions
+				drag	box_	box_	time .3	delta suprise if secret else box_up
+	@with
+		box_		0 box0		1 box1		2 box2		3 box3		4 box4		5 box5  
+		box_up		0 box0up	1 box1up	2 box2up	3 box3up	4 box4up	5 box5up  
+		box_down	0 box0down	1 box1down	2 box2down	3 box3down	4 box4down	5 box5down
+		pos_x		0    0000	1    1000	2    2000	3    3000	4    4000	5    5000
+
+
+
+
+
+
+
+
+
+
+@replace
+	@this
+		items	box_ boxItem
+		deltas	box_up
+			box_	transform	position	y 500	x pos_x
+			scene	transitions
+				drag	box_	box_	time .3	delta suprise if secret else box_down
+		deltas	box0down
+			box0	transform	position	y -500
+			scene	transitions
+				drag	box_	box_	time .3	delta suprise if secret else box_up
+	@with	@replace
+		@this
+			box_		N box+N
+			box_up		N box+N+up
+			box_down	N box+N+down
+			pos_x		N     N
+		@with
+			N 0 1 2 3 4 5
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+items	box0 boxItem
+deltas	box0up
+	box0	transform	position	y 500	x 0
+	scene	transitions
+		drag	box0	box0	time .3	delta suprise if secret else box0down
+deltas	box0down
+	box0	transform	position	y -500
+	scene	transitions
+		drag	box0	box0	time .3	delta suprise if secret else box0up
+
+items	box1 boxItem
+deltas	box1up
+	box1	transform	position	y 500	x 1000
+	scene	transitions
+		drag	box1	box1	time .3	delta suprise if secret else box1down
+deltas	box1down
+	box1	transform	position	y -500
+	scene	transitions
+		drag	box1	box1	time .3	delta suprise if secret else box1up
+
+items	box2 boxItem
+deltas	box2up
+	box2	transform	position	y 500	x 2000
+	scene	transitions
+		drag	box2	box2	time .3	delta suprise if secret else box2down
+deltas	box2down
+	box2	transform	position	y -500
+	scene	transitions
+		drag	box2	box2	time .3	delta suprise if secret else box2up

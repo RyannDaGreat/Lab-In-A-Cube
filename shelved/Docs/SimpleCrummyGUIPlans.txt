@@ -1,0 +1,17 @@
+ State-Stack: Just a display (To navigate you have to use items in the scene to transition etc)
+Reset Button (Refreshes the iframe)
+Deltas OR Materials OR Geometries OR Textures OR Sounds OR (Other Category) (Combobox)
+	--> Each points to a react component and gets fed its' props. 
+	(LATER IT WOULD BE NICE TO HAVE A GRID-VIEW OF DELTAS AND ITEMS)
+	Add Delta Button (Ideally goes to a modal dialog?? Or just reads from a textbox perhaps...)
+	Add Item Button (Ideally goes to a modal dialog too, giving requirements to the user) 
+	DeltaID	(Combobox) (Select from all deltas)
+	ItemID (Combobox) (Select from all items)
+		Item GUIs (Custom per item)
+		(FORGET ABOUT ATTRIBUTE GUIS FOR NOW)
+
+
+can be enabled/disabled to add/remove from delta, perhaps by right clicking. When not enabled, will not display anything.
+	Class NumberInput
+	Class ComboInput
+	Class StringInput

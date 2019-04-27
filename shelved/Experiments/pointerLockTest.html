@@ -1,0 +1,112 @@
+<body>
+  <style>
+    html {
+  font-family: Segoe, sans-serif;
+}
+
+canvas {
+  display: block;
+  margin: 0 auto;
+  border: 2px solid black;
+}
+
+div {
+  width: 48rem;
+  margin: 0 auto;
+  line-height: 1.25;
+}
+
+#logdiv {
+  text-align: center;
+}
+
+h1 {
+  font-size: 2rem;
+  text-align: center;
+}
+
+p {
+  font-size: 1rem;
+}
+  </style>
+  <div>
+    <canvas width="590" height="100">
+      Your browser does not support HTML5 canvas
+    </canvas>
+  </div>
+  <div id="logdiv">
+    The pointer in unlocked.
+  </div>
+  <script>
+    var divObj = document.getElementById("logdiv");
+
+function degToRad(degrees) {
+  var result = Math.PI / 180 * degrees;
+  return result;
+}
+window.addEventListener('load', eventWindowLoaded, false);
+var canvas = document.querySelector('canvas');
+var ctx = canvas.getContext('2d');
+
+function eventWindowLoaded() {
+  canvasDraw();
+}
+
+//x and y coordinates for drawing ball
+var x = 295;
+var y = 50;
+
+function canvasDraw() {
+  if (x > canvas.clientWidth + 10) {
+    x = 0;
+  }
+  if (y > canvas.clientHeight + 10) {
+    y = 0;
+  }
+  if (x < -10) {
+    x = canvas.clientWidth;
+  }
+  if (y < -10) {
+    y = canvas.clientHeight;
+  }
+  ctx.fillStyle = "grey";
+  ctx.fillRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+  ctx.fillStyle = "dodgerBlue";
+
+  ctx.beginPath();
+  ctx.arc(x, y, 10, 0, degToRad(360), true);
+  ctx.lineWidth = 3;
+  ctx.stroke();
+  ctx.fill();
+}
+
+canvas.onmousedown = function() {
+  canvas.requestPointerLock();
+}
+canvas.onmouseup = function() {
+  // alert("AS")
+  document.exitPointerLock();
+}
+
+document.addEventListener('pointerlockchange', lockChangeLog);
+
+function lockChangeLog() {
+  if (document.pointerLockElement === canvas) {
+    divObj.innerHTML = "The pointer is locked. Press Esc to unlock.";
+    document.addEventListener("mousemove", mousemoveCallback);
+  } else {
+    divObj.innerHTML = "The pointer is unlocked.";
+    document.removeEventListener("mousemove", mousemoveCallback);
+  }
+}
+
+function mousemoveCallback(event) {
+  var movementX = event.movementX || 0;
+  var movementY = event.movementY || 0;
+  x += movementX;
+  y += movementY;
+  canvasDraw();
+  var demo = requestAnimationFrame(mousemoveCallback);
+}
+  </script>
+</body>
