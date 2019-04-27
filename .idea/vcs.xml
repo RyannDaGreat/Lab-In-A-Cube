@@ -2,8 +2,5 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Experiments/HDRI-to-CubeMap" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/React/liac/public/Experiments/HDRI-to-CubeMap" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/public/Experiments/HDRI-to-CubeMap" vcs="Git" />
   </component>
 </project>
