@@ -457,18 +457,6 @@ function dictProduct(dicts)
 	}
 	return out
 }
-function transposed(object)
-{
-	//transposed({x:{a:1,b:2,c:3},y:{a:4,b:5,c:6}})   --->   {a:{x:1,y:4},b:{x:2,y:5},c:{x:3,y:6}}
-	const out={}
-	for(const [key1,value1] of Object.entries(object))
-		for(const [key2,value2] of Object.entries(value1))
-			if(out[key2]!==undefined)
-				out[key2][key1]=value2
-			else
-				out[key2]={[key1]:value2}
-	return out
-}
 function transformObjectTreeLeaves(objectTree,leafTransform)
 {
 	//Mutates objectTree in-place using leafTransform and returns undefined
