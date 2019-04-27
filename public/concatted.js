@@ -1,3 +1,11 @@
+
+
+
+//=======================================================================================================================================================
+//=======================================================================SEPARATOR=======================================================================
+//=======================================================================================================================================================
+
+
 (function(k,ta){"object"===typeof exports&&"undefined"!==typeof module?ta(exports):"function"===typeof define&&define.amd?define(["exports"],ta):(k=k||self,ta(k.THREE={}))})(this,function(k){function ta(){}function C(a,b){this.x=a||0;this.y=b||0}function ma(a,b,c,d){this._x=a||0;this._y=b||0;this._z=c||0;this._w=void 0!==d?d:1}function n(a,b,c){this.x=a||0;this.y=b||0;this.z=c||0}function na(){this.elements=[1,0,0,0,1,0,0,0,1];0<arguments.length&&console.error("THREE.Matrix3: the constructor no longer reads arguments. use .set() instead.")}
 function Y(a,b,c,d,e,f,g,h,l,m){Object.defineProperty(this,"id",{value:Yf++});this.uuid=O.generateUUID();this.name="";this.image=void 0!==a?a:Y.DEFAULT_IMAGE;this.mipmaps=[];this.mapping=void 0!==b?b:Y.DEFAULT_MAPPING;this.wrapS=void 0!==c?c:1001;this.wrapT=void 0!==d?d:1001;this.magFilter=void 0!==e?e:1006;this.minFilter=void 0!==f?f:1008;this.anisotropy=void 0!==l?l:1;this.format=void 0!==g?g:1023;this.type=void 0!==h?h:1009;this.offset=new C(0,0);this.repeat=new C(1,1);this.center=new C(0,0);this.rotation=
 0;this.matrixAutoUpdate=!0;this.matrix=new na;this.generateMipmaps=!0;this.premultiplyAlpha=!1;this.flipY=!0;this.unpackAlignment=4;this.encoding=void 0!==m?m:3E3;this.version=0;this.onUpdate=null}function W(a,b,c,d){this.x=a||0;this.y=b||0;this.z=c||0;this.w=void 0!==d?d:1}function Sa(a,b,c){this.width=a;this.height=b;this.scissor=new W(0,0,a,b);this.scissorTest=!1;this.viewport=new W(0,0,a,b);c=c||{};this.texture=new Y(void 0,void 0,c.wrapS,c.wrapT,c.magFilter,c.minFilter,c.format,c.type,c.anisotropy,
@@ -982,3 +990,3761 @@ k.BinaryTextureLoader=function(a){console.warn("THREE.BinaryTextureLoader has be
 return a.center()}};k.Projector=function(){console.error("THREE.Projector has been moved to /examples/js/renderers/Projector.js.");this.projectVector=function(a,b){console.warn("THREE.Projector: .projectVector() is now vector.project().");a.project(b)};this.unprojectVector=function(a,b){console.warn("THREE.Projector: .unprojectVector() is now vector.unproject().");a.unproject(b)};this.pickingRay=function(){console.error("THREE.Projector: .pickingRay() is now raycaster.setFromCamera().")}};k.CanvasRenderer=
 function(){console.error("THREE.CanvasRenderer has been removed")};k.JSONLoader=function(){console.error("THREE.JSONLoader has been removed.")};k.SceneUtils={createMultiMaterialObject:function(){console.error("THREE.SceneUtils has been moved to /examples/js/utils/SceneUtils.js")},detach:function(){console.error("THREE.SceneUtils has been moved to /examples/js/utils/SceneUtils.js")},attach:function(){console.error("THREE.SceneUtils has been moved to /examples/js/utils/SceneUtils.js")}};k.LensFlare=
 function(){console.error("THREE.LensFlare has been moved to /examples/js/objects/Lensflare.js")};Object.defineProperty(k,"__esModule",{value:!0})});
+
+
+//=======================================================================================================================================================
+//=======================================================================SEPARATOR=======================================================================
+//=======================================================================================================================================================
+
+
+/**
+ * @author mrdoob / http://mrdoob.com/
+ */
+ THREE.OBJLoader = ( function () {
+	// o object_name | g group_name
+	var object_pattern = /^[og]\s*(.+)?/;
+	// mtllib file_reference
+	var material_library_pattern = /^mtllib /;
+	// usemtl material_name
+	var material_use_pattern = /^usemtl /;
+	function ParserState() {
+		var state = {
+			objects: [],
+			object: {},
+			vertices: [],
+			normals: [],
+			colors: [],
+			uvs: [],
+			materialLibraries: [],
+			startObject: function ( name, fromDeclaration ) {
+				// If the current object (initial from reset) is not from a g/o declaration in the parsed
+				// file. We need to use it for the first parsed g/o to keep things in sync.
+				if ( this.object && this.object.fromDeclaration === false ) {
+					this.object.name = name;
+					this.object.fromDeclaration = ( fromDeclaration !== false );
+					return;
+				}
+				var previousMaterial = ( this.object && typeof this.object.currentMaterial === 'function' ? this.object.currentMaterial() : undefined );
+				if ( this.object && typeof this.object._finalize === 'function' ) {
+					this.object._finalize( true );
+				}
+				this.object = {
+					name: name || '',
+					fromDeclaration: ( fromDeclaration !== false ),
+					geometry: {
+						vertices: [],
+						normals: [],
+						colors: [],
+						uvs: []
+					},
+					materials: [],
+					smooth: true,
+					startMaterial: function ( name, libraries ) {
+						var previous = this._finalize( false );
+						// New usemtl declaration overwrites an inherited material, except if faces were declared
+						// after the material, then it must be preserved for proper MultiMaterial continuation.
+						if ( previous && ( previous.inherited || previous.groupCount <= 0 ) ) {
+							this.materials.splice( previous.index, 1 );
+						}
+						var material = {
+							index: this.materials.length,
+							name: name || '',
+							mtllib: ( Array.isArray( libraries ) && libraries.length > 0 ? libraries[ libraries.length - 1 ] : '' ),
+							smooth: ( previous !== undefined ? previous.smooth : this.smooth ),
+							groupStart: ( previous !== undefined ? previous.groupEnd : 0 ),
+							groupEnd: - 1,
+							groupCount: - 1,
+							inherited: false,
+							clone: function ( index ) {
+								var cloned = {
+									index: ( typeof index === 'number' ? index : this.index ),
+									name: this.name,
+									mtllib: this.mtllib,
+									smooth: this.smooth,
+									groupStart: 0,
+									groupEnd: - 1,
+									groupCount: - 1,
+									inherited: false
+								};
+								cloned.clone = this.clone.bind( cloned );
+								return cloned;
+							}
+						};
+						this.materials.push( material );
+						return material;
+					},
+					currentMaterial: function () {
+						if ( this.materials.length > 0 ) {
+							return this.materials[ this.materials.length - 1 ];
+						}
+						return undefined;
+					},
+					_finalize: function ( end ) {
+						var lastMultiMaterial = this.currentMaterial();
+						if ( lastMultiMaterial && lastMultiMaterial.groupEnd === - 1 ) {
+							lastMultiMaterial.groupEnd = this.geometry.vertices.length / 3;
+							lastMultiMaterial.groupCount = lastMultiMaterial.groupEnd - lastMultiMaterial.groupStart;
+							lastMultiMaterial.inherited = false;
+						}
+						// Ignore objects tail materials if no face declarations followed them before a new o/g started.
+						if ( end && this.materials.length > 1 ) {
+							for ( var mi = this.materials.length - 1; mi >= 0; mi -- ) {
+								if ( this.materials[ mi ].groupCount <= 0 ) {
+									this.materials.splice( mi, 1 );
+								}
+							}
+						}
+						// Guarantee at least one empty material, this makes the creation later more straight forward.
+						if ( end && this.materials.length === 0 ) {
+							this.materials.push( {
+								name: '',
+								smooth: this.smooth
+							} );
+						}
+						return lastMultiMaterial;
+					}
+				};
+				// Inherit previous objects material.
+				// Spec tells us that a declared material must be set to all objects until a new material is declared.
+				// If a usemtl declaration is encountered while this new object is being parsed, it will
+				// overwrite the inherited material. Exception being that there was already face declarations
+				// to the inherited material, then it will be preserved for proper MultiMaterial continuation.
+				if ( previousMaterial && previousMaterial.name && typeof previousMaterial.clone === 'function' ) {
+					var declared = previousMaterial.clone( 0 );
+					declared.inherited = true;
+					this.object.materials.push( declared );
+				}
+				this.objects.push( this.object );
+			},
+			finalize: function () {
+				if ( this.object && typeof this.object._finalize === 'function' ) {
+					this.object._finalize( true );
+				}
+			},
+			parseVertexIndex: function ( value, len ) {
+				var index = parseInt( value, 10 );
+				return ( index >= 0 ? index - 1 : index + len / 3 ) * 3;
+			},
+			parseNormalIndex: function ( value, len ) {
+				var index = parseInt( value, 10 );
+				return ( index >= 0 ? index - 1 : index + len / 3 ) * 3;
+			},
+			parseUVIndex: function ( value, len ) {
+				var index = parseInt( value, 10 );
+				return ( index >= 0 ? index - 1 : index + len / 2 ) * 2;
+			},
+			addVertex: function ( a, b, c ) {
+				var src = this.vertices;
+				var dst = this.object.geometry.vertices;
+				dst.push( src[ a + 0 ], src[ a + 1 ], src[ a + 2 ] );
+				dst.push( src[ b + 0 ], src[ b + 1 ], src[ b + 2 ] );
+				dst.push( src[ c + 0 ], src[ c + 1 ], src[ c + 2 ] );
+			},
+			addVertexPoint: function ( a ) {
+				var src = this.vertices;
+				var dst = this.object.geometry.vertices;
+				dst.push( src[ a + 0 ], src[ a + 1 ], src[ a + 2 ] );
+			},
+			addVertexLine: function ( a ) {
+				var src = this.vertices;
+				var dst = this.object.geometry.vertices;
+				dst.push( src[ a + 0 ], src[ a + 1 ], src[ a + 2 ] );
+			},
+			addNormal: function ( a, b, c ) {
+				var src = this.normals;
+				var dst = this.object.geometry.normals;
+				dst.push( src[ a + 0 ], src[ a + 1 ], src[ a + 2 ] );
+				dst.push( src[ b + 0 ], src[ b + 1 ], src[ b + 2 ] );
+				dst.push( src[ c + 0 ], src[ c + 1 ], src[ c + 2 ] );
+			},
+			addColor: function ( a, b, c ) {
+				var src = this.colors;
+				var dst = this.object.geometry.colors;
+				dst.push( src[ a + 0 ], src[ a + 1 ], src[ a + 2 ] );
+				dst.push( src[ b + 0 ], src[ b + 1 ], src[ b + 2 ] );
+				dst.push( src[ c + 0 ], src[ c + 1 ], src[ c + 2 ] );
+			},
+			addUV: function ( a, b, c ) {
+				var src = this.uvs;
+				var dst = this.object.geometry.uvs;
+				dst.push( src[ a + 0 ], src[ a + 1 ] );
+				dst.push( src[ b + 0 ], src[ b + 1 ] );
+				dst.push( src[ c + 0 ], src[ c + 1 ] );
+			},
+			addUVLine: function ( a ) {
+				var src = this.uvs;
+				var dst = this.object.geometry.uvs;
+				dst.push( src[ a + 0 ], src[ a + 1 ] );
+			},
+			addFace: function ( a, b, c, ua, ub, uc, na, nb, nc ) {
+				var vLen = this.vertices.length;
+				var ia = this.parseVertexIndex( a, vLen );
+				var ib = this.parseVertexIndex( b, vLen );
+				var ic = this.parseVertexIndex( c, vLen );
+				this.addVertex( ia, ib, ic );
+				if ( ua !== undefined && ua !== '' ) {
+					var uvLen = this.uvs.length;
+					ia = this.parseUVIndex( ua, uvLen );
+					ib = this.parseUVIndex( ub, uvLen );
+					ic = this.parseUVIndex( uc, uvLen );
+					this.addUV( ia, ib, ic );
+				}
+				if ( na !== undefined && na !== '' ) {
+					// Normals are many times the same. If so, skip function call and parseInt.
+					var nLen = this.normals.length;
+					ia = this.parseNormalIndex( na, nLen );
+					ib = na === nb ? ia : this.parseNormalIndex( nb, nLen );
+					ic = na === nc ? ia : this.parseNormalIndex( nc, nLen );
+					this.addNormal( ia, ib, ic );
+				}
+				if ( this.colors.length > 0 ) {
+					this.addColor( ia, ib, ic );
+				}
+			},
+			addPointGeometry: function ( vertices ) {
+				this.object.geometry.type = 'Points';
+				var vLen = this.vertices.length;
+				for ( var vi = 0, l = vertices.length; vi < l; vi ++ ) {
+					this.addVertexPoint( this.parseVertexIndex( vertices[ vi ], vLen ) );
+				}
+			},
+			addLineGeometry: function ( vertices, uvs ) {
+				this.object.geometry.type = 'Line';
+				var vLen = this.vertices.length;
+				var uvLen = this.uvs.length;
+				for ( var vi = 0, l = vertices.length; vi < l; vi ++ ) {
+					this.addVertexLine( this.parseVertexIndex( vertices[ vi ], vLen ) );
+				}
+				for ( var uvi = 0, l = uvs.length; uvi < l; uvi ++ ) {
+					this.addUVLine( this.parseUVIndex( uvs[ uvi ], uvLen ) );
+				}
+			}
+		};
+		state.startObject( '', false );
+		return state;
+	}
+	//
+	function OBJLoader( manager ) {
+		this.manager = ( manager !== undefined ) ? manager : THREE.DefaultLoadingManager;
+		this.materials = null;
+	}
+	OBJLoader.prototype = {
+		constructor: OBJLoader,
+		load: function ( url, onLoad, onProgress, onError ) {
+			var scope = this;
+			var loader = new THREE.FileLoader( scope.manager );
+			loader.setPath( this.path );
+			loader.load( url, function ( text ) {
+				onLoad( scope.parse( text ) );
+			}, onProgress, onError );
+		},
+		setPath: function ( value ) {
+			this.path = value;
+			return this;
+		},
+		setMaterials: function ( materials ) {
+			this.materials = materials;
+			return this;
+		},
+		parse: function ( text ) {
+			console.time( 'OBJLoader' );
+			var state = new ParserState();
+			if ( text.indexOf( '\r\n' ) !== - 1 ) {
+				// This is faster than String.split with regex that splits on both
+				text = text.replace( /\r\n/g, '\n' );
+			}
+			if ( text.indexOf( '\\\n' ) !== - 1 ) {
+				// join lines separated by a line continuation character (\)
+				text = text.replace( /\\\n/g, '' );
+			}
+			var lines = text.split( '\n' );
+			var line = '', lineFirstChar = '';
+			var lineLength = 0;
+			var result = [];
+			// Faster to just trim left side of the line. Use if available.
+			var trimLeft = ( typeof ''.trimLeft === 'function' );
+			for ( var i = 0, l = lines.length; i < l; i ++ ) {
+				line = lines[ i ];
+				line = trimLeft ? line.trimLeft() : line.trim();
+				lineLength = line.length;
+				if ( lineLength === 0 ) continue;
+				lineFirstChar = line.charAt( 0 );
+				// @todo invoke passed in handler if any
+				if ( lineFirstChar === '#' ) continue;
+				if ( lineFirstChar === 'v' ) {
+					var data = line.split( /\s+/ );
+					switch ( data[ 0 ] ) {
+						case 'v':
+						state.vertices.push(
+							parseFloat( data[ 1 ] ),
+							parseFloat( data[ 2 ] ),
+							parseFloat( data[ 3 ] )
+							);
+						if ( data.length === 8 ) {
+							state.colors.push(
+								parseFloat( data[ 4 ] ),
+								parseFloat( data[ 5 ] ),
+								parseFloat( data[ 6 ] )
+								);
+						}
+						break;
+						case 'vn':
+						state.normals.push(
+							parseFloat( data[ 1 ] ),
+							parseFloat( data[ 2 ] ),
+							parseFloat( data[ 3 ] )
+							);
+						break;
+						case 'vt':
+						state.uvs.push(
+							parseFloat( data[ 1 ] ),
+							parseFloat( data[ 2 ] )
+							);
+						break;
+					}
+				} else if ( lineFirstChar === 'f' ) {
+					var lineData = line.substr( 1 ).trim();
+					var vertexData = lineData.split( /\s+/ );
+					var faceVertices = [];
+					// Parse the face vertex data into an easy to work with format
+					for ( var j = 0, jl = vertexData.length; j < jl; j ++ ) {
+						var vertex = vertexData[ j ];
+						if ( vertex.length > 0 ) {
+							var vertexParts = vertex.split( '/' );
+							faceVertices.push( vertexParts );
+						}
+					}
+					// Draw an edge between the first vertex and all subsequent vertices to form an n-gon
+					var v1 = faceVertices[ 0 ];
+					for ( var j = 1, jl = faceVertices.length - 1; j < jl; j ++ ) {
+						var v2 = faceVertices[ j ];
+						var v3 = faceVertices[ j + 1 ];
+						state.addFace(
+							v1[ 0 ], v2[ 0 ], v3[ 0 ],
+							v1[ 1 ], v2[ 1 ], v3[ 1 ],
+							v1[ 2 ], v2[ 2 ], v3[ 2 ]
+							);
+					}
+				} else if ( lineFirstChar === 'l' ) {
+					var lineParts = line.substring( 1 ).trim().split( " " );
+					var lineVertices = [], lineUVs = [];
+					if ( line.indexOf( "/" ) === - 1 ) {
+						lineVertices = lineParts;
+					} else {
+						for ( var li = 0, llen = lineParts.length; li < llen; li ++ ) {
+							var parts = lineParts[ li ].split( "/" );
+							if ( parts[ 0 ] !== "" ) lineVertices.push( parts[ 0 ] );
+							if ( parts[ 1 ] !== "" ) lineUVs.push( parts[ 1 ] );
+						}
+					}
+					state.addLineGeometry( lineVertices, lineUVs );
+				} else if ( lineFirstChar === 'p' ) {
+					var lineData = line.substr( 1 ).trim();
+					var pointData = lineData.split( " " );
+					state.addPointGeometry( pointData );
+				} else if ( ( result = object_pattern.exec( line ) ) !== null ) {
+					// o object_name
+					// or
+					// g group_name
+					// WORKAROUND: https://bugs.chromium.org/p/v8/issues/detail?id=2869
+					// var name = result[ 0 ].substr( 1 ).trim();
+					var name = ( " " + result[ 0 ].substr( 1 ).trim() ).substr( 1 );
+					state.startObject( name );
+				} else if ( material_use_pattern.test( line ) ) {
+					// material
+					state.object.startMaterial( line.substring( 7 ).trim(), state.materialLibraries );
+				} else if ( material_library_pattern.test( line ) ) {
+					// mtl file
+					state.materialLibraries.push( line.substring( 7 ).trim() );
+				} else if ( lineFirstChar === 's' ) {
+					result = line.split( ' ' );
+					// smooth shading
+					// @todo Handle files that have varying smooth values for a set of faces inside one geometry,
+					// but does not define a usemtl for each face set.
+					// This should be detected and a dummy material created (later MultiMaterial and geometry groups).
+					// This requires some care to not create extra material on each smooth value for "normal" obj files.
+					// where explicit usemtl defines geometry groups.
+					// Example asset: examples/models/obj/cerberus/Cerberus.obj
+					/*
+					 * http://paulbourke.net/dataformats/obj/
+					 * or
+					 * http://www.cs.utah.edu/~boulos/cs3505/obj_spec.pdf
+					 *
+					 * From chapter "Grouping" Syntax explanation "s group_number":
+					 * "group_number is the smoothing group number. To turn off smoothing groups, use a value of 0 or off.
+					 * Polygonal elements use group numbers to put elements in different smoothing groups. For free-form
+					 * surfaces, smoothing groups are either turned on or off; there is no difference between values greater
+					 * than 0."
+					 */
+					 if ( result.length > 1 ) {
+					 	var value = result[ 1 ].trim().toLowerCase();
+					 	state.object.smooth = ( value !== '0' && value !== 'off' );
+					 } else {
+						// ZBrush can produce "s" lines #11707
+						state.object.smooth = true;
+					}
+					var material = state.object.currentMaterial();
+					if ( material ) material.smooth = state.object.smooth;
+				} else {
+					// Handle null terminated files without exception
+					if ( line === '\0' ) continue;
+					throw new Error( 'THREE.OBJLoader: Unexpected line: "' + line + '"' );
+				}
+			}
+			state.finalize();
+			var container = new THREE.Group();
+			container.materialLibraries = [].concat( state.materialLibraries );
+			for ( var i = 0, l = state.objects.length; i < l; i ++ ) {
+				var object = state.objects[ i ];
+				var geometry = object.geometry;
+				var materials = object.materials;
+				var isLine = ( geometry.type === 'Line' );
+				var isPoints = ( geometry.type === 'Points' );
+				var hasVertexColors = false;
+				// Skip o/g line declarations that did not follow with any faces
+				if ( geometry.vertices.length === 0 ) continue;
+				var buffergeometry = new THREE.BufferGeometry();
+				buffergeometry.addAttribute( 'position', new THREE.Float32BufferAttribute( geometry.vertices, 3 ) );
+				if ( geometry.normals.length > 0 ) {
+					buffergeometry.addAttribute( 'normal', new THREE.Float32BufferAttribute( geometry.normals, 3 ) );
+				} else {
+					buffergeometry.computeVertexNormals();
+				}
+				if ( geometry.colors.length > 0 ) {
+					hasVertexColors = true;
+					buffergeometry.addAttribute( 'color', new THREE.Float32BufferAttribute( geometry.colors, 3 ) );
+				}
+				if ( geometry.uvs.length > 0 ) {
+					buffergeometry.addAttribute( 'uv', new THREE.Float32BufferAttribute( geometry.uvs, 2 ) );
+				}
+				// Create materials
+				var createdMaterials = [];
+				for ( var mi = 0, miLen = materials.length; mi < miLen; mi ++ ) {
+					var sourceMaterial = materials[ mi ];
+					var material = undefined;
+					if ( this.materials !== null ) {
+						material = this.materials.create( sourceMaterial.name );
+						// mtl etc. loaders probably can't create line materials correctly, copy properties to a line material.
+						if ( isLine && material && ! ( material instanceof THREE.LineBasicMaterial ) ) {
+							var materialLine = new THREE.LineBasicMaterial();
+							THREE.Material.prototype.copy.call( materialLine, material );
+							materialLine.color.copy( material.color );
+							materialLine.lights = false;
+							material = materialLine;
+						} else if ( isPoints && material && ! ( material instanceof THREE.PointsMaterial ) ) {
+							var materialPoints = new THREE.PointsMaterial( { size: 10, sizeAttenuation: false } );
+							THREE.Material.prototype.copy.call( materialPoints, material );
+							materialPoints.color.copy( material.color );
+							materialPoints.map = material.map;
+							materialPoints.lights = false;
+							material = materialPoints;
+						}
+					}
+					if ( ! material ) {
+						if ( isLine ) {
+							material = new THREE.LineBasicMaterial();
+						} else if ( isPoints ) {
+							material = new THREE.PointsMaterial( { size: 1, sizeAttenuation: false } );
+						} else {
+							material = new THREE.MeshPhongMaterial();
+						}
+						material.name = sourceMaterial.name;
+					}
+					material.flatShading = sourceMaterial.smooth ? false : true;
+					material.vertexColors = hasVertexColors ? THREE.VertexColors : THREE.NoColors;
+					createdMaterials.push( material );
+				}
+				// Create mesh
+				var mesh;
+				if ( createdMaterials.length > 1 ) {
+					for ( var mi = 0, miLen = materials.length; mi < miLen; mi ++ ) {
+						var sourceMaterial = materials[ mi ];
+						buffergeometry.addGroup( sourceMaterial.groupStart, sourceMaterial.groupCount, mi );
+					}
+					if ( isLine ) {
+						mesh = new THREE.LineSegments( buffergeometry, createdMaterials );
+					} else if ( isPoints ) {
+						mesh = new THREE.Points( buffergeometry, createdMaterials );
+					} else {
+						mesh = new THREE.Mesh( buffergeometry, createdMaterials );
+					}
+				} else {
+					if ( isLine ) {
+						mesh = new THREE.LineSegments( buffergeometry, createdMaterials[ 0 ] );
+					} else if ( isPoints ) {
+						mesh = new THREE.Points( buffergeometry, createdMaterials[ 0 ] );
+					} else {
+						mesh = new THREE.Mesh( buffergeometry, createdMaterials[ 0 ] );
+					}
+				}
+				mesh.name = object.name;
+				container.add( mesh );
+			}
+			console.timeEnd( 'OBJLoader' );
+			return container;
+		}
+	};
+	return OBJLoader;
+} )();
+
+
+
+//=======================================================================================================================================================
+//=======================================================================SEPARATOR=======================================================================
+//=======================================================================================================================================================
+
+
+//All generalizable functions that don't really fit anywhere else, but that I'd like to reuse for other projects in the future...
+function weAreInAnIframe()
+{
+	console.assert(arguments.length===0,'Wrong number of arguments.')
+	 return window.location !== window.parent.location
+}
+function playSound(url)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	new Audio(url).play()
+}
+function uniqueFromRight(array)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	//Example: uniqueFromRight([1,2,1,3,3,2,1,2,3,1])
+	//Output:  [2, 3, 1]
+	seen=new Set
+	out=[]
+	for(element of [...array].reverse())
+		if(!seen.has(element))
+		{
+			seen.add(element)
+			out.unshift(element)
+		}
+	return out
+}
+function getRequest(url,callback=console.log)
+{
+	// Example usage: getRequest(url,response=>{console.log(response)})
+	console.assert(arguments.length===2,'Wrong number of arguments.')
+	var Http = new XMLHttpRequest()
+	Http.open("GET", url)
+	Http.send()
+	Http.onreadystatechange=()=>
+	{
+		console.assert(Http.status===200,"r.js getRequest error: code "+Http.status+" (should be 200) on url "+repr(url))
+		callback(Http.responseText)
+	}
+}
+function print(x)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	console.log(x)//What can I say? I really miss python...console.log is ugly.
+}
+function repr(x)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	return JSON.stringify(x)
+}
+function sortKeys(object)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	//Recursively reorder the keys alphabetically
+	//Intended for use on json-like objects
+	//Originally written to normalize djson files' object representations
+	//EXAMPLE: sortKeys({3:0,2:0,1:0}) ==== {1:0,2:0,3:0}   (order isn't supposed to matter, but it seems that it IS generally preserved)
+	assert.rightArgumentLength(arguments)
+	if(is_object(object))
+	{
+		const keys=Object.keys(object)
+		keys.sort()
+		for(const key of keys)
+		{
+			const value=object[key]
+			delete object[key]
+			object[key]=value//Place key on the bottom
+			sortKeys(object[key])
+		}
+	}
+}
+function bad_sleep(seconds)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	//Burn CPU for seconds
+	const e=new Date().getTime()+(seconds*1000)
+	while(new Date().getTime() <= e);
+}
+function random_chance(probability)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	return Math.random()<probability
+}
+function all_chars_are_unique(string)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	return string.length===number_of_unique_chars(string)
+}
+function number_of_unique_chars(string)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	return new Set(string.split('')).size
+}
+function random_integer(max)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	return Math.floor(Math.random()*(max+1))
+}
+function random_index(list)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	return random_integer(list.length-1)
+}
+function random_element(list)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	return list[random_index(list)]
+}
+function charInString(char,string)
+{
+	console.assert(arguments.length===2,'Wrong number of arguments.')
+	set=new Set()
+	for(const char of string)
+		set.push(char)
+	return set.has(char)
+}
+function currentFunctionName() 
+{
+	//Returns the name of the function that calls this
+	try
+	{
+		throw new Error()
+	}
+	catch(e)
+	{
+		try
+		{
+			return e.stack.split('at ')[3].split(' ')[0]
+		}
+		catch(e)
+		{
+			return ''
+		}
+	}
+}
+function removeDuplicateCharacters(string)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	//Examples:
+	//	'larry' --> 'lary'
+	//  'abcda' --> 'abcd'
+	//  'babcc' --> 'bac'
+	return [...new Set(string)].join('')//Relies on the order of 'set' (the way chrome's v8 engine does things)
+}
+function removeNonAlphabeticCharacters(string)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	return string.replace(/[^a-zA-Z]/g, "")
+}
+function withoutKey(object,key)
+{
+	console.assert(arguments.length===2,'Wrong number of arguments.')
+	out={...object}
+	delete out[key]
+	return out
+}
+function split_on_first_space(string)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	return string.split(/ (.*)/,2)
+}
+function remove_empty_lines(string)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	return split_lines(string).filter(x=>x.trim()).join('\n')
+}
+function nested_path(path,value)
+{
+	console.assert(arguments.length===2,'Wrong number of arguments.')
+	//EXAMPLE: nested_path([4,3,2,1],0) ==== {4:{3:{2:{1:0}}}}
+	//EXAMPLE: nested_path([],)
+	console.assert(path&&Object.getPrototypeOf(path)===Array.prototype,'Path must be a list of keys')
+	let out=value
+	for(key of [...path].reverse())
+		out={[key]:out}
+	return out
+}
+function multiply_string(string,number)
+{
+	console.assert(arguments.length===2,'Wrong number of arguments.')
+	//Like python ("abc"*3=="abcabcabc")
+	let out=''
+	while(number--)
+		out+=string
+	return out
+}
+function is_defined(x)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	return x!==undefined
+}
+function is_prototype_of(x,type)
+{
+	//This is like type-checking with 'typeof', or 'instanceof', except that this way of checking is much more precise.
+	console.assert(arguments.length===2,'Wrong number of arguments.')
+	assert.defined(type)
+	return Boolean(x&&Object.getPrototypeOf(x)===type.prototype)
+}
+function is_object(x)
+{
+	//Returns true IFF x is a pure object, meaning it could have been created with an object literal (no funky prototype chains)
+	//For example, is_object(any delta) is always true (because all deltas should be able to exist from object literals)
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	return is_prototype_of(x,Object)
+}
+function is_function(x)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	return is_prototype_of(x,Function)
+}
+function is_symbol(x)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	return is_prototype_of(x,Symbol)
+}
+function is_array(x)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	return is_prototype_of(x,Array)
+}
+function is_string(x)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	return is_prototype_of(x,String)
+}
+function is_number(x)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	return is_prototype_of(x,Number)
+}
+function are_objects(...variables)
+{
+	for(const variable of variables)
+		if(!is_object(variable))
+			return false
+	return true
+}
+function numbered_lines_string(string,numberToPrefix=i=>i+'\t')
+{
+	console.assert(arguments.length>=1,'Wrong number of arguments.')
+	//This function is meant for printing out code, with line-numbers on the far left.
+	//EXAMPLE:
+	//	CODE:
+	//		console.log(numbered_lines_string('line one\nline two\nline three'))
+	//	OUTPUT:
+	//		1	line one
+	//		2	line two
+	//		3	line three
+	//Note: This function follows the typical text-editor convention that line-numbers start at 1, not 0
+	//	(Think of it this way, when's the last time you ever saw a syntax error at line 0? Never...)
+	console.assert(typeof string==='string')
+	return Object.entries(string.split('\n')).map((([i,e])=>numberToPrefix(Number(i)+1)+e)).join('\n')
+}
+function singleton(get)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	//Makes a singleton out of a simple ()=>value getter function
+	let singleton
+	return function()
+	{
+		if(singleton===undefined)
+			singleton=get()
+		return singleton
+	}
+}
+function get_indent_level(line,key={'\t':4})
+{
+	console.assert(arguments.length>=1,'Wrong number of arguments.')
+	assert.isString(line)
+	//Another possible key: {'\t':4,' ':1} (converts 1 tab = 4 spaces)
+	let out=0
+	for(const char of line)
+		if(char in key)
+			out+=key[char]
+		else
+			break
+	return out
+}
+function clamp(x,a,b)
+{
+	console.assert(arguments.length===3,'Wrong number of arguments.')
+	//Clamp x between a and b (doesn't matter if a>b or b<a)
+	if(x<Math.min(a,b))
+		return Math.min(a,b)
+	if(x>Math.max(a,b))
+		return Math.max(a,b)
+	return x
+}
+function smoothAlpha(x)
+{
+	//For smooth blending (as opposed to linear, jerky animations)
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	return (3*x-x*x*x)/2//https://www.desmos.com/calculator/pfaw67cutk
+}
+function blend(x,y,alpha,clamped=false)
+{
+	console.assert(arguments.length>=3,'Wrong number of arguments.')
+	//If clamp is turned on, then we restrict alpha to reasonable values (between 0 and 1 inclusively)
+	if(clamped)
+		alpha=clamp(alpha,0,1)
+	return (1-alpha)*x+alpha*y
+}
+function gtoc()
+{
+	//Return _remainintTime in seconds since 1970
+	console.assert(arguments.length===0,'Wrong number of arguments.')
+	return new Date().getTime()/1000
+}
+function stringIsNumerical(string)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	console.assert(typeof string==='string')
+	//EXAMPLES:
+	//	stringIsNumerical('')   false
+	//	stringIsNumerical(' ')   false
+	//	stringIsNumerical('Infinity')   false
+	//	stringIsNumerical('NaN')   false
+	//	stringIsNumerical('0')   true
+	//	stringIsNumerical(' . 2   ')   false
+	//	stringIsNumerical(' . 2   ')   false
+	//	stringIsNumerical(' +.2   ')   true
+	//	stringIsNumerical(' -.2   ')   true
+	//	stringIsNumerical('+-.2   ')   false
+	//	stringIsNumerical('123   ')   true
+	//	stringIsNumerical('1.23   ')   true
+	//	stringIsNumerical('1.2.3   ')   false
+	if(!string.trim())return false//Number('')===Number(' ')===0
+	const number=Number(string)
+	return JSON.parse(JSON.stringify(number))===number
+}
+function parsedSimpleMathFromString(string)
+{
+	//Supports ONLY +,-,* and NOT parenthesis etc
+	//Can parse strings like '23 +3 - 234'
+	//Returns a number or returns undefined upon error
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	console.assert(typeof string==='string')
+	//EXAMPLES:
+	//	parsedSimpleMathFromString('  0-01*88') === -88
+	//	parsedSimpleMathFromString('  0-01')    === -1
+	//	parsedSimpleMathFromString('  0+0')     === 0
+	//	parsedSimpleMathFromString(' ')     === undefined
+	//	parsedSimpleMathFromString(' 0')     === 0
+	//	parsedSimpleMathFromString(' 0.')     === 0
+	//	parsedSimpleMathFromString(' .2')     === 0.2
+	//	parsedSimpleMathFromString(' .2-.1')     === 0.1
+	let sum=0
+	if(string.trim()[0]==='-')//Handle the edge case where the expression begins with a '-' sign
+		string='0'+string
+	string=string.replace(/\-/,'+-1*')//Replace all subtraction/negation signs with multiplication by -1
+	for(const chunk of string.split('+'))
+	{
+		let product=1
+		for(let factor of chunk.split('*'))
+		{
+			if(!stringIsNumerical(factor))
+			{
+				return undefined
+			}
+			else
+			{
+				product*=Number(factor)
+			}
+		}
+		sum+=product
+	}
+	if(!stringIsNumerical(''+sum))//If we have 'NaN' or 'Infinity' etc, don't return a number.
+		return undefined
+	return sum
+}
+function closestPowerOfTwo(n)
+{
+	//Round neither up nor down, but instead gets the closest
+	//From: https://bocoup.com/blog/find-the-closest-power-of-2-with-javascript
+	return Math.pow( 2, Math.round( Math.log( n ) / Math.log( 2 ) ) ); 
+}
+function equalsShallow(a,b)
+{
+	//By default, this is a SHALLOW equality check
+	//(This avoids possible infinite loops) (it is possible, with memoization, to create a deep equality checker that can handle such infinite loops. I'll make that another day.)
+	if(a===b||!a||!b||typeof a!=='object'||typeof b!=='object')return a===b
+	for(const [i,e] of Object.entries(a))if(e!==b[i])   return false
+	for(const [i,e] of Object.entries(b))if(e!==a[i])   return false
+	return true
+}
+function containsValueShallow(o,x,equal=equalsShallow)
+{
+	for(const value of o)
+		if(equalsShallow(x,value))
+			return true
+	return false
+}
+function dictProduct(dicts)
+{
+	console.log("DCIIC",dicts)
+	console.log("DCIIC",{...dicts})
+	//Takes a set of (dicts of variable length) and returns a set of (dicts of uniform length)
+	//Equivalent to returning every permutation of delta-concatenations of these dicts (which has >n! complexity)
+	//(Result will be that every dict has same length)
+	//EXAMPLE:
+	//	(Product of three dicts where keys are indices)
+	//	dictProduct([{0:1,1:1,2:1,3:1},{1:2,2:2},{0:3,2:3,3:3}])
+	//
+	//	1	1	1	1
+	//	?	2	2	?
+	//	3	?	3	3
+	//
+	//		  |
+	//		  V
+	//
+	//	1	1	1	1
+	//	1	2	2	1
+	//	3	1	3	3
+	//	3	2	3	3
+	//	3	2	2	3
+	//
+	//This function is part of the secret sauce behind djson's macros
+	//
+	//To calculate this I use a depth-first search with memoization. The equality functions are bad because I dont want to make hashing algorithms for dicts in JS.
+	const seen=[]
+	function isSeen(dict)
+	{
+		if(!containsValueShallow(seen,dict))
+		{
+			seen.push(dict)
+			return false
+		}
+		return true
+	}
+	function helper(dict)
+	{
+		if(isSeen(dict))
+		{
+			return
+		}
+		for(const key in dicts)
+		{
+			helper({...dict,...dicts[key]})
+		}
+	}
+	helper({})
+	let maxLength=0
+	for(const dict of seen)
+	{
+		const length=Object.keys(dict).length
+		if(length>maxLength)
+		{
+			maxLength=length
+		}
+	}
+	const out=[]
+	for(const dict of seen)
+	{
+		if(Object.keys(dict).length===maxLength)
+		{
+			out.push(dict)
+		}
+	}
+	return out
+}
+function transposed(object)
+{
+	//transposed({x:{a:1,b:2,c:3},y:{a:4,b:5,c:6}})   --->   {a:{x:1,y:4},b:{x:2,y:5},c:{x:3,y:6}}
+	const out={}
+	for(const [key1,value1] of Object.entries(object))
+		for(const [key2,value2] of Object.entries(value1))
+			if(out[key2]!==undefined)
+				out[key2][key1]=value2
+			else
+				out[key2]={[key1]:value2}
+	return out
+}
+function transformObjectTreeLeaves(objectTree,leafTransform)
+{
+	//Mutates objectTree in-place using leafTransform and returns undefined
+	assert.rightArgumentLength(arguments)
+	assert.isFunction(leafTransform)
+	assert.isPureObject(objectTree)
+	for(const [index,value] of Object.entries(objectTree))
+		if(is_object(value))
+			transformObjectTreeLeaves(value,leafTransform)
+		else
+			objectTree[index]=leafTransform(value)
+}
+
+
+
+//=======================================================================================================================================================
+//=======================================================================SEPARATOR=======================================================================
+//=======================================================================================================================================================
+
+
+let proxies={
+	filterEnumerables(object,filter)
+	{
+		//There will either be less or equal number of enumerables on the result
+		console.assert(Object.getPrototypeOf(object)===Object.prototype)
+		const handler={
+			ownKeys(target)
+			{
+				return Object.keys(target).filter(filter)
+			}
+		}
+		return new Proxy(object,handler)
+	},
+	whitelistEnumerables(object,...whitelist)
+	{
+		//Make sure only whitelisted keys/values show up in for..of or for..in loops
+		//We should make a glove version of this...
+		const set=new Set(whitelist)
+		return filterEnumerables(object,Set.prototype.has.bind(set))
+	},
+	typeAdder(object,f=(key,value)=>value)
+	{
+		//Use for LIAC: Meant to eventually replace the way assets in objects such as 'textures' and 'geometries' are loaded (instead of being loaded with a for loop once upon refreshing the page, this would let them be more dynamic) [[Progress postponed to code GUI instead of finishing the engine
+		console.assert(Object.getPrototypeOf(object)===Object.prototype)
+		const handler={
+			set(target,key,value)
+			{
+				target[key]=f(key,value)
+			}
+		}
+		return new Proxy(object,handler)
+	},
+	tryGetter(object,failDefaulter=(key=>undefined),failAlerter=(key,out)=>console.error('Cannot retrieve key ',key,' from object ',object,': returning default value = ',out))
+	{
+		//Meant to handle what happens when we try getting an object that doesn't exist. We don't usually donjust want to return 'undefined',
+		//Example:
+		//	o=proxies.tryGetter({a:0},()=>"Cheese")
+		//	console.log(o.q)//Error; prints "Cheese"
+		//	console.log(o.a)//No error; prints 0
+		console.assert(Object.getPrototypeOf(object)===Object.prototype)
+		const handler={
+			get(target,key)
+			{
+				if(key in target)
+					return target[key]
+				const out=failDefaulter(key)
+				failAlerter(key)
+				return out
+			}
+		}
+		return new Proxy(object,handler)
+	},
+	argumentCountChecker(object,exceptionHandler=(func,args)=>console.error('Not enough arguments on function: ',func,' Arguments: ',args))
+	{
+		//Meant to be used on objects containing tons of methods, such as this very file (though that would be annoying so whatever)
+		//Example:
+		//	let p=proxies.argumentCountChecker({a(x,y){},b(x){},c(){}})
+		//	p.a()//Error
+		//	p.a(1)//Error
+		//	p.a(1,1)//No Error
+		//	p.a(1,1,1)//No Error
+		//	p.b()//Error
+		//	p.b(1)//No error
+		//	p.b(1,1)//No error
+		//	p.b(1,1,1)//No error
+		//	p.b(1,1,1,1)//No error
+		//	p.b(1,1,1,1,1)//No error
+		//	p.c()//No error
+		//	p.c(1)//No error
+		//	p.c(1,1)//No error
+		console.assert(Object.getPrototypeOf(object)===Object.prototype)
+		const handler={
+			get(target,key)
+			{
+				const value=target[key]
+				return !value||Object.getPrototypeOf(value)!==Function.prototype ? value : function(...args)
+				{
+					//Return a function that checks to make sure we're feeding in a valid number of arguments
+					//(We can't auto-check to make sure they dont put in too many arguments afaik, we can only check to see if they haven't given enough)
+					if(args.length<value.length)
+						exceptionHandler(value, args)
+					return value(...args)//We should still run the function anyway, to be consistent with the toothless nature of JS assertions...
+				}
+			}
+		}
+		return new Proxy(object,handler)
+	}
+}
+proxies=proxies.argumentCountChecker(proxies)
+
+
+//=======================================================================================================================================================
+//=======================================================================SEPARATOR=======================================================================
+//=======================================================================================================================================================
+
+
+const assert=proxies.argumentCountChecker({
+	rightArgumentLength(arguments)
+	{
+		try
+		{
+			const actualNumberOfArguments=arguments.length
+			const minimumNumberOfArguments=arguments.callee.length
+			console.assert(actualNumberOfArguments>=minimumNumberOfArguments,'Wrong number of arguments in function '+JSON.stringify(arguments.callee.name)+' (got '+actualNumberOfArguments+' but was expecting at least '+minimumNumberOfArguments+' arguments)')
+		}
+		catch
+		{
+			console.warn("Failed to use rightArgumentLength. Probably because chrome is being a beastly piece of garbage and turning on strict mode without my consent afaik.")
+		}
+	},
+	isPrototypeOf(variable,type)
+	{
+		//This function REALLY NEEDS to be renamed...
+		assert.rightArgumentLength(arguments)
+		console.assert(variable!==undefined,'assertDefinedType: variable is undefined, and therefore does not have a prototype')
+		console.assert(variable!==null     ,'assertDefinedType: variable is null, and therefore does not have a prototype'     )
+		if(type!==undefined&&type!==null)
+			console.assert(Object.getPrototypeOf(variable)===type.prototype, 'assertDefinedType: variable has wrong prototype')
+	},
+	defined(variable)
+	{
+		assert.rightArgumentLength(arguments)
+		console.assert(variable!==undefined,'Caught undefined variable!')
+	},
+
+	isPureObject(variable)
+	{
+		assert.rightArgumentLength(arguments)
+		assert.isPrototypeOf(variable,Object)
+	},
+	arePureObjects(...variables)
+	{
+		assert.rightArgumentLength(arguments)
+		assert.isPrototypeOf(variable,Object)
+		for(variable of variables)
+			assert.isPureObject(variable)
+	},
+	isPureArray(variable)
+	{
+		assert.rightArgumentLength(arguments)
+	},
+	arePureArrays(...variables)
+	{
+		assert.rightArgumentLength(arguments)
+		for(variable of variables)
+			assert.isPureArray(variable)
+	},
+	isString(variable)
+	{
+		assert.isPrototypeOf(variable,String)
+	},
+	isFunction(variable)
+	{
+		assert.isPrototypeOf(variable,Function)
+	},
+	isNumber(variable)
+	{
+		assert.isPrototypeOf(variable,Number)
+	},
+})
+
+
+
+//=======================================================================================================================================================
+//=======================================================================SEPARATOR=======================================================================
+//=======================================================================================================================================================
+
+
+//Meant to be used for djson post-processing. Really the only important function in here is djson_macros.macroized.
+used_keys={}
+var djson_macros=proxies.argumentCountChecker({
+	containsMacro(object,key)
+	{
+		console.warn('This function is UNTESTED! Beware!')
+		//WARANING: UNUSED AND UNTESTED! I'M ONLY KEEPING THIS HERE IN-CASE I MIGHT NEED IT LATER,
+		//as it would be a waste to just throw out this code. But before you use it, make sure it works!
+		console.assert(arguments.length===2,'Wrong number of arguments')
+		if(is_object(object))
+		{
+			if(key in object)
+			{
+				return true
+			}
+			else
+			{
+				for(const value of object)
+				{
+					if(djson_macros.containsMacro(value,key))
+					{
+						return true
+					}
+				}
+				return false
+			}
+		}
+		else if(isString(object))
+		{
+			return object.split('~').includes(key)
+		}
+		else
+		{
+			console.error('This function should be called on pure-djson output (AKA all-strings)')
+			return false
+		}
+	},
+	appliedMacros(object,macros,otherMacros)
+	{
+		console.assert(arguments.length===3,'Wrong number of arguments')
+		assert.isPureObject(macros)
+		assert.isPureObject(otherMacros)
+		let out={}
+		if(is_object(object))
+		{
+			for(let [key,value] of Object.entries(object))
+			{
+				if(key in used_keys && djson.is_symbol(key))
+					key=djson.random_symbol()
+				used_keys[key]={}//TODO FIX BUG HERE
+				key  =djson_macros.appliedMacros(key,macros,otherMacros)
+				value=djson_macros.appliedMacros(value,macros,otherMacros)
+				out[key]=value
+			}
+			return out
+		}
+		else if(typeof object==='string')
+		{
+			return ''+djson.parse_leaf(object.split('~').map(x=>x in macros&&(!is_object(macros[x]))?macros[x]:x).join(''))
+		}
+		else
+		{
+			console.error('This function should be called on pure-djson output (AKA all-strings)')
+			return object
+		}
+	},
+	transposed(object)
+	{
+		const out={}
+		for(const [key1,value1] of Object.entries(object))
+			for(const [key2,value2] of Object.entries(value1))
+				if(out[key2]!==undefined)
+					out[key2][key1]=value2
+				else
+					out[key2]={[key1]:value2}
+		return out
+	},
+	purgeable(string,otherMacros)
+	{
+		console.assert(arguments.length===2,'Wrong number of arguments')
+		assert.isString(string)
+		assert.isPureObject(otherMacros)
+		for(const chunk of string.split('~'))
+		{
+			if(chunk in otherMacros)
+			{
+				return true
+			}
+		}
+		return false
+	},
+	purgedUnexpandedMacros(object,otherMacros)
+	{
+		console.assert(arguments.length===2,'Wrong number of arguments')
+		if(!is_object(object))
+		{
+			return object
+		}
+		assert.isPureObject(otherMacros)
+		//Delete all sections which have leftover macros in them
+		let out={}
+		for(let [key,value] of Object.entries(object))
+		{
+			if(djson_macros.purgeable(key,otherMacros))
+			{
+				continue
+			}
+			else if(typeof value==='string')
+			{
+				if(djson_macros.purgeable(value,otherMacros))
+				{
+					continue
+				}
+				else
+				{
+					out[key]=value
+				}
+			}
+			else
+			{
+				// assert.isPureObject(value)
+				out[key]=djson_macros.purgedUnexpandedMacros(value,otherMacros)
+			}
+		}
+		return out
+	},
+	otherMacros(macros,allMacros)
+	{
+		const out={}
+		for(const macro of Object.values(allMacros))
+		{
+			for(const key in macro)
+			{
+				if(!(key in macros))
+				{
+					out[key]=null
+				}
+			}
+		}
+		return out
+	},
+	deletedEmptyKeys(object)
+	{
+		if(!is_object(object))
+			return object
+		const out={}
+		for(const [key,value] of Object.entries(object))
+		{
+			if(key.trim())
+			{
+				out[key]=djson_macros.deletedEmptyKeys(value)
+			}
+		}
+		return out
+	},
+	composedMacros(object,macrosets)
+	{
+		console.assert(arguments.length===2,'Wrong number of arguments')
+		assert.isPureObject(macrosets)
+		macrosets=deltas.copied(macrosets)
+		macrosets=djson_macros.deletedEmptyKeys(macrosets)
+		for(const [key,value] of Object.entries(macrosets))
+		{
+			if(!is_object(value))
+			{
+				for(const macrosetKey in (macrosets))//Add this string-string key-value pair to any value which doesn't allready have an entry for that key
+				{
+					if(is_object(macrosets[macrosetKey]))
+					{
+						if(!(key in macrosets[macrosetKey]))
+						{
+							macrosets[macrosetKey][key]=value
+						}
+					}
+				}
+				macrosets[key]={[key]:value}//Also do stuff if there are no other macrosets...
+			}
+		}
+		// console.log("\n")
+		// console.log("MACROSETS",djson.stringify(macrosets))
+		// console.log("\n")
+		let out={}
+		let allMacroKeys={}
+		// console.log(macrosets)
+		for(const macroset of Object.values(macrosets))
+		{
+			if(is_object(macroset))
+			{
+				for(key in macroset)
+				{
+					allMacroKeys[key]=null//Doesn't matter what the value is. It only matters that the key exists.
+				}
+			}
+		}
+		deltas.pour(out,djson_macros.purgedUnexpandedMacros(object,allMacroKeys))
+		for(const macroset of Object.values(macrosets))
+		{
+			if(is_object(macroset))
+			{
+				const x=djson_macros.appliedMacros(object,macroset,djson_macros.otherMacros(macroset,allMacroKeys))
+				// console.log(djson.stringify(x))
+				deltas.pour(out,x)
+			}
+		}
+		return out
+	},
+	macroized(object)
+	{
+		if(!is_object(object))
+			return object
+		let out={}
+		for(let [key,value] of Object.entries(object))
+			if(key!=='~')//Get through all the non-macros first...
+				for(const KEY of key.split(','))
+					if(is_object(value) && KEY!==''&&KEY[0]==='~')//We're in a scope
+						 deltas.withoutDeletions(deltas.pour, out, djson_macros.macroized(value) )
+					else deltas.withoutDeletions(deltas.pour, out, {[KEY]:djson_macros.macroized(value)})
+		if('~' in object)
+		{
+			let macrosets=object['~']
+			macrosets=djson_macros.macroized(macrosets)
+			if(is_object(macrosets))
+			{
+				console.log(macrosets)
+				for(let [key,value] of Object.entries(macrosets))
+				{
+					if(typeof value!=='object')
+					{
+						// alert(key,value)
+						macrosets[Symbol()]={[key]:value}
+					}
+				}
+				macrosets=dictProduct(macrosets)
+			}
+			out=djson_macros.composedMacros(out,macrosets)
+		}
+		return out
+	}
+})
+
+
+// testobject=djson.parse(`
+// deltas	thing~N~move	position	x ~N	y ~M	x,y N~,~M
+// `)
+
+// testmacroset=djson.parse(`
+// 0
+// 	N Hello
+// 	M Lesiq
+// 1
+// 	N Ryan
+// 	M Burgert
+// 2
+// 	N cheese
+// 
+// 	M potato
+// `)
+
+// console.log(djson_macros.composedMacros(testobject,testmacroset))
+
+
+// var macroizedtester=`
+
+// deltas	pipe~pipe#~_to_slot~slot#
+// 	universal
+// ~
+// 	universal universality
+// 	0
+// 		pipe# 11
+// 		slot# 22
+// 		universal override
+// 	1
+// 		pipe# a
+// 		slot# b
+// 	2
+// 		pipe# A
+// 		slot# B
+// 	3
+// 		pipe# aa
+// 		slot# bb
+
+
+// `
+
+
+
+// console.log(djson.stringify(djson_macros.macroized(djson.parse(macroizedtester))))
+
+
+
+
+
+
+
+
+
+
+//=======================================================================================================================================================
+//=======================================================================SEPARATOR=======================================================================
+//=======================================================================================================================================================
+
+
+//DJSON Warnings:
+//	Don't use blank lines! It can be dangerous. If you use a COMPLETELY blank line (no whitespace), it will erase the rest of the current scope until the next unindented entry (this is because a blank line can be interpereted as a key called "". So, if you use another blank line later on, it will erase the previous value, and it will look as though values have been deleted.) They can be fine when written by a machine, but they're dangerous to try writing by hand (watch out for duplicate value warnings! Those are why thigns get overwritten)
+//	We can make warnings about duplicate values
+const djson=proxies.argumentCountChecker({
+	symbol:'@',//If symbols are enabled, this is the key name that will represent them
+	symbols_enabled:true,
+	random_symbol()
+	{
+		return '!!'+Math.random()//We use this because for some stupid reason symbols are not enumerable by default
+	},
+	is_symbol(key)
+	{
+		return key.startsWith('!!')
+	},
+	parse_leaf(leaf)
+	{
+		if(!(typeof leaf==='string'))
+			return leaf//Idk why but i made bugs
+		//This function is meant to be plugged into djson.parse's leaf_parser parameter as the default
+		//Summary: try converting the leaf into a JSON-style value, and if we can't, just leave it as a string.
+		console.assert(leaf!=null&&Object.getPrototypeOf(leaf)===String.prototype,'Leaf must be a string; leaf=',leaf)
+		try
+		{
+			return JSON.parse(leaf)
+		}catch{}
+		const number=parsedSimpleMathFromString(leaf)//If this is undefined, it means it failed to parse the expression
+		if(number!==undefined)
+			return number
+		//	OLD VERSION FOR DOING NUMBERS: if(leaf.match(/^\ *\-?\.\d+\ *$/))//A number like .234 isn't valid JSON number but is valid JS number// return Number(leaf)
+		return leaf
+	},
+	parse_handwritten(lines)
+	{
+		//Removes trailing whitespace and empty lines (that just have whitespace) It's really just to help when we're actually writing them
+		console.assert(arguments.length===1, 'djson.parse_handwritten takes exactly one argument')
+		if(typeof lines==='string')
+			lines=lines.split('\n')
+		assert.isPureArray(lines)
+		const out=[]
+		for(let line of lines)
+		{
+			assert.isPrototypeOf(line,String)
+			line=line.trimRight()
+			if(line)
+				out.push(line)
+		}
+		return djson.parse(out)
+	},
+	applyDjsonDelta(o,d)//A simpler variant of deltas.apply that lets you rewrite deltas, making djson potentially very readable if written by hand
+	{
+		for(let key of Object.keys(d))
+		{
+			if(are_objects(o,d[key]) && key in o)
+				djson.applyDjsonDelta(o[key],d[key])
+			else
+			{
+				// Very important warning, but even this got annoying...
+				// console.assert(!is_defined(o[key])||(is_object(o[key])===is_object(d[key])),'djson.parse error at line '+current_line_number+': Youre trying to overwrite a '+typeof o[key]+' with a '+typeof d[key]+' at line '+current_line_number+' at key '+JSON.stringify(key)+'. This is not allowed, as it could erase your previous entry of '+JSON.stringify(key)+' instead of merging them together.\nThe full line that caused the error: '+JSON.stringify(line)+'\nWhole djson shown below this line:\n'+numbered_lines_string(originalString))
+				o[key] = d[key]
+			}
+		}
+	},
+	parse(lines,kwargs={})
+	{
+		const {
+				  level                  =-1,
+				  leaf_parser            =djson.parse_leaf,
+				  macros                 =true,
+				  delete_emptystring_keys=true,
+				  baseCase               =true,
+				  symbols_enabled        =djson.symbols_enabled,
+				  symbol                 =djson.symbol
+			  }=kwargs
+
+		//TODO: refactor macros, leaf_parser, and delete_emptystring_keys into some 'post-processing' method
+		if(typeof lines==='string')
+			lines=lines.split('\n')
+		let out={}
+		const originalNumberOfLines=lines.length
+		const originalString=lines.join('\n')
+		while(lines.length)
+		{
+			const line=lines.shift()
+			const line_level=get_indent_level(line)
+			if(line_level<=level)
+			{
+				lines.unshift(line)//Put it back again
+				break
+			}
+
+			///////////////////////////////////////////////////////////////////
+
+			const current_line_number=originalNumberOfLines-(lines.length)
+
+			const trimmed=line.replace(/^\t*/,'')//Remove all tabs at the beginning of the line
+			const entries=trimmed.split(/\t+/)//Split at every contiguous cluster of tabs
+
+			const path=[]//This gets added to...
+
+			const enable_keys_with_spaces=false//This will be added once I can get syntax highlighting working for it, which turns out to be tricky. 
+			if(enable_keys_with_spaces)
+			if(entries.length && entries[0].includes(' '))
+			{
+				const next_line=lines[0]
+				if(entries.length>1||
+					entries.length===1&&
+					next_line!==undefined&&//We're not on the last line
+					get_indent_level(next_line)>line_level//There's stuff to put in this key (that has spaces)
+					)
+				{
+					path.push(entries.shift())//A special case
+				}
+			}
+
+			for(let entry of entries)
+			{
+				console.assert(!entry.includes('\t'),'This is impossible unless djson.parse is broken.',entry)
+				if(entry.includes(' '))
+				{
+					let [key,value]=split_on_first_space(entry)
+					if(symbols_enabled&&key===symbol)
+					{
+						key=djson.random_symbol()
+						// key=Math.random()+''
+						// key=Symbol("ASODIJA")
+					}
+					//I disabled the below warnings simply because I found them annoying. But you might find them useful...so I didn't delete them
+					//	if(false)if(value&&value!==value.trimLeft())console.warn('djson.parse warning at line '+current_line_number+': value starts with whitespace, which means you might have tried using spaces as indents: value==='+JSON.stringify(value))
+					//	if(!value)                                  console.warn('djson.parse warning at line '+current_line_number+': value is empty! You must have had some line ending with key followed by a single space before the end of the line')
+					djson.applyDjsonDelta(out,nested_path(path,{[key]:value}))
+				}
+				else
+				{
+					//if we're here, then entry IS a (purple) key that points to an object (as opposed to a string)
+					if(symbols_enabled&&entry===symbol)
+					{
+						entry=djson.random_symbol()
+					}
+					path.push(entry)//Burrow deeper down the rabbit hole...
+				}
+			}
+
+			djson.applyDjsonDelta(out,nested_path(path,djson.parse(lines,{...kwargs,level:line_level,baseCase:false})))
+
+			//I disabled the below warnings simply because I found them annoying. But you might find them useful for debugging (they're not obsolete or anything)...so I didn't delete them
+			//	if(false && key==='')   console.warn('djson.parse warning at line '+current_line_number+': key==="", which means you have a blank line somewherere')
+			//	if(false && key in out) console.warn('djson.parse warning at line '+current_line_number+': key is not unique! key==='+JSON.stringify(key))
+			//	console.assert(is_object(out))
+		}
+
+		if(delete_emptystring_keys)
+		{
+			out=djson_macros.deletedEmptyKeys(out)
+		}
+		if(baseCase)
+		{
+			used_keys={}
+			if(macros && baseCase)
+			{
+				// return out
+				// console.log("BEFOREOUT",out)
+				out=djson_macros.macroized(out)
+				// console.log("AFTEROUT",out)
+				// console.log()
+			}
+			//POST PROCESSING SECTION UNTIL END OF FUNCTION
+			function parse_leaves(object)
+			{
+				if(is_object(object))
+				{
+					const out={}
+					for(const [key, value] of Object.entries(object))
+					{
+						out[key]=parse_leaves(value)
+					}
+					return out
+				}
+				else
+				{
+					return leaf_parser(object)
+				}
+			}
+			// console.log('pre-parseley: ',out)
+			out=parse_leaves(out)
+		}
+		return out
+	},
+	stringify(object,level=0,out=[],{symbols_enabled=djson.symbols_enabled,symbol=djson.symbol}={})
+	{
+		console.assert(is_object(object),'you can only djson-stringify objects, but argument "object" was of type '+typeof object)
+		for(let [key,value] of Object.entries(object))
+		{
+			if(djson.is_symbol(key)&&symbols_enabled)
+			{
+				key=symbol
+			}
+			if(is_object(value))
+			{
+				out.push(multiply_string('\t',level)+key)
+				djson.stringify(value,level+1,out)
+			}
+			else
+			{
+				// console.assert(key                ,'djson keys cannot be empty strings')
+				console.assert(!key.includes(' ') ,'djson keys cannot contain spaces')
+				console.assert(!key.includes('\t'),'djson keys cannot contain tabs')
+				console.assert(!key.includes('\n'),'djson keys cannot contain newlines')
+				if(typeof value!=='string')
+				{
+					//I disabled this warning becaue it's a fairly normal thing to happen and it got spammy: console.warn('Coersion warning: all djson values are strings, and typeof value==='+typeof value+' and String(value)==='+String(value)+' and key==='+key)
+					value=String(value)
+				}
+				else if(value.includes('\n') || value.includes('\t'))
+				{
+					value=JSON.stringify(value)
+				}
+				console.assert(!value.includes('\n'),'no djson values may contain more than one line')
+				// console.assert(!value.trim(),'djson values cannot be empty strings (for readability\'s sake')
+				// console.assert(!value.trim(),'djson keys cannot be empty strings (for readability\'s sake')
+				out.push(multiply_string('\t',level)+key+' '+value)
+			}
+		}
+		return out.join('\n')
+	},
+	test(_djson)
+	{
+		//djson is SO important to this project that I HAVE to write at least SOME kind of tests for it...
+		_djson=_djson||`test
+1 
+	2
+	3
+1
+	4
+	5
+A
+	B
+	C
+	a 
+		b
+	c
+	d 
+	e f 
+	g 0
+	g 1
+	h 0
+	i 0
+		j
+		k 3
+	l
+		m
+		n 0
+	*
+		!
+		? -
+transform
+	Pos
+		X 3
+		Y 2
+		Z 0
+	rot
+		x 3
+		y 2
+		z 6
+fluid
+	level
+		percent 5
+	color
+		r 4
+		g 7
+		b 1
+	name elbow
+people
+	anh
+		gender
+			female
+		last
+
+	A 0
+	B 1
+	C 2
+	D 3
+	E 4
+deltaTest
+	Blah 4
+	Blarh 5
+deltaTest
+	Blah 5
+	Blem 9
+deltaTest aposd
+	`
+		console.log("ORIGINAL:\n"+_djson)
+		const object=djson.parse(_djson)
+		console.log("DJSON PARSED:\n"+JSON.stringify(object))
+
+		const stringified=djson.stringify(object)
+		console.assert(typeof stringified === 'string')
+		console.log("DJSON STRINGIFIED:\n"+stringified)
+		const object2=djson.parse(stringified)
+		console.log("DJSON RE-PARSED:\n"+JSON.stringify(object2,null,4))
+		const stringified2=djson.stringify(object2)
+		console.log("DJSON RE-STRINGIFIED:\n"+stringified2)
+		console.assert(stringified===stringified2)
+	},
+})
+// djson.test()
+
+
+//=======================================================================================================================================================
+//=======================================================================SEPARATOR=======================================================================
+//=======================================================================================================================================================
+
+
+const deltas=proxies.argumentCountChecker({//Idk if it's safe to call this deltas...
+	none:null,//Sometimes you might want to use undefined instead, or some Symbol. But it probably shouldn't change more than once per project...
+	copied(d)
+	{
+		console.assert(arguments.length===1, 'deltas.copied error: wrong number of arguments')
+		//Copies an object tree
+		if(!d||Object.getPrototypeOf(d)!==Object.prototype)
+			return d
+		const out={}
+		for(const [key,val] of Object.entries(d))
+			out[key]=deltas.copied(val)
+		return out
+	},
+	apply(o,d,f=(o,d)=>[d,o])
+	{
+		console.assert(arguments.length>=2,'deltas.apply error: wrong number of arguments')
+		//Apply _targetDelta 'd' to object 'o' and make d the receipt.
+		//Mutates both o and d and returns nothing.
+		assert.isPureObject(d)//All deltas are object trees
+		if(o===deltas.none)
+			return
+		for(const [key,val] of Object.entries(d))
+		{
+			if(key in o)
+			{
+				if(val === deltas.none)
+				{
+					d[key]=o[key]//For our receipt...
+					delete o[key]
+				}
+				else if(Object.getPrototypeOf(val) === Object.prototype && typeof o[key]==='object')//Explanation for "typeof o[key]==='object'" : Because if "typeof x==='object'", then "y in x" probably won't throw an error (this handles the case where we replace a primitive with an object)
+				{
+					deltas.apply(o[key],val,f)
+				}
+				else
+				{
+					[o[key],d[key]] = f(o[key],val)//Added this to enable things like blending etc
+				}
+			}
+			else if(val!==deltas.none)
+			{
+				o[key] = val
+				d[key] = deltas.none
+			}
+		}
+	},
+	contains(o,d)
+	{
+		//Return whether d is in o (also returns true if they're completely equal)
+		//This is the most important function for conditions
+		console.assert(arguments.length===2, 'deltas.contains error: wrong number of arguments')
+		assert.isPureObject(d)//All deltas are object trees
+		// let out=true
+		// function f(o,d)
+		// {
+		// 	if(o!==d)
+		// 		out=false
+		// 	return [o,d]
+		// }
+		// deltas.apply(o,d,f)//No mutations should occur
+
+		
+		let out=true
+		function f(o,d)//This is like applyDelta, except it doesn't actually apply anything. Instead, in every place that we would have had to made a change, we instead set out to false
+		{
+			if(!is_object(o))
+				return false
+			if(o===deltas.none)
+				if(d!==deltas.none)
+					out=false
+			for(const [key,val] of Object.entries(d))
+				if(key in o)
+					if(val === deltas.none && key in o)//This means it should have been deleted
+						out=false
+					else if(Object.getPrototypeOf(val) === Object.prototype && typeof o[key]==='object')//Explanation for "typeof o[key]==='object'" : Because if "typeof x==='object'", then "y in x" probably won't throw an error (this handles the case where we replace a primitive with an object)
+						f(o[key],val)
+					else if(o[key]!==val)//If a value would have changed
+						out=false
+					else;//So we don't need brackets
+				else if(val!==deltas.none)
+					out=false//If a value would have been added
+		}
+		f(o,d)
+		return out
+	},
+	blended(x,y,alpha,threshold=0)
+	{
+		console.assert(arguments.length>=3,'deltas.blended error: wrong number of arguments')
+		//Pure function: no mutations
+		//EXAMPLE:
+		//	let a={a:0,b:{c:1,d:2},W:false}
+		//	let b={a:1,b:{c:2,d:3},W:true}
+		//	deltas.blended(a,b,.2) ===== {a:0.2,b:{c:1.2000000000000002,d:2.2},W:true}
+		//Threshold controls when discrete values (such as strings and booleans; basically 
+		//	anything that's not a number). When alpha>=threshold, this happens.
+		x=deltas.copied(x)
+		function blended(o,d)
+		{
+			if(Object.getPrototypeOf(o)===Number.prototype&&
+				Object.getPrototypeOf(d)===Number.prototype  )
+				return [blend(o,d,alpha,false),d]
+			return [alpha>=threshold?d:o,d]
+		}
+		deltas.apply(x,y,blended)
+		return x
+	},
+	composed(deltaArray)
+	{
+		console.assert(arguments.length===1, 'deltas.composed error: wrong number of arguments')
+		//Pure function: sums a list of deltas together, essentially creating the equivalent of multiple 
+		//If efficiency is an issue, this function might be cached later (somehow we'd have to hash the deltas)
+		assert.isPureArray(deltaArray)
+		const out={}
+		for(const delta of deltaArray)
+			deltas.pour(out,delta)
+		return out
+	},
+	soak(o,d)
+	{
+		console.assert(arguments.length===2, 'deltas.soak error: wrong number of arguments')
+		//This just mutates 'd', in the same way a normal deltas.apply would.
+		//Returns nothing, just like deltas.apply.
+		//The visualization is that we 'soak' the delta shape 'd' in the object 'o', to get a delta that would make something more like 'o'
+		//when 'd' is applied to it
+		//In other words, the only difference between deltas.soak and deltas.apply is that deltas.soak doesn't mutate 'o'.
+		o=deltas.copied(o)
+		deltas.apply(o,d)//Don't use a custom version of the 'f' parameter to do swaps; this forgets about setting things to deltas.none etc (this was a mistake I made before in the hopes of better efficiency. It was a mistake and this comment is here so you dont refactor it into the same mistake.)
+	},
+	pour(o,d)
+	{
+		console.assert(arguments.length===2, 'deltas.pour error: wrong number of arguments')
+		//Opposite of deltas.soak
+		//This just mutates 'o', in the same way a normal deltas.apply would.
+		//Returns nothing, just like deltas.apply.
+		//In other words, the only difference between pour and deltas.apply is that pour doesn't mutate 'd'.
+		d=deltas.copied(d)
+		deltas.apply(o,d)
+	},
+	poured(o,d)
+	{
+		//This should return the resulting object of a deltas.pour action, without mutating either 'o' or 'd'
+		console.assert(arguments.length===2, 'deltas.poured error: wrong number of arguments')
+		o=deltas.copied(o)
+		deltas.pour(o,d)
+		return o
+		//(Untested)
+	},
+	soaked(o,d)
+	{
+		//This should return the resulting object of a deltas.soak action, without mutating either 'o' or 'd'
+		console.assert(arguments.length===2, 'deltas.soaked error: wrong number of arguments')
+		d=deltas.copied(d)
+		deltas.soak(o,d)
+		return d
+		//(Untested)
+	},
+	withNoneAs(value,func,...args)
+	{
+		assert.isFunction(func)
+		assert.isPureArray(args)
+		//When we don't want to delete null values (for example, when using djson macros)
+		const original=deltas.none
+		deltas.none=value
+		const out=func(...args)
+		deltas.none=original
+		return out
+	},
+	withoutDeletions(func,...args)
+	{
+		//Simply dont ever delete anything...Symbol() is anonymous unless we have seriously messy proxy shenanigans (which I wont ever make) (But the point remains that even that could be avoided if none was passed as a parameter instead, thus confining its scope and making it thread safe)
+		return deltas.withNoneAs(Symbol(),func,...args)
+	}
+})
+
+
+//=======================================================================================================================================================
+//=======================================================================SEPARATOR=======================================================================
+//=======================================================================================================================================================
+
+
+const gloves=proxies.argumentCountChecker({
+	//Gloves are recursive proxies; basically proxies that are meant to work even with an 'deltas.apply' method call
+	broadcaster:function(objects,path=[])
+	{
+		//Will broadcast any deltas to all objects in objects.
+		//	Objects can be an array, or it could be a normal object
+		//	where the object's values are the things we wish to
+		//	broadcast to. 
+		//Note that this means you can subscribe/unsubscribe new
+		//	objects to this broadcaster, 
+		//Also note that this communication is one-way. You can
+		//	never get the leaf values of any object in objects
+		//	via this glove; you can only set them
+		//EXAMPLE:
+		//	A={};B={};C=gloves.broadcaster([A,B]);C.a.b.c=5;console.log(A.a.b.c,B.a.b.c)
+		//This function was originally created to be used with deltas.apply, but can be generalized (which is why it's just a generic glove)
+		assert.rightArgumentLength(arguments)
+		assert.isPureArray(objects)
+		assert.isPureArray(path)
+		const handler={
+			get(_,key)
+			{
+				return gloves.broadcaster(objects,[...path,key])
+			},
+			set(_,key,value)
+			{
+				for(object of objects)
+				{
+					keyPath.pave(object,path)//Ensure a path exists for us to write to...
+					keyPath.set(object,[...path,key],value)//...then write to it 
+					//(WARNING: this might burst into flames if there's some Object.freeze
+					//	shenanagins going on in any of the objects etc)
+				}
+			}
+		}
+		return new Proxy(Object.create(null),handler)
+	},
+})
+
+
+//=======================================================================================================================================================
+//=======================================================================SEPARATOR=======================================================================
+//=======================================================================================================================================================
+
+
+const keyPath=proxies.argumentCountChecker({
+	//
+	exists(object,path)
+	{
+		assert.rightArgumentLength(arguments)
+		assert.isPureArray(path)
+		return Boolean(keyPath.valid(object,path)&&(keyPath.get(object,path)!=null))//Note: x!=null implies x!==undefined&&x!==null
+	},
+	valid(object,path)
+	{
+		//Returns true, even if the end result is null or undefined. Returns false if accessing would give an error.
+		assert.rightArgumentLength(arguments)
+		assert.isPureArray(path)
+		if(object===undefined||object===null)return false//Not iterable, will cause errors if we continue
+		for(const key of path)
+		{
+			if(object===null||object===undefined)
+				return false
+			object=object[key]
+		}
+		return true
+	},
+	get(object,path)
+	{
+		//Specify path as a list of keys
+		//Example: getPath({a:{b:{c:0}}},['a','b','c'])===0
+		assert.rightArgumentLength(arguments)
+		assert.isPureArray(path)
+		console.assert(path!=null&&Object.getPrototypeOf(path)===Array.prototype)
+		console.assert(keyPath.valid(object,path),'getKeyFromPath error: path '+JSON.stringify(path)+' does not exist in object '+JSON.stringify(object))
+		for(const key of path)
+			object=object[key]
+		return object
+	},
+	getAndSquelch(object,path)
+	{
+		//Returns undefined where keyPath.get would throw an error
+		//Essentially, 'squelching' any 'cannot access key of undefined' errors etc
+		if(keyPath.valid(object,path))
+		{
+			return keyPath.get(object,path)
+		}
+		else
+		{
+			return undefined
+		}
+	},
+	pave(object,path)
+	{
+		assert.rightArgumentLength(arguments)
+		assert.isPureArray(path)
+		//NOTE: NOT PURE! Mutates object! Returns nothing.
+		for(const key of path)
+		{
+			const value=object[key]
+			object=object[key]=keyPath.exists(value,[key])?value:{}
+		}
+	},
+	set(object,path,value)
+	{
+		//NOTE: NOT PURE! Mutates object!
+		//Specify path as a list of keys: see getPath's description for explanation
+		assert.rightArgumentLength(arguments)
+		assert.isPureArray(path)
+		console.assert(path!=null&&Object.getPrototypeOf(path)===Array.prototype)
+		console.assert(keyPath.valid(object,path))
+		path=[...path]
+		path_end=path.pop()
+		for(const key of path)
+			object=object[key]
+		object[path_end]=value
+	},
+	getAllPaths(objectTree)
+	{
+		const out=[]
+		function helper(root,path=[])
+		{
+			if(is_object(root))
+			{
+				for(const [index,value] of Object.entries(root))
+				{
+					helper(value,path.concat(index))
+				}
+			}
+			else
+			{
+				out.push(path.concat(root))
+			}
+		}
+		helper(objectTree)
+		return out
+	},
+})
+
+
+//=======================================================================================================================================================
+//=======================================================================SEPARATOR=======================================================================
+//=======================================================================================================================================================
+
+
+const attributes=proxies.argumentCountChecker({
+	position(threeObject)
+	{
+		return{
+			get x(){return threeObject.position.x},
+			get y(){return threeObject.position.y},
+			get z(){return threeObject.position.z},
+			set x(value){threeObject.position.x=value},
+			set y(value){threeObject.position.y=value},
+			set z(value){threeObject.position.z=value},
+		}
+	},
+	rotation(threeObject)
+	{
+		return{
+			get x(){return threeObject.rotation.x/Math.PI*180},
+			get y(){return threeObject.rotation.y/Math.PI*180},
+			get z(){return threeObject.rotation.z/Math.PI*180},
+			set x(value){threeObject.rotation.x=value*Math.PI/180},
+			set y(value){threeObject.rotation.y=value*Math.PI/180},
+			set z(value){threeObject.rotation.z=value*Math.PI/180},
+		}
+	},
+	scale(threeObject)
+	{
+		const scale={
+			overall:1,
+			x:1,y:1,z:1,
+		}
+		return{
+			get x(){return scale.x},
+			get y(){return scale.y},
+			get z(){return scale.z},
+			set x(value){scale.x=value;threeObject.scale.x=scale.x*scale.overall},
+			set y(value){scale.y=value;threeObject.scale.y=scale.y*scale.overall},
+			set z(value){scale.z=value;threeObject.scale.z=scale.z*scale.overall},
+			set overall(value)
+			{
+				scale.overall=value
+				threeObject.scale.x=scale.x*scale.overall
+				threeObject.scale.y=scale.y*scale.overall
+				threeObject.scale.z=scale.z*scale.overall
+			},
+			get overall(){return scale.overall},
+		}
+	},
+	transform(threeObject)
+	{
+		const position=attributes.position(threeObject)
+		const rotation=attributes.rotation(threeObject)
+		const scale   =attributes.scale   (threeObject)
+		return{
+			get position(){return position},
+			get rotation(){return rotation},
+			get scale(){return scale},
+		}
+	},
+	rgb(color)
+	{
+		return{
+			get r(){return color.r},
+			get g(){return color.g},
+			get b(){return color.b},
+			set r(value){color.r=value},
+			set g(value){color.g=value},
+			set b(value){color.b=value},
+		}
+	},
+})
+
+
+//=======================================================================================================================================================
+//=======================================================================SEPARATOR=======================================================================
+//=======================================================================================================================================================
+
+
+let modules={
+	get boxItem(){return modules.mesh},//This is legacy from a few tests we did when I first put the engine together. If you don't need it you can delete it in the future.
+	mesh(ID)
+	{
+		//We don't require ID as an argument, because this method might be called simply to get its structure
+		const materials ={
+			basic:new THREE.MeshBasicMaterial({color: 0xfffff, wireframe: true }),//color.r/g/b, wireframe,
+			phong:new THREE.MeshPhongMaterial(),//color.r/g/b
+			standard:new THREE.MeshStandardMaterial(),
+		}
+		let geometry='box'
+		let material='basic'
+		let texture='default'
+		let parent='scene'
+		let mesh=new THREE.Mesh(geometries[geometry], materials[material])
+		scene.add(mesh)
+		const item= {
+			//NEW STYLE: Should only be able to get directories; not values. It's Unidirectional now.
+			//Convention: The name of the function is the name of the threeObject, which is always put in item (for some hackability-->faster dev time but more messy)
+			get ID(){return ID},
+			transform:attributes.transform(mesh),
+			get material(){return{
+				get mode(){return material},
+				set mode(mode){material=mode;mesh.material=materials[mode]},
+				modes:materials,
+			}},
+			get texture(){return texture},
+			set texture(value){texture=value;mesh.material.map=textures[texture]||textures.default},
+			get geometry(){return geometry},
+			set geometry(value)
+			{
+				if(value in geometries)
+					mesh.geometry=geometries[geometry=value]
+				else
+					console.error('ERROR setting geometry: '+JSON.stringify(value)+' is not in geometries. ')
+			},
+			get threeObject() {return mesh },
+			set parent(itemID)
+			{
+				if(parent===itemID)return
+				const item=items[itemID]
+				if(item===undefined)
+					console.error(repr(itemID),'is not a valid parent! (Failed to set parent of '+repr(ID)+')')
+				else
+					mesh.parent=item.threeObject//MAKE SOME ASSERTIONS HERE
+				parent=itemID//Even if we did error, we're going to pretend we succedded to we don't spam the console (it would try setting that parent again and agian every frame otherwise)
+			},
+			get parent() {return parent },
+			set visible(x){mesh.visible=x},
+			get visible(){return mesh.visible},
+		}
+		mesh.userData.item=item//This is to let click events access this item's ID, which have to originate in the threeObject
+		return item
+	},
+	get lightItem(){return modules.light},//This is legacy from a few tests we did when I first put the engine together. If you don't need it you can delete it in the future.
+	light(ID)
+	{
+		const light = new THREE.PointLight(0xffffff,1,100)
+		scene.add(light)
+		const item= {
+			ID:ID,
+			threeObject:light,
+			position:attributes.position(light),
+			get intensity(){return light.intensity;},
+			set intensity(value){light.intensity=value},
+			set visible(x){light.visible=x},
+			get visible( ){return light.visible},
+		}
+		light.userData.item=item
+		return item
+	},
+	simpleBeaker(ID)
+	{
+		// return modules.mesh(ID)
+		const simpleBeaker=modules.mesh(ID)
+		const fluidItem =modules.mesh('Anonymous')//This item won't show up in the items list, and should have an anonymous ID (null)
+		if(!geometries.simpleBeakerBeaker)
+			// load_geometry('simpleBeakerBeaker','./Assets/Models/SimpleBeaker/Beaker.obj')
+		// if(!geometries.simpleBeakerFluid)
+			// load_geometry('simpleBeakerFluid','./Assets/Models/SimpleBeaker/Beaker.obj')
+		// geometries.simpleBeakerBeaker='./Assets/Models/SimpleBeaker/Beaker.obj'
+		// geometries.simpleBeakerFluid ='./Assets/Models/SimpleBeaker/Fluid.obj'
+		simpleBeaker.fluid=fluidItem
+		simpleBeaker.geometry='simpleBeakerBeaker'
+		fluidItem.geometry='simpleBeakerFluid'
+		fluidItem.threeObject.parent=simpleBeaker.threeObject
+		// simpleBeaker.materials.basic.color.r=1
+		return simpleBeaker
+	},
+	sprite(ID)
+	{
+		//Currently, sprites only show text. This can change later, but for now let's KISS.
+		//NOTE: ctx stands for 'canvas.context'
+		// function for drawing rounded rectangles
+		const canvas   = document.createElement('canvas')
+		const ctx  = canvas.getContext('2d')
+		const texture=new THREE.Texture(canvas,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined)
+		const spriteMaterial=new THREE.SpriteMaterial({map:texture, useScreenCoordinates: false ,depthTest:false})
+		const sprite = new THREE.Sprite( spriteMaterial )
+		//From https://stackoverflow.com/questions/23514274/three-js-2d-text-sprite-labels
+		var fontface       = 'Quicksand'
+		// var fontsize       = size
+		var fontsize=80
+		var borderThickness= 1
+
+		//If our image doesnt' have dimensions that are powers of two, THREE.js will resize the image to match those dimensions (and you'll see a warning in the console.)
+		//However, when it does this, for some reason this seems to flip it upside-down. I have no idea why. Changing dpi to 256 and aspect to 8 appears to have fixed this problem for now.
+		let dpi=128//Higher --> better resolution
+		let aspect=8//Bigger = skinnier image --> more text can fit
+		let smallness=30//OPPOSITE OF Phyical sprite size
+		function updateSpriteSize()
+		{
+			sprite.scale.set(size*aspect/2/1/smallness * fontsize, size*-1/2/smallness* fontsize, size*-0.75/smallness * fontsize)
+		}
+		function updateSpriteText()
+		{
+			let message=text
+			canvas.width=aspect*dpi
+			canvas.height=dpi
+			var middleX=canvas.width/2
+			var middleY=canvas.height/2
+
+			ctx.font =
+			//'Bold ' +
+			 fontsize + 'px ' + fontface
+
+			ctx.shadowBlur = 30;
+			ctx.shadowColor = 'black';
+
+			// ctx.fillStyle = 'white';
+			// ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+			ctx.translate(0,100);
+			ctx.textAlign='center'
+			ctx.lineWidth = borderThickness
+
+			let scale=dpi/128
+			ctx.translate(middleX,-middleY*.15);
+			// ctx.scale(scale,scale*-1)//Mirror it about the y-axis (Used to be needed when I got power-of-two-image-dimension warnings from THREE.js)
+			ctx.scale(scale,scale)//Mirror it about the y-axis
+			ctx.strokeStyle = 'rgba(000,000,000,1)'
+			ctx.strokeText(message, 0, 0 );
+			ctx.strokeText(message, 0, 0 );//Second stroke to emphasize shadow
+    		ctx.fillStyle = 'white';
+			ctx.fillText( message, 0, 0)
+
+			texture.needsUpdate = true
+		}
+		let text='Example'
+		let size=1
+		updateSpriteText()
+		updateSpriteSize()
+		scene.add(sprite)
+		let parent
+		const item={
+			ID:ID,
+			threeObject:sprite,
+			transform:attributes.transform(sprite),
+			get xray() { return !spriteMaterial.depthTest },
+			set xray(x) { spriteMaterial.depthTest=!x },
+			set visible(x){sprite.visible=x},
+			get visible(){return sprite.visible},
+			set text(x){if(x!==text){text=x;updateSpriteText()}},
+			set size(x){if(x!==size){size=x;updateSpriteSize()}},
+			get size(){return size},
+			get text(){return text},
+			set parent(itemID)
+			{
+				if(parent===itemID)return
+				const item=items[itemID]
+				if(item===undefined)
+					console.error(repr(itemID),'is not a valid parent! (Failed to set parent of '+repr(ID)+')')
+				else
+					sprite.parent=item.threeObject//MAKE SOME ASSERTIONS HERE
+				parent=itemID//Even if we did error, we're going to pretend we succedded to we don't spam the console (it would try setting that parent again and agian every frame otherwise)
+			},
+			get parent() {return parent },
+		}
+		sprite.userData.item=item
+		return item
+	},
+}
+modules=proxies.argumentCountChecker(modules)
+modules=proxies.tryGetter(modules,()=>modules.mesh)
+
+function setParent(threeObject,itemID)
+{
+	const newParent=keyPath.getAndSquelch(items,[itemID,'threeObject'])
+	if(newParent===undefined)
+	{
+		console.error('Cannot set parent to',itemID,' from threeObject',threeObject,'! Aborting...')
+		return
+	}
+	mesh.parent=newParent
+	parent=itemID
+}
+
+function getInterfaces()
+{
+	//Specifies all default values
+	// assert.isPureObject(config.items     )
+	// assert.isPureObject(config.geometries)
+	// assert.isPureObject(config.textures  )
+	return djson.parse(`
+mesh,boxItem
+	texture default:TEXTURES
+	geometry box:GEOMETRIES
+	parent scene:ITEMS
+	visible true
+	material
+		mode  basic:basic,standard,phong
+		modes		basic,standard,phong
+			color	r,g,b 1:0,1
+			opacity       1:0,1
+			transparent false
+			depthWrite  true
+			wireframe   false
+	transform
+		position,rotation	x,y,z 0
+		scale				x,y,z,overall 1
+
+overlay
+	size 30:0,
+	text Overlay
+
+light,lightItem
+	intensity 1
+	visible true
+	position	x,y,z 0
+
+scene
+	background	r,g,b .5:0,1
+	transitions
+		drag	ITEMS	ITEMS	delta none:none,ITEMS	time 0:0,
+		enter,leave		ITEMS	delta none:none,ITEMS	time 0:0,
+		auto					delta none:none,ITEMS	time 0:0,
+
+camera
+	transform	position,rotation	x,y,z 0
+	fov 40
+
+label
+	transform
+		position	x,y,z 0
+		scale		x,y,z,overall 1
+	visible true
+	xray    true
+	parent scene:ITEMS
+	text Label
+	size 1
+`.replace(/ITEMS/g     ,Object.keys(config.items     ||{}).join(','))
+ .replace(/GEOMETRIES/g,Object.keys(config.geometries||{}).join(','))
+ .replace(/TEXTURES/g  ,Object.keys(config.textures  ||{}).join(',')),
+ {leaf_parser:x=>x.trim()})
+}
+
+
+function getInterfacesGuiArchitecture()
+{
+	const interfaces=getInterfaces()
+	const paths=keyPath.getAllPaths(interfaces)
+	function processPaths(paths)
+	{
+		//Mutates input and returns nothing
+		//EXAMPLE:
+		//processPaths([[1,2,3],[4,5,6],[7,8,9]])  --->  [[[1,2],[3]],[[4,5],[6]],[[7,8],[9]]]
+			// console.log(paths)
+		for(const [index,path] of Object.entries(paths))
+		{
+			// console.log(index,path)
+			paths[index]=[path,path.pop()]
+		}
+	}
+	processPaths(paths)
+	// function 
+	const out=[]
+	for(const [path,leaf] of paths)
+	{
+		assert.isString(leaf)
+		const colonSplit=leaf.split(':')
+		console.assert(colonSplit.length>0,'Common sense when splitting a string...this should be impossible to fail.')
+		if     (colonSplit.length===1)
+		{
+			const [value]=colonSplit
+			const parsed=djson.parse_leaf(value)
+			if(typeof parsed==='number')
+			{
+				out.push({path,type:'number'})
+			}
+			else if(typeof parsed==='boolean')
+			{
+				out.push({path,type:'boolean'})
+			}
+			else if(typeof parsed==='string')
+			{
+				out.push({path,type:'string'})
+			}
+			else
+			{
+				console.error('There is no syntax defined for this leaf:',leaf,'at path:',path)
+			}
+		}
+		else if(colonSplit.length===2)
+		{
+			const [beforeColon,afterColon]=leaf.split(':')
+			const parsedBeforeColon=djson.parse_leaf(beforeColon)
+			if(typeof parsedBeforeColon==='number')
+			{
+				console.assert(afterColon.includes(','))
+				const commaSplit=afterColon.split(',')
+				console.assert(commaSplit.length===2)
+				let [min,max]=commaSplit
+				min=min.trim()
+				max=max.trim()
+				out.push({path,type:'number',...(min?{min:Number(min)}:{}),
+				                             ...(max?{max:Number(max)}:{})})
+			}
+			else if(typeof parsedBeforeColon==='string')
+			{
+				out.push({path,type:'select',values:afterColon.split(',')})
+			}
+			else
+			{
+				console.error('There is no syntax defined for this leaf:',leaf,'at path:',path)
+			}
+		}
+		else
+		{
+			console.error('There is no syntax defined for this leaf:',leaf,'at path:',path)
+		}
+	}
+	return out
+	//TYPES: select,number,boolean,string
+	//EXAMPLE OUTPUT:
+	//	[{"path":["mesh","texture"],"type":"select","values":[""]},
+	//	 {"path":["mesh","geometry"],"type":"select","values":[""]},
+	//	 {"path":["mesh","parent"],"type":"select","values":[""]},
+	//	 {"path":["mesh","visible"],"type":"boolean"},
+	//	 {"path":["mesh","material","mode"],"type":"select","values":["basic","standard","phong"]},
+	//	 {"path":["mesh","material","modes","basic","color","r"],"type":"number","min":0,"max":1},
+	//	 {"path":["mesh","material","modes","basic","color","g"],"type":"number","min":0,"max":1},
+	//	 {"path":["mesh","material","modes","basic","color","b"],"type":"number","min":0,"max":1},
+	//	 {"path":["mesh","material","modes","basic","opacity"],"type":"number","min":0,"max":1},
+	//	 ...(etc)...]
+}
+
+function getGuiItemsArchitectureInstance(config=djson.parse(localStorage.getItem('config')))
+{
+	//Filled out item type names with item names
+	//Crummy complexity in this function but whatever who cares with my kind of time limits
+	const architecture=getInterfacesGuiArchitecture()
+	const out=[]
+	const items=config.items
+	for(const [name,type] of Object.entries(items))
+	{
+		// console.log('AOISHDIOASD',name,type)
+		for(const thing of architecture)
+		{
+			if(type===thing.path[0])
+			{
+				out.push({...thing,path:[name,...thing.path.slice(1)]})
+			}
+		}
+	}
+	return out
+}
+
+function getGuiArchitectureInstance()
+{
+	// const config=djson.parse(localStorage.getItem('config'))
+	// const config=window.config
+	const config=JSON.parse(localStorage.getItem('readOnlyConfig'))||{}
+	// alert(JSON.stringify(Object.keys(config.deltas)))
+	if(!('deltas' in config))config.deltas={}//Avoid errors when trying to access things in config.deltas
+	if(!('items'  in config))config.items ={}//Avoid errors when trying to access things in config.items
+	const itemsArchitecture=getGuiItemsArchitectureInstance(config)
+	const out=[]
+	for(const deltaId in config.deltas)
+	{
+		for(const item of itemsArchitecture)
+		{
+			const thing={delta:deltaId,...item}
+			const path=item.path
+			const delta=config.deltas[deltaId]
+			assert.isPureArray(path)
+			if(keyPath.exists(delta,path))
+			{
+				thing.valueInConfig=keyPath.get(delta,path)
+			}
+			out.push(thing)
+		}
+	}
+	return out
+}
+
+
+window.getGuiArchitectureInstance=getGuiArchitectureInstance
+
+function getDefaultInitialDelta()
+{
+	const interfaces=getInterfaces()
+	function leafTransform(leaf)
+	{
+		if(is_string(leaf))
+			leaf=leaf.split(':')[0].trim()
+		return djson.parse_leaf(leaf)
+	}
+	transformObjectTreeLeaves(interfaces,leafTransform)
+	assert.isPureObject(config.items)
+	out={}
+	for(const index of 'camera scene overlay'.split(' '))
+	{
+		out[index]=interfaces[index]
+	}
+	for(const [index,value] of Object.entries(config.items))
+		out[index]=interfaces[value]||{}
+	return out
+}
+
+
+//=======================================================================================================================================================
+//=======================================================================SEPARATOR=======================================================================
+//=======================================================================================================================================================
+
+
+//This code is responsible for loading all the assets etc
+function load_geometry(name,url)
+{
+	var object
+	function loadModel()
+	{
+		try
+		{
+			geometries[name]=object.children[0].geometry
+			requestRender()
+		}
+		catch
+		{
+			console.error("load_geometry error: failed to load "+JSON.stringify(url))
+		}
+	}
+	function callback( obj )
+	{
+		object = obj//Maybe eliminate maybe not....I think loading manager might come in handy....when we want to load all the textures etc
+	}
+	new THREE.OBJLoader(new THREE.LoadingManager(loadModel)).load(url, callback, ()=>{}, ()=>{})
+}
+
+function load_texture(name,url)
+{
+	var texture = new THREE.TextureLoader().load(url,requestRender);//This callback calls requestRender so that we can see the newly loaded texture when it loads
+	textures[name]=texture
+}
+let cubeMaps={}
+function load_cube_map(name,url_prefix,px,nx,py,ny,pz,nz)	
+{	
+	cubeMaps[name] = new THREE.CubeTextureLoader()	
+		.setPath( url_prefix )	
+		.load( [	
+			px,	
+			nx,	
+			py,	
+			ny,	
+			pz,	
+			nz	
+		] );	
+}
+
+
+//=======================================================================================================================================================
+//=======================================================================SEPARATOR=======================================================================
+//=======================================================================================================================================================
+
+
+const renderer = new THREE.WebGLRenderer()
+renderer.setSize(window.innerWidth, window.innerHeight)
+renderer.setPixelRatio(window.devicePixelRatio)
+document.getElementById('renderer').appendChild(renderer.domElement)
+window.onresize=requestRender//Re-render when we resize the window
+
+const scene = new THREE.Scene()
+scene.background=new THREE.Color(.1,.1,.1)
+
+const ambientLight=new THREE.AmbientLight( 0x404040 )
+scene.add(ambientLight)
+
+const camera = new THREE.PerspectiveCamera(75,10,1,999999)
+camera.fov=75
+// camera.position.z = 0
+
+engineModules={
+	//These modules cannot be instantiated from a djson file. There's only one of each of them. But we're using funcitons to keep some variables private.
+}
+
+const overlay=document.getElementById('overlay')
+
+let textures={default:null}
+// textures=proxies.tryGetter(textures,()=>textures.default)
+
+//CURSOR STYLES
+function setCursor(style)
+{
+	renderer.domElement.style.cursor= style
+}
+function setWaitingCursor()
+{
+	setCursor('progress')
+	// setCursor('wait')
+	// setCursor('none')
+}
+function setClickableCursor()
+{
+	setCursor('pointer')
+}
+function setNormalCursor()
+{
+	setCursor('default')
+}
+function setDraggableCursor()
+{
+	setCursor('grab')
+}
+
+const geometries={
+	box:  new THREE.BoxGeometry(1, 1, 1, 10, 10, 10),
+	cube:  new THREE.BoxGeometry(700, 700, 700, 1, 1, 1),
+	sphere: new THREE.IcosahedronGeometry(1, 3),
+}
+
+const sounds={}
+
+const items={
+	//Reserved item names:
+	get sound(){},
+	get inherit(){},
+	get condition(){},
+	overlay:
+	{
+		// NO threeObject, this is a DOM element
+		get element()
+		{
+			return overlay
+		},
+		get text()
+		{
+			return overlay.innerText
+		},
+		set text(value)
+		{
+			overlay.innerText=value
+		},
+		set size(value)
+		{
+			//Set size in pixels
+			assert.isNumber(value)
+			console.assert(value>0,'Font sizes must be greater than 0pt')
+			overlay.style['fontSize']=value+'px'
+		},
+	},
+	camera:
+	{
+		threeObject:camera,
+		transform:attributes.transform(camera),
+		get fov(){return camera.fov},
+		set fov(value){camera.fov=value},
+	},
+	scene:
+	{
+		threeObject:scene,
+		transitions:
+		{
+			smooth:1,
+		},
+		get scene(){return scene},
+		background:
+		{
+			color:attributes.rgb(scene.background),
+		},
+		ambience:
+		{
+			color:attributes.rgb(ambientLight.color),
+			get intensity(){return ambientLight.intensity},
+			set intensity(value){ambientLight.intensity=value},
+		},
+	},
+}
+
+let mouse_x,mouse_y,mouse_in_renderer=false//THese are updated periodically.
+function updateMousePosition(event)
+{
+	mouse_in_renderer=true
+	mouse_x =  (event.clientX/window.innerWidth )*2-1
+	mouse_y = -(event.clientY/window.innerHeight)*2+1
+	updateItemIDUnderCursor()
+	if(itemByIDIsClickable(itemIDUnderCursor))
+	{
+		setClickableCursor()
+	}
+	else if(itemByIDIsDraggable(itemIDUnderCursor))
+	{
+		setDraggableCursor()
+	}
+	else
+	{
+		setNormalCursor()
+	}
+}
+function getItemUnderCursor()//Give it a mouse event
+{
+	console.assert(arguments.length===0,'Wrong number of arguments.')
+	if(!mouse_in_renderer)
+		return undefined
+	assert.rightArgumentLength(arguments)
+	const raycaster = new THREE.Raycaster();
+	//Return clicked item, else return undefined
+	const mouse = new THREE.Vector2()
+	mouse.x=mouse_x
+	mouse.y=mouse_y
+	raycaster.setFromCamera(mouse, camera)
+	const intersects = raycaster.intersectObjects(scene.children, true)
+	if(intersects.length > 0)
+	{
+		const threeObject=intersects[0].object
+		const item = threeObject.userData.item
+		console.assert(item!==undefined)
+		return item
+	}
+	return
+	return 'scene'//If we're not mousing over an object, we're definately mousing over the scene
+}
+function itemByIDIsClickable(itemID)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments')
+	console.assert(!itemID || itemID in items,'Not a real itemID! ItemID: ',itemID)
+	if(!itemID)
+	{
+		return false
+	}
+	//Returns true IFF we can drag this item to iteself
+	const scene=tween.delta.scene
+	return keyPath.exists(scene,['transitions','drag',itemID,itemID])
+}
+function itemByIDIsDraggable(itemID)
+{
+
+	console.assert(arguments.length===1,'Wrong number of arguments')
+	console.assert(!itemID || itemID in items,'Not a real itemID! ItemID: ',itemID)
+	if(!itemID)
+	{
+		return false
+	}
+	//Returns true IFF we can drag this item to iteself
+	const scene=tween.delta.scene
+	return keyPath.exists(scene,['transitions','drag',itemID])
+}
+
+let mousedownItem
+function mousedown(event)
+{
+	updateMousePosition(event)
+	mousedownItem=getItemUnderCursor()
+}
+
+function mouseup(event)
+{
+	updateMousePosition(event)
+	const mouseupItem=getItemUnderCursor()
+	if(mouseupItem && mousedownItem)
+		triggerDragTransition(mousedownItem,mouseupItem)
+	mousedownItem=undefined
+}
+renderer.domElement.addEventListener("mousedown", mousedown, true)
+renderer.domElement.addEventListener("mouseup", mouseup, true)
+renderer.domElement.addEventListener("mouseout",   function(){mouse_in_renderer=false}, true)
+renderer.domElement.addEventListener("mouseleave", function(){mouse_in_renderer=false}, true)
+renderer.domElement.addEventListener("mousemove", updateMousePosition, true)
+
+function requestTransition(transition,ignoreBlocking=false,isAuto=false)
+{
+	requestRender()
+	//Handle conditions
+	console.assert(arguments.length>=1,'Wrong number of arguments.')
+	function t(id)//t is for Tween
+	{
+		requestTweenByID(id,transition.time,ignoreBlocking,isAuto)
+	}
+	function c(id)//c is for Condition
+	{
+		return deltaIDContainedInState(id)
+	}
+	let d=transition.delta
+	assert.isString(d)
+	d=d.trim().split(/ +/)
+	assert.isPureArray(d)
+	if(d.length===0)
+	{
+		console.error('You must specify a delta (deltaIDs cannot contain spaces nor be empty strings)')
+	}
+	else if(d.length===1)
+	{
+		t(d[0])
+	}
+	else if(d.length===2)
+	{
+		console.error('Invalid number of arguments at the moment',transition.delta)
+	}
+	else if(d.length===3)
+	{
+		console.assert(d[1]==='if')
+		if(c(d[2]))
+			t(d[0])
+	}
+	else if(d.length===4)
+	{
+		console.error('Invalid number of arguments at the moment',transition.delta)
+	}
+	else if(d.length===5)
+	{
+		console.assert(d[1]==='if')
+		console.assert(d[3]==='else')
+		if(c(d[2]))
+		{
+			t(d[0])
+		}
+		else
+		{
+			t(d[4])
+		}
+	}
+	else
+	{
+		console.error('Invalid number of arguments at the moment',transition.delta)
+	}
+}
+
+function triggerEnterTransition(enterItemID)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	if(enterItemID===undefined)
+		return
+	//A transition triggered by mousing over something
+	let cursor=tween.delta.scene.transitions.enter
+	if(cursor && enterItemID in cursor)
+	{
+		const transition = tween.delta.scene.transitions.enter[enterItemID]
+		requestTransition(transition,true)
+		console.log("triggerEnterTransition: "+enterItemID)
+	}
+	else if(debugMouseHovers)
+	{
+		console.error("triggerEnterTransition error: No transition from "+enterItemID+" exists")
+	}
+}
+
+const debugMouseHovers=false
+
+function triggerLeaveTransition(leaveItemID)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	if(leaveItemID===undefined)
+		return
+	//A transition triggered by mousing over something
+	let cursor=tween.delta.scene.transitions.leave
+	if(cursor && leaveItemID in cursor)
+	{
+		const transition = tween.delta.scene.transitions.leave[leaveItemID]
+		requestTransition(transition,true)
+		console.log("triggerLeaveTransition: "+leaveItemID)
+	}
+	else if(debugMouseHovers)
+	{
+		console.error("triggerLeaveTransition error: No transition from "+leaveItemID+" exists")
+	}
+}
+
+
+function triggerDragTransition(mousedownItem,mouseupItem)
+{
+	console.assert(arguments.length===2,'Wrong number of arguments.')
+	let cursor=tween.delta.scene.transitions.drag
+	if(mousedownItem.ID in cursor && mouseupItem.ID in cursor[mousedownItem.ID])
+	{
+		const transition = tween.delta.scene.transitions.drag[mousedownItem.ID][mouseupItem.ID]
+		requestTransition(transition,false)
+		console.log("triggerDragTransition: "+mousedownItem.ID+" TO "+mouseupItem.ID)
+	}
+	else
+	{
+		console.error("triggerDragTransition error: No transition from "+mousedownItem.ID+" TO "+mouseupItem.ID+" exists")
+	}
+}
+
+
+const tween={
+	_initialDelta:{},//The initial _initialDelta of the _targetDelta
+	_targetDelta:{},
+	_deadline:0,//The gtoc() in which we'll have finished our tween
+	_length:0,
+	get _alpha()
+	{
+		const length = tween._length
+		if(length === 0) return 1//We don't want division-by-zero errors when _length is 0
+			const time = tween.time
+		return 1 - (time / length)
+	},
+	get time()
+	{
+		//Remaining _remainintTime
+		return Math.max(0, tween._deadline - gtoc())
+	},
+	set time(time)
+	{
+		//Set countdown for tween._remainintTime
+		tween._length=time
+		tween._deadline=gtoc()+time
+	},
+	get delta()
+	{
+		let alpha=tween._alpha
+		alpha=blend(alpha,smoothAlpha(alpha),items.scene.transitions.smooth)
+		return deltas.blended(tween._initialDelta,tween._targetDelta,alpha)
+	},
+	set delta(delta)
+	{
+		// deltas.pour(tween._initialDelta,delta)
+		tween._initialDelta=deltas.blended(deltas.blended(tween._initialDelta,tween._targetDelta,1),delta,0)
+		// tween._initialDelta=deltas.poured(deltas._targetDelta,deltas._initialDelta)
+		tween._targetDelta=delta
+		tween.delta//BEcause its a bit glitchy....idk why. This fixes it.
+		tween.delta
+		tween.delta
+		requestRender()
+	},
+}
+
+
+function getDeltaInheritanceChainString(rootDeltaID)
+{
+	//Returns a space-separated string
+	//This function has been tested (not for edge cases yet though) seems to work perfectly (got it on the first try) 
+	//TODO: This function is needed to handle circular delta inheritance. 
+	//This function should DEFINITELY be cached...but right now it's NOT. In fact, even the result of this chain should be cached...getDeltaByID should be cached. But that's premature optimization for now...
+	//NOT SURE WHAT TO DO WITH THIS YET BUT I HAVE TO GO TO CLASS...WE WANT RECURSIVE CONDITIONS....
+	console.assert(arguments.length===1, 'Wrong number of arguments.')
+	const out=[]
+	function helper(deltaID)
+	{
+		if(out.includes(deltaID))
+			return//No duplicates!
+		if(deltaExistsInConfig(deltaID))
+		{
+			out.unshift(deltaID)//Put it at the beginning; which is the place of least-priority
+			const delta=getRawDeltaFromConfigByID(deltaID)
+			if(delta.inherit!==undefined)
+			{
+				console.assert(typeof delta.inherit==='string','getDeltaInheritanceChainString helper error: '+repr(deltaID)+' inheritance cannot be of type object, it must be a space-separated string of deltaIDs')
+				for(inheritedDeltaID of getArrayOfDeltaIDsFromString(delta.inherit).reverse())
+					helper(inheritedDeltaID)
+			}
+		}
+		else
+			console.error('getDeltaInheritanceChainString error: '+repr(deltaID)+' is not a valid delta, skipping it...')
+	}
+	helper(rootDeltaID)
+	return out.join(' ')
+}
+
+function deltaIDContainedInState(deltaID)
+{
+
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	const currentState=tween.delta
+	if(currentState.sound!==undefined)
+		delete currentState.sound
+	return deltas.contains(currentState,getDeltaByID(deltaID))
+	// assert.isPureObject(deltaContainedInState_Cache)
+	// assert.isString(deltaID)
+	// console.assert(deltaExistsInConfig(deltaID),'deltaIDContainedInState error: deltaID = '+repr(deltaID)+' is not in config')
+	// if(deltaID in deltaContainedInState_Cache)//This NEEDS to exist in order for this function to avoid circular loops
+	// 	return deltaContainedInState_Cache[deltaID]
+	// return deltaContainedInState_Cache[deltaID]=deltas.contains(currentState,getDeltaByID(deltaID,deltaContainedInState_Cache))
+
+	//This is the foundation of all conditions. The question: Is this delta contained in the current state?
+	//This function can be cached with respect to the simplified state-stack of deltas
+}
+
+function deltaExistsInConfig(deltaID)
+{
+	console.assert(arguments.length===1, 'Wrong number of arguments.')
+	if(!is_defined(config.deltas))
+	{
+		console.warn("deltaExistsInConfig: There is no 'deltas' entry in the config, therefore",repr(deltaID),"cannot exist in the config")
+		return false
+	}
+	else
+	{
+		return deltaID in config.deltas
+	}
+}
+
+function getRawDeltaFromConfigByID(deltaID)
+{
+	//Simply read a delta from the config and return a copy (in-case we mutate it later). This intermediate function exists to help throw useful errors.
+	//This function should be cached...but right now I'm not caching it because the config might be reloaded dynamically, and I don't want to add hooks to that method to clear this cache.
+	console.assert(arguments.length>=1,'Wrong number of arguments.')//>=1 instead of ===1 because of deltaRawCompositionFromIdArray using the Array.prototype.map function (which passes multiple arguments, only the first of which is important)
+	if(deltaExistsInConfig(deltaID))
+	{
+		console.assert(typeof config.deltas[deltaID] === 'object','getDeltaByID error: '+'typeof config.deltas['+deltaID+'] === '+typeof config.deltas[deltaID]+'\n(All entries in config.deltas should be objects! Not numbers, not strings, etc. Check the djson and make sure no spaces are attached to delta '+deltaID)
+		return (config.deltas[deltaID])//The copy might or might not be nessecary, but it's safer in case we mutate it later. This function isn't meant for setting these parameters. That should only be done with applyDelta or loading the config file.
+	}
+	else
+	{
+		assertValidDeltaId(deltaID)
+		return {}
+	}
+}
+
+function getDeltaByIDWithInheritance(deltaID)
+{
+	console.assert(arguments.length>=1,'Wrong number of arguments.')
+	let out=deltaRawCompositionFromIdsString(getDeltaInheritanceChainString(deltaID))
+	delete out.inherit//We don't want this variable hanging around when we compare the deltas to the state
+	return out
+}
+
+function getDeltaByID(deltaID)
+{
+	//I KNOW THIS FUNCTION LOOKS LIKE A DUMMY BUT PLEASE DONT DELETE IT FOR FUTURE EXPANSION PURPOSES
+	//This function is allowed to have schenenangins
+	//Unlike getRawDeltaFromConfigByID, this function takes into account deltas' inheritance chains, and any other preprocessing that may have to be done (if I add more things in the future)
+	//THIS FUNCTION SHOULD BE CACHED (a task for another day if its too slow).
+	//	But right now it isn't, because in the Editor, we can change the config without reloading the whole page...and that would mean I would have to hook config's changes into clearing the cache.
+	const out=getDeltaByIDWithInheritance(deltaID)
+	// delete out.sound//We don't want this variable hanging around when we compare the deltas to the state
+	return out
+}
+
+
+function getArrayOfDeltaIDsFromString(deltaIdsSeparatedBySpaces)
+{
+	console.assert(arguments.length===1, 'Wrong number of arguments.')
+	assert.isPrototypeOf(deltaIdsSeparatedBySpaces,String)
+	console.assert(!deltaIdsSeparatedBySpaces.includes('\t'),'deltaRawCompositionFromIdsString error: Dont feed tabs into deltaRawCompositionFromIdsString! Your string: '+repr(deltaIdsSeparatedBySpaces))
+	console.assert(!deltaIdsSeparatedBySpaces.includes('\n'),'deltaRawCompositionFromIdsString error: Dont feed more than one line into deltaRawCompositionFromIdsString! Your string: '+repr(deltaIdsSeparatedBySpaces))
+	//
+	const deltaIds=deltaIdsSeparatedBySpaces.trim().split(/ +/)//We split by spaces, because there is a rule that no deltaID can contain spaces (because no djson keys can contain whitespace). We forget the 'edge case' where we have a deltaID that is an empty string, because that's not allowed either (which is why we use .trim() and split by any number of spaces at a time, AKA /\ +/ instead of just /\ /)
+	assert.isPureArray(deltaIds)
+	return deltaIds
+}
+
+function deltaRawCompositionFromIdsString(deltaIdsSeparatedBySpaces)
+{
+	console.assert(arguments.length===1, 'Wrong number of arguments.')
+	//Takes a space-separated string of deltaID's and returns the composition of all of those deltas as a delta object
+	const deltaIds=getArrayOfDeltaIDsFromString(deltaIdsSeparatedBySpaces)
+	assert.isPureArray(deltaIds)
+	return deltaRawCompositionFromIdArray(deltaIds)
+}
+
+function assertValidDeltaId(deltaID)
+{
+	assert.isString(deltaID)
+	console.assert(deltaExistsInConfig(deltaID),'deltaRawCompositionFromIdsString error: '+repr(deltaID)+' is not a real delta!\ndeltaIdsSeparatedBySpaces = '+repr(Object.keys(config.deltas).join(' ')))
+}
+function assertAllValidDeltaIds(deltaIdsAsArray)
+{
+	assert.isPureArray(deltaIdsAsArray)
+	for(const deltaID of deltaIdsAsArray)
+		if(deltaID!=='')//I dont know what's feeding this function empty deltaIds, but its spamming the console with errors...I dont think its a big problem though. I'm going to squelch that error with this line.
+			assertValidDeltaId(deltaID)
+}
+
+function deltaRawCompositionFromIdArray(deltaIdsAsArray)
+{
+	console.assert(arguments.length===1, 'Wrong number of arguments.')
+	assert.isPureArray(deltaIdsAsArray)
+	assertAllValidDeltaIds(deltaIdsAsArray)
+	return deltaCompositionFromArray(deltaIdsAsArray.map(getRawDeltaFromConfigByID))
+}
+function deltaCompositionFromIdArray(deltaIdsAsArray)
+{
+	console.assert(arguments.length===1, 'Wrong number of arguments.')
+	assert.isPureArray(deltaIdsAsArray)
+	assertAllValidDeltaIds(deltaIdsAsArray)
+	return deltaCompositionFromArray(deltaIdsAsArray.map(getDeltaByID))
+}
+function deltaCompositionFromArray(deltaArray)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	assert.isPureArray(deltaArray)
+	const out={}
+	for(const delta of deltaArray)
+	{
+		assert.isPureObject(delta)
+		deltas.pour(out,delta)
+	}
+	return out
+}
+
+function print_current_state()
+{
+	console.assert(arguments.length===0,'Wrong number of arguments.')
+	console.log(djson.stringify(tween.delta))
+}
+
+function requestTweenByID(deltaID,time=0,ignoreBlocking=false,isAuto=false)
+{
+	if(deltaID==='none')
+	{
+		console.log('requestTweenByID("none") skips a transition. This is an alternative for setting this transition to null.')
+		return
+	}
+	console.assert(arguments.length>=1,'Wrong number of arguments.')
+	if(!deltaIDContainedInState(deltaID))
+	{
+		pushDeltaIDToStateStack(deltaID)
+		console.log('requestTweenByID: deltaID = '+repr(deltaID)+' and time = '+repr(time))
+		requestTween(getDeltaByID(deltaID),time,ignoreBlocking,isAuto)
+	}
+	else
+	{
+		tween.delta={scene:{transitions:{auto:null}}}//This saves us from having to rewrite 'scene	transitions	auto	null' all over the place (otherwise, if we enter some delta with auto, by default (if that delta doesnt set scene	transitions	auto	null), we'll be stuck there forever.)
+		console.log('requestTweenByID: Skipping tween '+repr(deltaID)+' because it would have no effect (the gamestate contains it allready)')
+	}
+}
+
+function requestTween(delta,time=0,ignoreBlocking=false,isAuto=false)
+{
+	//if ignoreBlocking is true, it will override the transition blocker
+	//Tweens will be denied if we are in the middle of a transition
+	console.assert(arguments.length>=1,'Wrong number of arguments.')
+	if(tween.time&&!ignoreBlocking){console.log("Blocked Transition (another transition is still tweening)");return}//Don't allow more than one tween at a time
+	if(!isAuto&&autoIsPending())
+		return//Don't let the user screw up the game
+	if(delta.sound && typeof delta.sound==='string')
+		playSound(config.sounds[delta.sound])
+	deltas.pour(tween._initialDelta,{scene:{transitions:{auto:null}}})//This saves us from having to rewrite 'scene	transitions	auto	null' all over the place (otherwise, if we enter some delta with auto, by default (if that delta doesnt set scene	transitions	auto	null), we'll be stuck there forever.)
+	deltas.pour(tween._targetDelta,{scene:{transitions:{auto:null}}})
+	tween.time=time
+	tween.delta=delta
+}
+
+let itemIDUnderCursor//Can be undefined if there is no item under the cursor
+function updateItemIDUnderCursor()//Can be cached with respect to state and cursor position. 
+{
+	if(autoIsPending())
+		return
+	if(!tween.time)
+	{
+		//We shouldn't be processing this data while we're tweening
+		const currentItemUnderCursor=getItemUnderCursor()
+		console.assert(currentItemUnderCursor===undefined || 'ID' in currentItemUnderCursor,'Whoops, some internal error here if youre reading this...ID should ALWAYS be a parameter of every item beacuse thats how it knows what it is. (How it knows which key in "items" to find itself)')
+		const currentItemIDUnderCursor=currentItemUnderCursor&&currentItemUnderCursor.ID//If the item is undefined, make the ID undefined. Else, set it to the item's ID.
+		console.assert(currentItemIDUnderCursor===undefined || typeof currentItemIDUnderCursor ==='string','Oops...if youre reading this you need to figure out why ID; (a RESERVED parameter) was allowed to be turned into a non-string')
+		if(itemIDUnderCursor!==currentItemIDUnderCursor)
+		{
+			if(debugMouseHovers)
+				console.log('Item ID under cursor changed from '+itemIDUnderCursor+' to '+currentItemIDUnderCursor)
+			triggerLeaveTransition(itemIDUnderCursor)
+			triggerEnterTransition(currentItemIDUnderCursor)
+		}
+		itemIDUnderCursor=currentItemIDUnderCursor
+	}
+}
+function updateCursorStyle()
+{
+	//This function doesnt exist yet. once/if i refactor this code, this will be the function you call to update the cursor style.
+}
+function autoIsPending(currentState=tween.delta)
+{
+	if(!tween.time)
+	{
+		if(keyPath.exists(currentState,'scene transitions auto'.split(' ')))//auto doesn't always exist (set it to null to delete it)
+		{
+			let auto=currentState.scene.transitions.auto//DONT USE items.scene.transitions.auto (this is updated every frame and overwritten; null can't delete this auto so you shouldn't use it. It causes lags and delays when you try to make it work with if/else statements etc)
+			const autodeltaid=auto.delta
+			if(!deltaIDContainedInState(autodeltaid))
+			{
+				return true
+			}
+		}
+	}
+	return false
+}
+
+const stateDeltaStack=[]//This is referenced by getters/setters in config
+function pushDeltaIDToStateStack(deltaID)
+{
+	stateDeltaStack.push(deltaID)
+}
+function getStateDeltaStack()
+{
+	return stateDeltaStack
+}
+function getSimplifiedStateDeltaStack()
+{
+	return uniqueFromRight(stateDeltaStack)
+}
+function setStateFromDeltaIDArray(deltaIdsAsArray)
+{
+	tween._initialDelta=tween.delta
+	tween._targetDelta=deltaCompositionFromIdArray(deltaIdsAsArray)
+
+	// requestTween(deltaCompositionFromIdArray(deltaIdsAsArray),time,true,true)
+}
+function setStateFromDeltaIDSpaceSplitString(deltaIdsSeparatedBySpaces)
+{
+	setStateFromDeltaIDArray(getArrayOfDeltaIDsFromString(deltaIdsSeparatedBySpaces),time)
+}
+function refreshStateFromConfig()
+{
+	setStateFromDeltaIDArray(getSimplifiedStateDeltaStack())
+	// printDeltaStack()
+}
+function printDeltaStack()
+{
+	console.log(stateDeltaStack.join('\n'))
+}
+
+//Settings
+//THIS BREAKS THE SAD VIOLIN DOG. I DONT KNOW WHY. WHEN I USE IT IT FREEZES. THIS ENGINE HAS TO BE REWRITTEN CLEANLY. If we should automatically set auto to 'null' after finishing an auto-sequence
+
+//This section is to save battery life (my laptop's battery is terrible, so I'm optimizing this site for energy consumption as well) (only render when the items' state changes)
+let prevState =undefined//For further efficiency; we don't need to comparre strings every frame
+let prevWidth =undefined//When undefined will force to render even if batterysavingmode is true
+let prevHeight=undefined
+let batterySavingMode=true//Only render frames when tween.delta changes. (Fire/stuff wont work if this is turned on but that's OK because i think not-having my laptop die is more important)
+let renderRequested  =false//NOT a config item
+function requestRender()
+{
+	if(!renderRequested)
+		requestAnimationFrame(render)
+	renderRequested=true//This funciton exists so we don't call requestAnimationFrame(render) needlessly many times
+}
+
+function render()
+{
+	renderRequested=false//REset this so requestRender() can be called again
+	const currentState=tween.delta
+	if(!batterySavingMode||currentState!==prevState||window.innerHeight!==prevHeight||window.innerWidth!==prevWidth)//To save battery life, only animate the frames when we have some change in the deltas.
+	{
+		deltas.pour(items,currentState)
+		if(autoIsPending(currentState))
+		{
+			let auto=currentState.scene.transitions.auto//DONT USE items.scene.transitions.auto (this is updated every frame and overwritten; null can't delete this auto so you shouldn't use it. It causes lags and delays when you try to make it work with if/else statements etc)
+			const autodeltaid=auto.delta
+			console.log('Requesting auto-tween: auto.delta = '+repr(autodeltaid)+' and auto.time = '+repr(auto.time))
+			requestTransition(auto,true,true)
+		}
+		prevHeight=window.innerHeight
+		prevWidth =window.innerWidth
+		// 
+		camera.aspect=prevWidth/prevHeight
+		camera.updateProjectionMatrix()//Lets you update camera FOV and aspect ratio
+		renderer.setSize(prevWidth,prevHeight)
+		renderer.render(scene, camera)
+		if(JSON.stringify(currentState)!==JSON.stringify(prevState)||tween.time)//If tween recycled a state (and didn't bother calculating a new one), it means
+			//The ||tween.time is because we need to be able to wait-out timed deltas even if they don't change anything (as it might turn out; for ex emptying an empty flask)  (its purpose is very subtle, but very real; please dont remove it)
+		{
+			requestRender()//IF STATE HASNT CHANED; SOmebody must call render() again in order to make the program continue to render things. THis is because requestAnimationFrame(render) is skipped (because we're returning NOW)
+			setWaitingCursor()
+		}
+		else
+		{
+			setNormalCursor()
+		}
+	}
+	prevState=currentState
+	updateItemIDUnderCursor()//Becuase when battery saving is on, and we just finish playing an animation, it won't update till we move our mouse
+}
+
+
+
+//=======================================================================================================================================================
+//=======================================================================SEPARATOR=======================================================================
+//=======================================================================================================================================================
+
+
+function load_config(url)
+{
+	getRequest(url,response=>
+		{
+			console.log(response)
+			deltas.apply(config,djson.parse(response))
+		})
+}
+
+let defaultConfig=`
+preview
+	height 50
+	mode sublime
+	numbers
+	type state 
+textures
+	dog ./Assets/dog.jpg
+	weird ./Assets/weird.jpg
+	blank ./Assets/blank.png
+sounds
+	woof ./Assets/Sounds/Woof.mp3
+	nyan ./Assets/Sounds/Nyan.mp3
+	sadness ./Assets/Sounds/Sadviolin.mp3
+geometries
+	dog ./Assets/dog.obj
+	flask ./Assets/flask.obj
+items
+	light1 lightItem	light2 lightItem	light3 lightItem	light4 lightItem
+	light5 lightItem	light6 lightItem	light7 lightItem	light8 lightItem
+	dog boxItem
+	box boxItem
+	camx boxItem
+	camy boxItem
+	camz boxItem
+	flask boxItem
+	skybox boxItem
+
+deltas	redCubeText
+	overlay	text Red Cube
+
+deltas	redBackground
+	scene	background	color	r 1	g 0	b 0
+	inherit autonull
+	//sound woof
+
+deltas	greenBackground
+	scene	background	color	r 0	g .31	b 0
+	overlay	text Green Cube
+	scene	transitions	auto null
+	//sound woof
+
+deltas	blueBackground
+	overlay	size 30
+	scene	background	color	r 0	g 0	b 0.31
+	//sound woof
+	scene	transitions	auto null
+	overlay	text "Blue\n\nCube\nYou\nknow,\ndoggos\nLOVE\nblue\nthings!\n\n\n\n"	 <--- YEAH that's right, we can even use newlines! (this is a comment)
+	camx	transform	position	x 0
+	scene	transitions	drag	dog	dog	time 1	delta blueDoggo-0
+
+deltas
+	blueDoggo-0
+		dog	transform	rotation	x -90
+		sound woof
+		overlay	text "THE DOGE THANKS YOU FOR YOUR SERVICE!\n(Click the doggy!)"	size 40
+		scene	transitions	auto	time 3	delta blueDoggo-1
+	blueDoggo-1
+		dog	transform	position	x 0	y -500
+		dog	transform	scale	overall 20
+		overlay	size 0.1
+		camera	transform	position	y 300	z 800	x 0
+		camera	transform	rotation	x -30
+		camera	fov 30
+		scene	transitions
+			enter	dog	delta clickDoggoText	time 0
+			drag	dog	dog	delta mainInitialCamera
+			auto null
+		sound sadness
+			
+	clickDoggoText
+		overlay	text (that's right...just DO IT!!)	size 20
+		scene	transitions	auto null
+		scene	transitions	enter	dog null
+	
+
+deltas	blackBackground
+	scene	background	color	r 3	g 0	b 0
+	camx	transform	position	x 0
+	//scene	transitions	auto null
+	//sound woof
+
+deltas
+	zoomOutAnimation-0
+		sound nyan
+		scene	transitions	auto	delta zoomOutAnimation-1	time 5
+		overlay	text Zooming out to show you that...this is literally a lab in a giant cube!
+		camera	transform
+			rotation	x 90
+			position	x 0	z 0	y -1000
+	zoomOutAnimation-1
+		scene	transitions	auto	delta zoomOutAnimation-2	time 9
+		camera	transform
+			position	y -13000
+			rotation	x 90	z 30	y 15
+		flask	transform	scale	overall 10000
+		flask	transform
+			rotation	x -98	y -147	z 333
+		skybox	material	mode basic	modes	basic	opacity .6	color	r 1	g 0	b .5
+		flask	material	mode standard	modes	standard	wireframe true	color	r 5	g 5	b 0
+	zoomOutAnimation-2	inherit zoomOutAnimation-0
+		scene	transitions	auto	delta zoomOutAnimation-3	time 5
+		camera	fov 100	transform	rotation	z -30	y -5
+		flask	transform
+			scale	overall 40000
+			rotation	x 25	y 98	z -159
+		sound null
+		skybox	material	mode basic	modes	basic	opacity 1	color	r .5	g 1	b 0
+		flask	material	mode standard	modes	standard	wireframe true	color	r 0	g 1	b 10
+	zoomOutAnimation-3	inherit autonull initialCamera initial	scene	transitions	auto	time 1
+
+
+deltas	initial
+	skybox	transform	scale	overall 200*700
+	skybox	material	mode basic	modes	basic
+		color	r 1	g 1	b 1
+		transparent true
+		opacity .2
+	inherit initialCamera main autonull
+	flask	transform	scale	overall 140
+	flask	transform
+		position	y -230	z 0	x 0
+		rotation	x 45	y 30	z 20
+	flask	material	mode standard	modes	standard	wireframe true	color	r 10	g 1	b 1
+	flask	geometry flask
+	box	texture blank	material	mode standard	modes	standard	color	r 1	g 1	b 1
+	dog	texture dog		material	mode standard	modes	standard	color	r 1	g 1	b 1
+	scene	transitions	auto null	delta initial	time .5
+	scene	transitions	drag	flask	flask	delta zoomOutAnimation-0	time 4
+	
+deltas	initialCamera
+	camera	transform
+			position	x 0	y 0	z 1000
+			rotation	x 0	y 0	z 0
+	camera	fov 75
+	scene	transitions	auto null
+
+deltas	resetcamboxes
+	camx	transform	scale	overall 0.1*700
+	camy	transform	scale	overall 0.1*700
+	camz	transform	scale	overall 0.1*700
+
+deltas	autonull	scene	transitions	auto null
+
+deltas	greenText	overlay	text I don't like green cubes and ham
+
+deltas	initial	scene	transitions	enter	box	delta boxText	time 0
+deltas	boxText	overlay	text This boring white box resets the scene when you click it (except for camera position)	size 20
+
+deltas	main
+	inherit blackBackground resetcamboxes greenText autonull
+	overlay	text Welcome to Lab In a Cube!
+	overlay	size 40
+	
+	scene	transitions	smooth 1
+	
+	// All lights
+	light1	intensity 0.1	transform	position	x -10000	y -10000	z -10000
+	light2	intensity 0.1	transform	position	x -10000	y -10000	z  10000
+	light3	intensity 0.1	transform	position	x -10000	y  10000	z -10000
+	light4	intensity 0.1	transform	position	x -10000	y  10000	z  10000
+	light5	intensity 0.1	transform	position	x  10000	y -10000	z -10000
+	light6	intensity 0.1	transform	position	x  10000	y -10000	z  10000
+	light7	intensity 0.1	transform	position	x  10000	y  10000	z -10000
+	light8	intensity 0.1	transform	position	x  10000	y  10000	z  10000
+	
+	// Scenery
+	scene	ambience	intensity 0.8	color	r 1	g 1	b 1
+	scene	transitions	auto null
+	
+	// Camera Transform
+	
+	// Initialize Items
+	box	texture blank	material	mode standard	modes	standard	color	r 1	g 1	b 1
+	dog
+		texture dog	geometry dog
+		transform
+			position	x -500	y  0	z  0
+			rotation	x  0	y  0	z  0
+			scale		x  1	y  1	z  1	overall 10
+	box	transform
+			position	x 500	y  0	z  0
+			rotation	x  0	y  0	z  0
+			scale		x  1	y  1	z  1	overall .3*700
+	
+	// Camera X
+	camx
+		material	mode standard	modes	standard	color	r 1	g 0	b 0
+		transform	position	y 600	z 100	x 100
+	scene	transitions	drag	camx	camx	time 1	delta camx
+	
+	// Camera Y
+	camy
+		material	mode standard	modes	standard	color	r 0	g 1	b 0
+		transform	position	y 500	z  0	x  0
+	scene	transitions	drag	camy	camy	time 1	delta camy
+	scene	transitions	enter	camy	time 0	delta greenBackground
+	scene	transitions	leave	camy	time 0	delta greenBackground
+	
+	
+	// Camera Z box
+	camz
+		material	mode standard	modes	standard	color	r 0	g 0	b 1
+		transform	position	y 400	z -100	x -100
+	scene	transitions	drag	camz	camz	time 1	delta camz
+	scene	transitions	enter	camz			time 0	delta blueBackground
+	scene	transitions	leave	camz			time 0	delta blueBackground
+	
+	// Transitions
+	scene	transitions
+		drag	dog	dog	time 1	delta pour_0
+		drag	box	box	time 1	delta mainInitialCamera
+	scene	background	color	r 0	g 0	b 0
+
+deltas	mainInitialCamera	inherit initial main initialCamera autonull
+
+deltas	camx
+	inherit redBackground
+	camera	transform
+		position	x 1000	y    0	z    0
+		rotation	x    0	y   90	z    0
+	camx	transform	scale	overall 0.15*700
+	camy	transform	scale	overall 0.1*700
+	camz	transform	scale	overall 0.1*700
+deltas	camy
+	camera	transform
+		position	x    0	y 1000	z    0
+		rotation	x   -90	y    0	z    0
+	camx	transform	scale	overall 0.1*700
+	camy	transform	scale	overall 0.15*700
+	camz	transform	scale	overall 0.1*700
+deltas	camz
+	camera	transform
+		position	x    0	y    0	z 1000
+		rotation	x    0	y    0	z    0
+	camx	transform	scale	overall 0.1*700
+	camy	transform	scale	overall 0.1*700
+	camz	transform	scale	overall 0.15*700
+
+deltas	pour_0
+	dog	transform	position	y 200
+	scene	transitions	smooth 0	auto	delta pour_1	time 1
+	overlay	text OH MY GOD!	size 20
+deltas	pour_1
+	dog	transform	position	x 500
+	dog	transform	rotation	x 180
+	scene	transitions	auto	delta pour_2
+	overlay	text YOU'VE BOOPED THE DOGGO!!	size 40
+deltas	pour_2
+	dog	transform	rotation	z 180
+	scene	transitions	auto	delta pour_3
+	overlay	text WOOF!!	size 40
+deltas	pour_3
+	sound woof
+	// Wait a few seconds
+	dog	transform	scale	y 50
+	scene	transitions	auto	delta pour_4
+	box
+		material	mode basic
+		transform	scale	x 10
+	box	transform	rotation	x 360
+	overlay	text WOOF!!	size 300
+deltas	pour_4
+	dog	transform	rotation	z 0	x 360
+	dog	transform	scale	y 10
+	box
+		material	mode standard
+		transform	scale	x 1
+	scene	transitions	auto	delta pour_5
+	overlay	text WOOF!!	size .1
+deltas	pour_5
+	dog	transform	position	x -500
+	box	texture weird	material	modes	standard	color	r 0	g 1	b 0
+	scene	transitions	smooth 1	auto	delta main
+	overlay	text 
+	`
+
+function getConfigFromLocalStorageAsString()
+{
+	return localStorage.getItem('config')
+}
+
+
+function setConfigDjsonInLocalStorage(djsonString)
+{
+	assert.isString(djsonString)
+	localStorage.setItem('config',djsonString)
+	localStorage.setItem('configChanged','true')
+}
+window.setConfigDjsonInLocalStorage=setConfigDjsonInLocalStorage
+
+
+let previousLoadedConfigString
+function loadConfigFromLocalStorage()
+{
+	if(previousLoadedConfigString===undefined || localStorage.getItem('configChanged')==='true')
+	{
+		localStorage.setItem('configChanged','false')//This is to lighten the 9ms burden of refreshing this every .1 seconds when using the editor
+	}
+	else
+	{
+		return
+	}
+	if(!tween.time && !autoIsPending())
+	{
+		let storedItem=getConfigFromLocalStorageAsString()
+		if(!storedItem)
+		{
+			console.warn("Failed to load 'config' from localStorage")
+			localStorage.setItem('config',defaultConfig)//Write new config file if none currently exists...
+			storedItem=defaultConfig
+		}
+		const newConfig=djson.parse(storedItem)
+		if(previousLoadedConfigString!==storedItem && !deltas.contains(config, newConfig))
+		{
+			playSound('./Assets/Sounds/ShortBells/E.mp3')//This got annoying, but it was here to
+			deltas.pour(config,newConfig)
+			deltas.pour(config,deltas.poured({deltas:{initial:deltas.poured(getDefaultInitialDelta(),getDeltaByIDWithInheritance('initial'))}},newConfig))
+			// deltas.pour(config,{deltas:{initial:getDefaultInitialDelta()}})
+
+			refreshStateFromConfig()
+			console.log(tween.delta)
+			// tween.time=1
+		}
+		previousLoadedConfigString=storedItem
+		localStorage.setItem('readOnlyConfig',JSON.stringify(config))//Hack because this is an iframe. Sadness. Needs to communicate to the gui.
+	}
+	// if(/config.deltas===undefined)config.deltas={}
+	// if(config.items ===undefined)config.items ={}
+	config.deltas.none={}//This is a valid delta, and it does absolutely nothing. THis is here to prevent errors such as 'none is not a valid delta' from cluttering the console
+	requestRender()//Aand the game begins...
+}
+
+function saveStateToLocalStorage()
+{
+	localStorage.setItem('state',djson.stringify(tween.delta))
+}
+
+const config={
+	get state()
+	{
+		return getStateDeltaStack().join(' ')
+	},
+	set state(string)
+	{
+		assert.isString(string)
+		stateDeltaStack=string.split(' ')
+	}
+	//...more items will be added...
+}
+window.config=config
+loadConfigFromLocalStorage()
+
+if(weAreInAnIframe()||window.editorMode||true)
+{
+	setInterval(loadConfigFromLocalStorage, 100)
+	setInterval(saveStateToLocalStorage, 100)
+}
+
+
+if(config.geometries)
+	for(const [geometryName,geometryURL] of Object.entries(config.geometries))
+		load_geometry(geometryName,geometryURL)//Load all the geometries
+
+if(config.textures)
+	for(const [Name,URL] of Object.entries(config.textures))
+		load_texture(Name,URL)//Load all the textures
+
+if(config.items)
+	for(const [itemName,itemType] of Object.entries(config.items))
+		if(itemName in modules)
+			console.error('ERROR: Cannot add item with name '+repr(itemName)+' because that already exists. No duplicates are allowed.')//This is a very important check to make sure that they don't get rid of things like 'scene' etc
+		else
+		{
+			items[itemName]=modules[itemType](itemName)//Load all the items
+			console.assert(is_object(items[itemName]),'A mistake was made in the code for the module '+repr(itemType)+
+				', detected while creting item '+repr(itemName)+
+				'. All items are supposed to be pure objects, because thats the way deltas apply changes (to pure object trees).'+
+				'Please note that this is NOT a config error, this is a javascript error: blame the programmer of the '+repr(itemType)+' module.'+
+				'\nFor debugging purposes, heres a the object returned by the module: items['+repr(itemName)+']===',items[itemName])
+		}
+
+if(config.sounds)
+	for(const [soundName,soundURL] of Object.entries(config.sounds))
+		sounds[soundName]=new Audio(soundURL)//Load all the sounds
+
+requestTween({
+				 overlay:
+				 {
+					 text: ''
+				 }
+			 })
+requestTweenByID('initial')
