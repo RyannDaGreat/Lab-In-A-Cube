@@ -69,7 +69,7 @@ const djson=proxies.argumentCountChecker({
 				  delete_emptystring_keys=true,
 				  baseCase               =true,
 				  symbols_enabled        =djson.symbols_enabled,
-				  symbol                 =djson.symbol
+				  symbol                 =djson.symbol,
 			  }=kwargs
 
 		//TODO: refactor macros, leaf_parser, and delete_emptystring_keys into some 'post-processing' method

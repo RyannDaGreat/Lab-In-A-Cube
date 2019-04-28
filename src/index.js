@@ -23,7 +23,7 @@ function GetSimpleGui()
 	let [instance, setInstance]=useState({})
 	timerEvents[0]             =()=>
 	{
-		let stuff=gameWindow.getGuiArchitectureInstance.apply(gameWindow, [gameWindow.config])
+		let stuff=window.gameWindow.getGuiArchitectureInstance.apply(window.gameWindow, [window.gameWindow.config])
 		if(stuff!==oldStuff)
 		{
 			setInstance(stuff)
@@ -45,7 +45,7 @@ function GetSimpleGui()
 				{
 					let configString=localStorage.getItem('config')
 					configString+='\n'+'deltas	'+i.delta+'	'+i.path.join('	')+' '+value
-					gameWindow.setConfigDjsonInLocalStorage(configString)
+					window.gameWindow.setConfigDjsonInLocalStorage(configString)
 				}
 			}
 			let color  =i.valueInConfig===undefined ? "primary" : "secondary"
@@ -62,14 +62,14 @@ function GetSimpleGui()
 	</table>
 }
 
-var gameWindow   =undefined//Will be set to the 'window' element of the 'game.html' iframe
+window.gameWindow   =undefined//Will be set to the 'window' element of the 'game.html' iframe
 const timerEvents=[()=>{}]//Calls each one of these on a timer
 function doTimerEvents()
 {
-	if(gameWindow!==undefined)//We're not ready yet: the game iframe has to finish loading first
+	if(window.gameWindow!==undefined)//We're not ready yet: the game iframe has to finish loading first
 	{
 		console.log("HO")
-		gameWindow.editorMode=true
+		window.gameWindow.editorMode=true
 		for(const event of timerEvents)
 			event()
 	}
@@ -81,7 +81,7 @@ function App()
 	function setGameWindow(x)
 	{
 		// let w            =x.contentWindow
-		gameWindow=x.contentWindow
+		window.gameWindow=x.contentWindow
 	}
 	let gameStyle={width: '100%', height: '100%', border: '0'}
 	// noinspection HtmlUnknownTarget

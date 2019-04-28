@@ -284,23 +284,24 @@ deltas	pour_5
 	overlay	text 
 	`
 
-function getConfigFromLocalStorageAsString()
+function getConfigStringFromLocalStorage()
 {
 	return localStorage.getItem('config')
 }
 
 
-function setConfigDjsonInLocalStorage(djsonString)
+function setConfigDjsonInLocalStorage(djsonString,setChanged=true)
 {
 	assert.isString(djsonString)
 	localStorage.setItem('config',djsonString)
-	localStorage.setItem('configChanged','true')
+	if(setChanged)
+		localStorage.setItem('configChanged','true')
 }
 window.setConfigDjsonInLocalStorage=setConfigDjsonInLocalStorage
 
 
 let previousLoadedConfigString
-function loadConfigFromLocalStorage()
+function refreshConfigFromLocalStorage()
 {
 	if(previousLoadedConfigString===undefined || localStorage.getItem('configChanged')==='true')
 	{
@@ -312,7 +313,7 @@ function loadConfigFromLocalStorage()
 	}
 	if(!tween.time && !autoIsPending())
 	{
-		let storedItem=getConfigFromLocalStorageAsString()
+		let storedItem=getConfigStringFromLocalStorage()
 		if(!storedItem)
 		{
 			console.warn("Failed to load 'config' from localStorage")
@@ -358,14 +359,34 @@ const config={
 	//...more items will be added...
 }
 window.config=config
-loadConfigFromLocalStorage()
+refreshConfigFromLocalStorage()
 
 if(weAreInAnIframe()||window.editorMode)
 {
-	setInterval(loadConfigFromLocalStorage, 100)
+	setInterval(refreshConfigFromLocalStorage, 100)
 	setInterval(saveStateToLocalStorage, 100)
 }
 
+
+const machineWrittenDjsonTag=' (Machine Written Transaction Tag)'//This is used to understand which lines are written by machines and which lines are written by humans. When using 'undo', we'll delete all lines form the bottom of the djson up until the point where we reach this line. This tag lets us both: 1. Not delete any hand-written code via the undo function and 2. Lets us
+function addLinesToConfigString(lines,{window=window,reloadWholeDjson=true})
+{
+	// reloadWholeDjson=true is safe, but slower than when reloadWholeDjson=false
+	// When reloadWholeDjson is true, we re-parse the whole djson (which might have macros, which might be slow).
+	// But if we say reloadWholeDjson is false, the intent is that we're not adding a line that references (or is referenced by) any macros.
+	// That gives us a performance boost
+	assert.isString(lines)
+	assert.isString(machineWrittenDjsonTag)
+	setConfigDjsonInLocalStorage(getConfigStringFromLocalStorage()+'\n'+lines,reloadWholeDjson)
+	if(reloadWholeDjson)
+	{
+		window.refreshConfigFromLocalStorage()
+	}
+	else
+	{
+		deltas.apply(window.config,djson.parse(lines))
+	}
+}
 
 if(config.geometries)
 	for(const [geometryName,geometryURL] of Object.entries(config.geometries))

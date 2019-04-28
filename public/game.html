@@ -15,6 +15,7 @@
 		<div id='root' style='flex-grow:1'></div>
 	</body>
 
+
 	<!-- The order of the imports below is somewhat important -->
 	<script src="Three/three.js"></script>
 	<script src="Three/objloader.js"></script>
@@ -35,4 +36,26 @@
 	<script src="Game/loader.js"></script>
 	<script src="Game/engine.js"></script>
 	<script src="Game/config.js"></script>
+
+	<script>
+		//This is a hack to let me call functions in this iframe
+		//To call a function in this iFrame (which has a DIFFERENT globalThis, which is why things get messed up),
+		//Add some void function to this list. In time, it will be popped.
+		// window.todoList=[printFig]
+		// function printFig()
+		// {
+		// 	console.log(config)
+		// }
+		// function doEverythingOnTodoList()
+		// {
+		// 	while(todoList.length)
+		// 	{
+		// 		console.log('FIGS',config)
+		// 		const f=todoList.pop()
+		// 		eval(f.toLocaleString()+'()')//This is a hack
+		// 	}
+		// }
+		// setInterval(doEverythingOnTodoList)
+	//	THIS IS WAAYYY TOO HACKY. I'm NOT doing this.
+	</script>
 </html>

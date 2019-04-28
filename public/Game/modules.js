@@ -195,7 +195,7 @@ function setParent(threeObject,itemID)
 	parent=itemID
 }
 
-function getInterfaces(config)
+function getItemSchemas(config)
 {
 	//This wasn't the original way I had planned to write the gui, but this was is just waaaayyy too pretty for me not to (I love it too much to get rid of it)
 	//Specifies all default values
@@ -203,6 +203,7 @@ function getInterfaces(config)
 	// assert.isPureObject(config.geometries)
 	// assert.isPureObject(config.textures  )
 	var out=`
+
 mesh,boxItem
 	texture default:TEXTURES
 	geometry box:GEOMETRIES
@@ -257,23 +258,21 @@ label
 	return djson.parse(out,{leaf_parser:x=>x.trim()})
 }
 
-function getLeafArchitecture(leaf)
+function parseItemLeafSchema(leaf)
 {
 	//EXAMPLES:
-	//	getLeafArchitecture("0")           --->   {type:'number',default:0             }
-	//	getLeafArchitecture(".5:0,1")      --->   {type:'number',default:.5,min:0,max:1}
-	//	getLeafArchitecture(".5:,1")       --->   {type:'number',default:.5,      max:1}
-	//	getLeafArchitecture(".5:0,")       --->   {type:'number',default:.5,min:0      }
+	//	parseItemLeafSchema("0")           --->   {type:'number',default:0             }
+	//	parseItemLeafSchema(".5:0,1")      --->   {type:'number',default:.5,min:0,max:1}
+	//	parseItemLeafSchema(".5:,1")       --->   {type:'number',default:.5,      max:1}
+	//	parseItemLeafSchema(".5:0,")       --->   {type:'number',default:.5,min:0      }
 	//
-	//	getLeafArchitecture("\"Hello\"")   --->   {type:'string' ,default:"Hello"      }
-	//	getLeafArchitecture("Hello")       --->   {type:'string' ,default:"Hello"      }
-	//	getLeafArchitecture("false")       --->   {type:'boolean',default: false       }
-	//	getLeafArchitecture("falsey")      --->   {type:'string' ,default:"falsey"     }
-	//	getLeafArchitecture(" false ")     --->   {type:'boolean',default: false       }
+	//	parseItemLeafSchema("\"Hello\"")   --->   {type:'string' ,default:"Hello"      }
+	//	parseItemLeafSchema("Hello")       --->   {type:'string' ,default:"Hello"      }
+	//	parseItemLeafSchema("false")       --->   {type:'boolean',default: false       }
+	//	parseItemLeafSchema("falsey")      --->   {type:'string' ,default:"falsey"     }
+	//	parseItemLeafSchema(" false ")     --->   {type:'boolean',default: false       }
 	//
-	//	getLeafArchitecture("A:A,B,C,D,E") --->   {type:'select' ,default:'A',values:['A','B','C','D','E']}
-
-	//Returns {schema,value} (because used to get both interface for GUI and also the default value)
+	//	parseItemLeafSchema("A:A,B,C,D,E") --->   {type:'select' ,default:'A',values:['A','B','C','D','E']}
 	assert.isString(leaf)
 	const colonSplit=leaf.split(':')
 	console.assert(colonSplit.length>0,'Common sense when splitting a string...this should be impossible to fail.')
@@ -335,9 +334,11 @@ function getLeafArchitecture(leaf)
 	console.assert(out!==undefined,'If this assertion fails then this function was written improperly (this is an internal assertion)')
 	return out
 }
+
+
 function getInterfacesGuiArchitecture(config)
 {
-	const interfaces=getInterfaces(config)
+	const interfaces=getItemSchemas(config)
 	const paths=keyPath.getAllPaths(interfaces)
 	function processPaths(paths)
 	{
@@ -358,7 +359,7 @@ function getInterfacesGuiArchitecture(config)
 	{
 		assert.isString(leaf)
 
-		let leafArchitecture=getLeafArchitecture(leaf)
+		let leafArchitecture=parseItemLeafSchema(leaf)
 		if(leafArchitecture===undefined)
 			console.error('There is no syntax defined for this leaf:',leaf,'at path:',path)
 		else
@@ -378,6 +379,47 @@ function getInterfacesGuiArchitecture(config)
 	//	 {"path":["mesh","material","modes","basic","opacity"],"type":"number","min":0,"max":1},
 	//	 ...(etc)...]
 }
+
+
+function getDeltasGuiSchema(window=window/*This needs a reference to a window, because this code is being accessed through an iframe and that breaks stuff for some reason*/)
+{
+	//Needs to provide path information WITHOUT lagging...
+	//Returns some object like
+	//deltas
+	//	initial
+	//		item1
+	// 			transform	position
+	//				x
+	//					type number
+	//			texture
+	//				type select
+	const config=window.config
+	const state =window.tween.delta
+	const deltaIds=Object.keys(config.deltas)
+	const itemSchemas=getItemSchemas(config)
+	for(const itemSchema of itemSchemas)
+		Object.setPrototypeOf(itemSchema,null)//This is how we can infer that we're looking at a leaf: it's prototype is NOT object, but is instead null
+	const items={...config.items}
+	const itemsSchema={}
+	const deltasSchema={}
+	for(const [itemId,itemType] of Object.entries(items)) itemsSchema[ itemId]=itemSchemas[type]
+	for(const deltaId           of deltaIds             )deltasSchema[deltaId]=itemsSchema
+	function glove(path=[])
+	{
+		const handler={
+			get(target,key)
+			{
+				return glove(target[key],[...path,key])
+			},
+			set(target,key,value)
+			{
+				addLinesToConfigString(path.join('\t')+'\t'+value,false)
+			}
+		}
+		return new Proxy(Object.create(null),handler)
+	}
+}
+
 
 function getGuiItemsArchitectureInstance(config=djson.parse(localStorage.getItem('config')))
 {
@@ -436,7 +478,7 @@ function getGuiArchitectureInstance(config=JSON.parse(localStorage.getItem('read
 
 function getDefaultInitialDelta()
 {
-	const interfaces=getInterfaces(config)
+	const interfaces=getItemSchemas(config)
 	function leafTransform(leaf)
 	{
 		if(is_string(leaf))
