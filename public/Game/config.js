@@ -332,7 +332,7 @@ function loadConfigFromLocalStorage()
 			// tween.time=1
 		}
 		previousLoadedConfigString=storedItem
-		localStorage.setItem('readOnlyConfig',JSON.stringify(config))//Hack because this is an iframe. Sadness. Needs to communicate to the gui.
+		localStorage.setItem('readOnlyConfig',JSON.stringify(config))//Hack because this is an iframe. Sadness. Needs to communicate to the gui. JSONs are faster to read and write than djson, so this is why it's read-only.
 	}
 	// if(/config.deltas===undefined)config.deltas={}
 	// if(config.items ===undefined)config.items ={}
@@ -360,7 +360,7 @@ const config={
 window.config=config
 loadConfigFromLocalStorage()
 
-if(weAreInAnIframe()||window.editorMode||true)
+if(weAreInAnIframe()||window.editorMode)
 {
 	setInterval(loadConfigFromLocalStorage, 100)
 	setInterval(saveStateToLocalStorage, 100)

@@ -195,7 +195,7 @@ function setParent(threeObject,itemID)
 	parent=itemID
 }
 
-function getInterfaces()
+function getInterfaces(config)
 {
 	//Specifies all default values
 	// assert.isPureObject(config.items     )
@@ -255,9 +255,9 @@ label
 }
 
 
-function getInterfacesGuiArchitecture()
+function getInterfacesGuiArchitecture(config)
 {
-	const interfaces=getInterfaces()
+	const interfaces=getInterfaces(config)
 	const paths=keyPath.getAllPaths(interfaces)
 	function processPaths(paths)
 	{
@@ -348,7 +348,7 @@ function getGuiItemsArchitectureInstance(config=djson.parse(localStorage.getItem
 {
 	//Filled out item type names with item names
 	//Crummy complexity in this function but whatever who cares with my kind of time limits
-	const architecture=getInterfacesGuiArchitecture()
+	const architecture=getInterfacesGuiArchitecture(config)
 	const out=[]
 	const items=config.items
 	for(const [name,type] of Object.entries(items))
@@ -365,11 +365,18 @@ function getGuiItemsArchitectureInstance(config=djson.parse(localStorage.getItem
 	return out
 }
 
-function getGuiArchitectureInstance()
+
+let __oldStringifiedConfig=""
+let __oldGetGuiArchitectureResult=undefined
+function getGuiArchitectureInstance(config=JSON.parse(localStorage.getItem('readOnlyConfig'))||{})
 {
+	let stringifiedConfig=JSON.stringify(config)
+	if(stringifiedConfig===__oldStringifiedConfig)
+		return __oldGetGuiArchitectureResult
+	__oldStringifiedConfig=stringifiedConfig//To prevent lag, only update when the config changes...
+	//
 	// const config=djson.parse(localStorage.getItem('config'))
 	// const config=window.config
-	const config=JSON.parse(localStorage.getItem('readOnlyConfig'))||{}
 	// alert(JSON.stringify(Object.keys(config.deltas)))
 	if(!('deltas' in config))config.deltas={}//Avoid errors when trying to access things in config.deltas
 	if(!('items'  in config))config.items ={}//Avoid errors when trying to access things in config.items
@@ -390,15 +397,13 @@ function getGuiArchitectureInstance()
 			out.push(thing)
 		}
 	}
-	return out
+	return __oldGetGuiArchitectureResult=out
 }
 
 
-window.getGuiArchitectureInstance=getGuiArchitectureInstance
-
 function getDefaultInitialDelta()
 {
-	const interfaces=getInterfaces()
+	const interfaces=getInterfaces(config)
 	function leafTransform(leaf)
 	{
 		if(is_string(leaf))

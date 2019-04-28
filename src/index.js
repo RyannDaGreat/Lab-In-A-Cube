@@ -8,52 +8,86 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import Split from 'react-split'
-import { useState } from 'react'
+import {useState} from 'react'
 import {withStyles} from '@material-ui/core/styles'
 
-setInterval(window.getGuiArchitectureInstance,.5)
+function LeafModifier({path})
+{
 
+}
+
+let oldStuff=undefined
 function GetSimpleGui()
 {
-	// try{
-	// const instance=window.getGuiArchitectureInstance()
-	const labels  =[]
-	let [instance, setInstance] = useState({})
-	timerEvents[0]=()=>{setInstance(window.getGuiArchitectureInstance())}
+	const labels               =[]
+	let [instance, setInstance]=useState({})
+	timerEvents[0]             =()=>
+	{
+		let stuff=gameWindow.getGuiArchitectureInstance.apply(gameWindow, [gameWindow.config])
+		if(stuff!==oldStuff)//This
+		{
+			setInstance(stuff)
+			oldStuff=stuff
+		}
+	}//This function is inefficient. It must be cleaned up asap. (it lists all possible controls...which is just STUPID (but also very easy to make))
 
-	for(const [index,i] of Object.entries(instance))
+	for(const [index, i] of Object.entries(instance))
 	{
 		if(i.path.includes('color'))
-		labels.push(<Button key={index}variant="contained" onClick={
-			function()
+		{
+			let onClick=function()
 			{
-				const value=prompt("Enter the new value for "+(i.path.join(' '))+'\n\n at delta '+(i.delta)+'\n\nCurrent Value: '+i.valueInConfig)
+				const value=prompt("Enter the new value for "+(i.path.join(' '))+
+									   '\n\n at delta '+(i.delta)+'\n\nCurrent Value: '+i.valueInConfig)
 				if(value==null)
 					return//Canceled
 				else
 				{
 					let configString=localStorage.getItem('config')
 					configString+='\n'+'deltas	'+i.delta+'	'+i.path.join('	')+' '+value
-					window.setConfigDjsonInLocalStorage(configString)
+					gameWindow.setConfigDjsonInLocalStorage(configString)
 				}
 			}
+			let color  =i.valueInConfig===undefined ? "primary" : "secondary"
+			labels.push(<Button key={index}
+								variant="contained" onClick={onClick}
+								size="small"
+								color={color}>
+				{'deltas '+i.delta+' '+i.path.join(' ')}
+			</Button>)
 		}
-		size="small" color={i.valueInConfig===undefined?"primary":"secondary"}>{'deltas '+i.delta+' '+i.path.join(' ')}</Button>)
 	}
-	return <div style={{flexGrow: 4, display: 'flex', flexDirection: 'column'}}>
+	return <table style={{flexGrow: 4, display: 'flex', flexDirection: 'column'}}>
 		{labels}
-	</div>
-// }
-	// catch{}
-	return <div></div>
+	</table>
 }
-window.editorMode=true
+
+var gameWindow   =undefined//Will be set to the 'window' element of the 'game.html' iframe
+const timerEvents=[()=>{}]//Calls each one of these on a timer
+function doTimerEvents()
+{
+	if(gameWindow!==undefined)//We're not ready yet: the game iframe has to finish loading first
+	{
+		console.log("HO")
+		gameWindow.editorMode=true
+		for(const event of timerEvents)
+			event()
+	}
+}
+setInterval(doTimerEvents, 100)
 
 function App()
 {
+	function setGameWindow(x)
+	{
+		// let w            =x.contentWindow
+		gameWindow=x.contentWindow
+	}
+	let gameStyle={width: '100%', height: '100%', border: '0'}
+	// noinspection HtmlUnknownTarget
 	return <Split style={{display: 'flex', flexDirection: 'horizontal', width: '100%', height: '100%'}}>
 		<div style={{flexGrow: 4}}>
-			<iframe src="scene.html" style={{width: '100%', height: '100%', border: '0'}}></iframe>
+			<iframe src="game.html" style={gameStyle} ref={setGameWindow}/>
 		</div>
 		<div style={{flexGrow: 4, display: 'flex', flexDirection: 'column', overflowY: 'scroll'}}>
 			<h1 style={{color: 'white'}}>Config</h1>
@@ -65,17 +99,8 @@ function App()
 		</div>
 	</Split>
 }
-
-const timerEvents=[()=>{}]//Calls each one of these on a timer
-function doTimerEvents()
+document.addEventListener("DOMContentLoaded", function(event)
 {
-	for(const event of timerEvents)
-		event()
-}
-setInterval(doTimerEvents,1000)
-
-
-
-
-ReactDOM.render(<App />, document.getElementById('root'))
-
+	ReactDOM.render(<App/>, document.getElementById('root'))
+	// Your code to run since DOM is loaded and ready
+})
