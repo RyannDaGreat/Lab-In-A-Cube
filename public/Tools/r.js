@@ -391,8 +391,6 @@ function containsValueShallow(o,x,equal=equalsShallow)
 }
 function dictProduct(dicts)
 {
-	console.log("DCIIC",dicts)
-	console.log("DCIIC",{...dicts})
 	//Takes a set of (dicts of variable length) and returns a set of (dicts of uniform length)
 	//Equivalent to returning every permutation of delta-concatenations of these dicts (which has >n! complexity)
 	//(Result will be that every dict has same length)

@@ -296,6 +296,7 @@ function setConfigDjsonInLocalStorage(djsonString,setChanged=true)
 	localStorage.setItem('config',djsonString)
 	if(setChanged)
 		localStorage.setItem('configChanged','true')
+	refreshConfigFromLocalStorage()
 }
 window.setConfigDjsonInLocalStorage=setConfigDjsonInLocalStorage
 
@@ -303,6 +304,8 @@ window.setConfigDjsonInLocalStorage=setConfigDjsonInLocalStorage
 let previousLoadedConfigString
 function refreshConfigFromLocalStorage()
 {
+	if(config.deltas===undefined)config.deltas={}
+	if(config.items ===undefined)config.items ={}
 	if(previousLoadedConfigString===undefined || localStorage.getItem('configChanged')==='true')
 	{
 		localStorage.setItem('configChanged','false')//This is to lighten the 9ms burden of refreshing this every .1 seconds when using the editor
@@ -335,8 +338,6 @@ function refreshConfigFromLocalStorage()
 		previousLoadedConfigString=storedItem
 		localStorage.setItem('readOnlyConfig',JSON.stringify(config))//Hack because this is an iframe. Sadness. Needs to communicate to the gui. JSONs are faster to read and write than djson, so this is why it's read-only.
 	}
-	// if(/config.deltas===undefined)config.deltas={}
-	// if(config.items ===undefined)config.items ={}
 	config.deltas.none={}//This is a valid delta, and it does absolutely nothing. THis is here to prevent errors such as 'none is not a valid delta' from cluttering the console
 	requestRender()//Aand the game begins...
 }
@@ -369,7 +370,7 @@ if(weAreInAnIframe()||window.editorMode)
 
 
 const machineWrittenDjsonTag=' (Machine Written Transaction Tag)'//This is used to understand which lines are written by machines and which lines are written by humans. When using 'undo', we'll delete all lines form the bottom of the djson up until the point where we reach this line. This tag lets us both: 1. Not delete any hand-written code via the undo function and 2. Lets us
-function addLinesToConfigString(lines,{window=window,reloadWholeDjson=true})
+function addLinesToConfigString(lines,{reloadWholeDjson=true}={})
 {
 	// reloadWholeDjson=true is safe, but slower than when reloadWholeDjson=false
 	// When reloadWholeDjson is true, we re-parse the whole djson (which might have macros, which might be slow).
@@ -377,14 +378,14 @@ function addLinesToConfigString(lines,{window=window,reloadWholeDjson=true})
 	// That gives us a performance boost
 	assert.isString(lines)
 	assert.isString(machineWrittenDjsonTag)
-	setConfigDjsonInLocalStorage(getConfigStringFromLocalStorage()+'\n'+lines,reloadWholeDjson)
+	setConfigDjsonInLocalStorage(getConfigStringFromLocalStorage()+'\n'+machineWrittenDjsonTag+"\n"+lines,reloadWholeDjson)
 	if(reloadWholeDjson)
 	{
-		window.refreshConfigFromLocalStorage()
+		refreshConfigFromLocalStorage()
 	}
 	else
 	{
-		deltas.apply(window.config,djson.parse(lines))
+		deltas.apply(config,djson.parse(lines))
 	}
 }
 

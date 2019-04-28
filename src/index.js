@@ -10,10 +10,130 @@ import ReactDOM from 'react-dom'
 import Split from 'react-split'
 import {useState} from 'react'
 import {withStyles} from '@material-ui/core/styles'
+import Select from 'react-select'
 
-function LeafModifier({path})
+function Multiplexer({schema})
 {
+	const [selectedOption, setSelectedOption]=useState(null)
+	if(!schema)
+		return <div></div>
+	const options                            =Object.keys(schema).map(key=>({value: key, label: key}))
 
+	return <div>
+		<Select value={{label: selectedOption}}
+				onChange={x=>setSelectedOption(x.value)}
+				options={options}
+		/>
+		<Schema schema={schema[selectedOption]}/>
+	</div>
+}
+
+function StringInput({schema})
+{
+	return <div>{schema}</div>
+}
+
+function isLeaf(schema)
+{
+	if(typeof schema!=='object')
+		return 'type'
+	for(const [index,value] of Object.entries(schema))
+	{
+		if(typeof value==='string')
+		{
+			console.assert('type' in schema)
+			return true
+		}
+	}
+	return false
+}
+
+function addItemDialogs()
+{
+	function itemDialog()
+	{
+		const value=prompt("Enter the new item name:")
+		if(!value)
+			return alert('Canceled adding item')
+		else if(value in window.config.items)
+		{
+			alert('Sorry, that names already taken! Try another one...')
+			return itemDialog()
+		}
+		return value
+	}
+	function typeDialog()
+	{
+		const value=prompt("Enter the new item type! Please choose from: "+Object.keys(window.getItemSchemas()))
+		if(!value)
+			return alert('Canceled adding item')
+		else if(!(value in (window.getItemSchemas())))
+		{
+			alert('Sorry, thats not a module type! Please choose from: '+Object.keys((window.getItemSchemas())))
+			return typeDialog()
+		}
+		return value
+	}
+	const name=itemDialog()
+	if(!name)
+		return
+	const type=typeDialog()
+	if(!type)
+		return
+	alert("Success! Added item. Please refresh the page to see changes.")
+		window.addLinesToConfigString('items	'+name+' '+type)
+}
+
+function addDeltaDialog()
+{
+	function deltaDialog()
+	{
+		const value=prompt("Enter the new delta name:")
+		if(!value)
+			return alert('Canceled adding delta')
+		else if(value in window.config.deltas)
+		{
+			alert('Sorry, that names already taken! Try another one...')
+			return deltaDialog()
+		}
+		return value
+	}
+	const d=deltaDialog()
+	if(!d)return
+	alert("Success! Added delta. Please refresh the page to see changes.")
+	window.addLinesToConfigString('deltas	'+d)
+}
+
+function Schema({schema})
+{
+	if(!schema)
+		return <div></div>
+	if(isLeaf(schema))
+	{
+		return <LeafModifier schema={schema}/>
+	}
+	else
+	{
+		return <Multiplexer schema={schema}/>
+	}
+}
+
+function LeafModifier({schema})
+{
+	let onClick=function()
+	{
+		const value=prompt("Enter the new value:")
+		if(value==null)
+			return//Canceled
+		else
+		{
+			schema.set(value)
+		}
+	}
+	return <Button
+			variant="contained" onClick={onClick}
+			size="small"
+				   >{schema.path+''}</Button>
 }
 
 let oldStuff=undefined
@@ -62,7 +182,7 @@ function GetSimpleGui()
 	</table>
 }
 
-window.gameWindow   =undefined//Will be set to the 'window' element of the 'game.html' iframe
+window.gameWindow=undefined//Will be set to the 'window' element of the 'game.html' iframe
 const timerEvents=[()=>{}]//Calls each one of these on a timer
 function doTimerEvents()
 {
@@ -83,21 +203,20 @@ function App()
 		// let w            =x.contentWindow
 		window.gameWindow=x.contentWindow
 	}
+
 	let gameStyle={width: '100%', height: '100%', border: '0'}
 	// noinspection HtmlUnknownTarget
-	return <Split style={{display: 'flex', flexDirection: 'horizontal', width: '100%', height: '100%'}}>
-		<div style={{flexGrow: 4}}>
-			<iframe src="game.html" style={gameStyle} ref={setGameWindow}/>
-		</div>
-		<div style={{flexGrow: 4, display: 'flex', flexDirection: 'column', overflowY: 'scroll'}}>
+	return <div style={{display: 'flex', flexDirection: 'horizontal', width: '25%', height: '100%'}}>
+		<div style={{border: 10, backgroundColor: 'rgba(255,255,255,.1)', flexGrow: 4, display: 'flex', flexDirection: 'column', overflowY: 'scroll', pointerEvents: 'auto'}}>
 			<h1 style={{color: 'white'}}>Config</h1>
-			<Button variant="contained" size="small" color="primary"> Undo </Button>
-			<Button variant="contained" size="small" color="primary"> Redo </Button>
-			<Button variant="contained" size="small" color="primary"> Add Item </Button>
-			<Button variant="contained" size="small" color="primary"> Add Delta </Button>
+			<Button style={{pointerEvents: 'auto'}} onClick={window.undoEditorChange}variant="contained" size="small" color="primary"> Undo </Button>
+			{/*<Button variant="contained" size="small" color="primary"> Redo </Button>*/}
+			<Button variant="contained" size="small" color="primary" onClick={addItemDialogs}> Add Item </Button>
+			<Button variant="contained" size="small" color="primary" onClick={addDeltaDialog}> Add Delta </Button>
+			<Schema schema={window.getDeltasGuiSchema()}></Schema>
 			<GetSimpleGui/>
 		</div>
-	</Split>
+	</div>
 }
 document.addEventListener("DOMContentLoaded", function(event)
 {

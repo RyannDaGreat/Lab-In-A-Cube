@@ -221,7 +221,7 @@ var djson_macros=proxies.argumentCountChecker({
 			macrosets=djson_macros.macroized(macrosets)
 			if(is_object(macrosets))
 			{
-				console.log(macrosets)
+				// console.log(macrosets)
 				for(let [key,value] of Object.entries(macrosets))
 				{
 					if(typeof value!=='object')

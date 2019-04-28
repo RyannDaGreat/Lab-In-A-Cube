@@ -195,7 +195,7 @@ function setParent(threeObject,itemID)
 	parent=itemID
 }
 
-function getItemSchemas(config)
+function getItemSchemas()
 {
 	//This wasn't the original way I had planned to write the gui, but this was is just waaaayyy too pretty for me not to (I love it too much to get rid of it)
 	//Specifies all default values
@@ -381,7 +381,7 @@ function getInterfacesGuiArchitecture(config)
 }
 
 
-function getDeltasGuiSchema(window=window/*This needs a reference to a window, because this code is being accessed through an iframe and that breaks stuff for some reason*/)
+function getDeltasGuiSchema()
 {
 	//Needs to provide path information WITHOUT lagging...
 	//Returns some object like
@@ -393,33 +393,56 @@ function getDeltasGuiSchema(window=window/*This needs a reference to a window, b
 	//					type number
 	//			texture
 	//				type select
-	const config=window.config
-	const state =window.tween.delta
+	const state =tween.delta
 	const deltaIds=Object.keys(config.deltas)
-	const itemSchemas=getItemSchemas(config)
-	for(const itemSchema of itemSchemas)
-		Object.setPrototypeOf(itemSchema,null)//This is how we can infer that we're looking at a leaf: it's prototype is NOT object, but is instead null
-	const items={...config.items}
+	const itemSchemas=getItemSchemas()
+	// for(const itemSchema of Object.values(itemSchemas))
+	// 	Object.setPrototypeOf(itemSchema,null)//This is how we can infer that we're looking at a leaf: it's prototype is NOT object, but is instead null
+	const items={...config.items,scene:'scene',camera:'camera',overlay:'overlay'}
 	const itemsSchema={}
 	const deltasSchema={}
-	for(const [itemId,itemType] of Object.entries(items)) itemsSchema[ itemId]=itemSchemas[type]
+	for(const [itemId,itemType] of Object.entries(items)) itemsSchema[ itemId]=itemSchemas[itemType]
 	for(const deltaId           of deltaIds             )deltasSchema[deltaId]=itemsSchema
-	function glove(path=[])
+	function glove(target,path=[])
 	{
+		if(typeof target==='string')
+		{
+			function set(value)
+			{
+				addLinesToConfigString('deltas\t'+path.join('\t')+' '+value,false)
+			}
+			return {...parseItemLeafSchema(target),path,set}
+		}
+		if(!is_object(target))
+			return target
 		const handler={
 			get(target,key)
 			{
 				return glove(target[key],[...path,key])
 			},
-			set(target,key,value)
-			{
-				addLinesToConfigString(path.join('\t')+'\t'+value,false)
-			}
 		}
-		return new Proxy(Object.create(null),handler)
+		return new Proxy(target,handler)
 	}
+	return  glove(deltasSchema)
 }
 
+function undoEditorChange()
+{
+	let s=getConfigStringFromLocalStorage().split('\n')
+	// alert(JSON.stringify(s))
+	// if(!s.includes(machineWrittenDjsonTag))
+	// 	return//Nothing to undo
+	let flag=false
+	for(const line of s)
+	{
+		flag|=line===machineWrittenDjsonTag
+	}
+	if(!flag)return//nothing to undo
+	s.pop()
+	s.pop()
+	// while(!s.pop()!==machineWrittenDjsonTag){/*alert(JSON.stringify(s))*/}
+	setConfigDjsonInLocalStorage(s.join('\n'))
+}
 
 function getGuiItemsArchitectureInstance(config=djson.parse(localStorage.getItem('config')))
 {
