@@ -197,11 +197,12 @@ function setParent(threeObject,itemID)
 
 function getInterfaces(config)
 {
+	//This wasn't the original way I had planned to write the gui, but this was is just waaaayyy too pretty for me not to (I love it too much to get rid of it)
 	//Specifies all default values
 	// assert.isPureObject(config.items     )
 	// assert.isPureObject(config.geometries)
 	// assert.isPureObject(config.textures  )
-	return djson.parse(`
+	var out=`
 mesh,boxItem
 	texture default:TEXTURES
 	geometry box:GEOMETRIES
@@ -231,9 +232,9 @@ light,lightItem
 scene
 	background	r,g,b .5:0,1
 	transitions
-		drag	ITEMS	ITEMS	delta none:none,ITEMS	time 0:0,
-		enter,leave		ITEMS	delta none:none,ITEMS	time 0:0,
-		auto					delta none:none,ITEMS	time 0:0,
+		drag	ITEMS	ITEMS	delta none:none,DELTAS	time 0:0,
+		enter,leave		ITEMS	delta none:none,DELTAS	time 0:0,
+		auto					delta none:none,DELTAS	time 0:0,
 
 camera
 	transform	position,rotation	x,y,z 0
@@ -248,13 +249,92 @@ label
 	parent scene:ITEMS
 	text Label
 	size 1
-`.replace(/ITEMS/g     ,Object.keys(config.items     ||{}).join(','))
- .replace(/GEOMETRIES/g,Object.keys(config.geometries||{}).join(','))
- .replace(/TEXTURES/g  ,Object.keys(config.textures  ||{}).join(',')),
- {leaf_parser:x=>x.trim()})
+`
+	out=out.replace(/ITEMS/g     ,Object.keys(config.items     ||{}).join(','))
+	out=out.replace(/DELTAS/g    ,Object.keys(config.deltas    ||{}).join(','))
+ 	out=out.replace(/GEOMETRIES/g,Object.keys(config.geometries||{}).join(','))
+ 	out=out.replace(/TEXTURES/g  ,Object.keys(config.textures  ||{}).join(','))
+	return djson.parse(out,{leaf_parser:x=>x.trim()})
 }
 
+function getLeafArchitecture(leaf)
+{
+	//EXAMPLES:
+	//	getLeafArchitecture("0")           --->   {type:'number',default:0             }
+	//	getLeafArchitecture(".5:0,1")      --->   {type:'number',default:.5,min:0,max:1}
+	//	getLeafArchitecture(".5:,1")       --->   {type:'number',default:.5,      max:1}
+	//	getLeafArchitecture(".5:0,")       --->   {type:'number',default:.5,min:0      }
+	//
+	//	getLeafArchitecture("\"Hello\"")   --->   {type:'string' ,default:"Hello"      }
+	//	getLeafArchitecture("Hello")       --->   {type:'string' ,default:"Hello"      }
+	//	getLeafArchitecture("false")       --->   {type:'boolean',default: false       }
+	//	getLeafArchitecture("falsey")      --->   {type:'string' ,default:"falsey"     }
+	//	getLeafArchitecture(" false ")     --->   {type:'boolean',default: false       }
+	//
+	//	getLeafArchitecture("A:A,B,C,D,E") --->   {type:'select' ,default:'A',values:['A','B','C','D','E']}
 
+	//Returns {schema,value} (because used to get both interface for GUI and also the default value)
+	assert.isString(leaf)
+	const colonSplit=leaf.split(':')
+	console.assert(colonSplit.length>0,'Common sense when splitting a string...this should be impossible to fail.')
+	let out=undefined
+	if(colonSplit.length===1)
+	{
+		const [value]=colonSplit
+		const parsed=djson.parse_leaf(value)
+		if(typeof parsed==='number')
+		{
+			out=({type:'number'})
+		}
+		else if(typeof parsed==='boolean')
+		{
+			out=({type:'boolean'})
+		}
+		else if(typeof parsed==='string')
+		{
+			out=({type:'string'})
+		}
+		else
+		{
+			console.error('There is no syntax defined for this leaf:',leaf,'at path:',path)
+			out=undefined
+		}
+		out.default=parsed
+	}
+	else if(colonSplit.length===2)
+	{
+		const [beforeColon,afterColon]=leaf.split(':')
+		const parsedBeforeColon=djson.parse_leaf(beforeColon)
+		if(typeof parsedBeforeColon==='number')
+		{
+			console.assert(afterColon.includes(','))
+			const commaSplit=afterColon.split(',')
+			console.assert(commaSplit.length===2)
+			let [min,max]=commaSplit
+			min=min.trim()
+			max=max.trim()
+			out={type:'number',...(min?{min:Number(min)}:{}),
+								...(max?{max:Number(max)}:{})}
+		}
+		else if(typeof parsedBeforeColon==='string')
+		{
+			out={type:'select',values:afterColon.split(',')}
+		}
+		else
+		{
+			console.error('There is no syntax defined for this leaf:',leaf,'at path:',path)
+			return
+		}
+		out.default=parsedBeforeColon
+	}
+	else
+	{
+		console.error('There is no syntax defined for this leaf:',leaf,'at path:',path)
+		return
+	}
+	console.assert(out!==undefined,'If this assertion fails then this function was written improperly (this is an internal assertion)')
+	return out
+}
 function getInterfacesGuiArchitecture(config)
 {
 	const interfaces=getInterfaces(config)
@@ -272,62 +352,17 @@ function getInterfacesGuiArchitecture(config)
 		}
 	}
 	processPaths(paths)
-	// function 
+	// function
 	const out=[]
 	for(const [path,leaf] of paths)
 	{
 		assert.isString(leaf)
-		const colonSplit=leaf.split(':')
-		console.assert(colonSplit.length>0,'Common sense when splitting a string...this should be impossible to fail.')
-		if     (colonSplit.length===1)
-		{
-			const [value]=colonSplit
-			const parsed=djson.parse_leaf(value)
-			if(typeof parsed==='number')
-			{
-				out.push({path,type:'number'})
-			}
-			else if(typeof parsed==='boolean')
-			{
-				out.push({path,type:'boolean'})
-			}
-			else if(typeof parsed==='string')
-			{
-				out.push({path,type:'string'})
-			}
-			else
-			{
-				console.error('There is no syntax defined for this leaf:',leaf,'at path:',path)
-			}
-		}
-		else if(colonSplit.length===2)
-		{
-			const [beforeColon,afterColon]=leaf.split(':')
-			const parsedBeforeColon=djson.parse_leaf(beforeColon)
-			if(typeof parsedBeforeColon==='number')
-			{
-				console.assert(afterColon.includes(','))
-				const commaSplit=afterColon.split(',')
-				console.assert(commaSplit.length===2)
-				let [min,max]=commaSplit
-				min=min.trim()
-				max=max.trim()
-				out.push({path,type:'number',...(min?{min:Number(min)}:{}),
-				                             ...(max?{max:Number(max)}:{})})
-			}
-			else if(typeof parsedBeforeColon==='string')
-			{
-				out.push({path,type:'select',values:afterColon.split(',')})
-			}
-			else
-			{
-				console.error('There is no syntax defined for this leaf:',leaf,'at path:',path)
-			}
-		}
-		else
-		{
+
+		let leafArchitecture=getLeafArchitecture(leaf)
+		if(leafArchitecture===undefined)
 			console.error('There is no syntax defined for this leaf:',leaf,'at path:',path)
-		}
+		else
+			out.push({path,...leafArchitecture})
 	}
 	return out
 	//TYPES: select,number,boolean,string
@@ -365,7 +400,6 @@ function getGuiItemsArchitectureInstance(config=djson.parse(localStorage.getItem
 	return out
 }
 
-
 let __oldStringifiedConfig=""
 let __oldGetGuiArchitectureResult=undefined
 function getGuiArchitectureInstance(config=JSON.parse(localStorage.getItem('readOnlyConfig'))||{})
@@ -399,7 +433,6 @@ function getGuiArchitectureInstance(config=JSON.parse(localStorage.getItem('read
 	}
 	return __oldGetGuiArchitectureResult=out
 }
-
 
 function getDefaultInitialDelta()
 {

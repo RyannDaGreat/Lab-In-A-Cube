@@ -2,13 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="135bb503-6ec1-462c-9f44-1d512427b351" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/public/Game/guiBridge.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/Game/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/Game/config.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/Game/modules.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/Game/modules.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/Tools/gloves.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/Tools/gloves.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/Tools/r.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/Tools/r.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/Tools/djson.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/Tools/djson.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.js" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
@@ -22,11 +19,34 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file pinned="true" current-in-tab="true">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/public/Game/modules.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="563">
-              <caret line="396" column="12" selection-start-line="396" selection-start-column="12" selection-end-line="396" selection-end-column="12" />
+            <state relative-caret-position="-3825">
+              <caret line="17" selection-start-line="17" selection-end-line="17" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/public/Game/guiBridge.js">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/public/Tools/djson.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="24">
+              <caret line="3" column="6" selection-start-line="3" selection-start-column="6" selection-end-line="3" selection-end-column="6" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/public/Tools/djson_macros.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-3801">
+              <caret column="46" selection-start-column="46" selection-end-column="46" />
             </state>
           </provider>
         </entry>
@@ -39,8 +59,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/Tools/r.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="661">
-              <caret line="482" column="1" selection-start-line="482" selection-start-column="1" selection-end-line="482" selection-end-column="1" />
+            <state relative-caret-position="579">
+              <caret line="480" column="11" selection-start-line="480" selection-start-column="11" selection-end-line="480" selection-end-column="11" />
             </state>
           </provider>
         </entry>
@@ -57,8 +77,8 @@
       <file pinned="true" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/index.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="314">
-              <caret line="26" column="33" selection-start-line="26" selection-start-column="33" selection-end-line="26" selection-end-column="33" />
+            <state relative-caret-position="238">
+              <caret line="26" column="28" lean-forward="true" selection-start-line="26" selection-start-column="28" selection-end-line="26" selection-end-column="28" />
             </state>
           </provider>
         </entry>
@@ -149,7 +169,6 @@
         <option value="$PROJECT_DIR$/public/Configs/WorkingMacro4" />
         <option value="$PROJECT_DIR$/public/Configs/DictProductScopeDemo" />
         <option value="$PROJECT_DIR$/public/Configs/GUI" />
-        <option value="$PROJECT_DIR$/public/Tools/djson.js" />
         <option value="$PROJECT_DIR$/public/engine.js" />
         <option value="$PROJECT_DIR$/public/modules.js" />
         <option value="$PROJECT_DIR$/public/config.js" />
@@ -165,11 +184,12 @@
         <option value="$PROJECT_DIR$/public/Three/three_not_minified.js" />
         <option value="$PROJECT_DIR$/src/game.html" />
         <option value="$PROJECT_DIR$/public/index.html" />
-        <option value="$PROJECT_DIR$/public/Game/guiBridge.js" />
         <option value="$PROJECT_DIR$/public/Game/config.js" />
         <option value="$PROJECT_DIR$/public/Tools/gloves.js" />
-        <option value="$PROJECT_DIR$/src/index.js" />
+        <option value="$PROJECT_DIR$/public/Tools/djson.js" />
+        <option value="$PROJECT_DIR$/public/Game/guiBridge.js" />
         <option value="$PROJECT_DIR$/public/Tools/r.js" />
+        <option value="$PROJECT_DIR$/src/index.js" />
         <option value="$PROJECT_DIR$/public/Game/modules.js" />
       </list>
     </option>
@@ -309,12 +329,12 @@
       <workItem from="1555957798406" duration="1598000" />
       <workItem from="1556070112495" duration="8961000" />
       <workItem from="1556231023969" duration="526000" />
-      <workItem from="1556407463111" duration="11333000" />
+      <workItem from="1556407463111" duration="16709000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="75616000" />
+    <option name="totallyTimeSpent" value="80992000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -332,8 +352,8 @@
       <window_info id="npm" order="0" side_tool="true" />
       <window_info id="Structure" order="1" sideWeight="0.17590362" side_tool="true" weight="0.22031474" />
       <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info active="true" content_ui="combo" id="Project" order="3" sideWeight="0.8240964" visible="true" weight="0.14020029" />
-      <window_info anchor="bottom" id="Terminal" order="0" visible="true" weight="0.038554218" />
+      <window_info content_ui="combo" id="Project" order="3" sideWeight="0.8240964" visible="true" weight="0.14020029" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="0" visible="true" weight="0.10120482" />
       <window_info anchor="bottom" id="Event Log" order="1" side_tool="true" weight="0.32891566" />
       <window_info anchor="bottom" id="Version Control" order="2" />
       <window_info anchor="bottom" id="Docker" order="3" show_stripe_button="false" />
@@ -458,13 +478,6 @@
     <entry file="file://$PROJECT_DIR$/public/Configs/WorkingMacro3" />
     <entry file="file://$PROJECT_DIR$/public/Configs/WorkingMacro1" />
     <entry file="file://$PROJECT_DIR$/public/Configs/DemoLabPouring1" />
-    <entry file="file://$PROJECT_DIR$/public/Tools/djson.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="6" selection-start-line="3" selection-start-column="6" selection-end-line="3" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/App.test.js" />
     <entry file="file://$PROJECT_DIR$/src/App.js" />
     <entry file="file://$PROJECT_DIR$/public/Three/three.js">
@@ -552,13 +565,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/Tools/djson_macros.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="37" lean-forward="true" selection-start-line="2" selection-start-column="37" selection-end-line="2" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/public/Tools/proxies.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="121">
@@ -583,9 +589,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/Game/guiBridge.js">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/public/Game/config.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="525">
@@ -607,13 +610,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/index.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="314">
-          <caret line="26" column="33" selection-start-line="26" selection-start-column="33" selection-end-line="26" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/public/Tools/deltas.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1">
@@ -621,20 +617,44 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/Tools/r.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="661">
-          <caret line="482" column="1" selection-start-line="482" selection-start-column="1" selection-end-line="482" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/public/Tools/objectTree.js">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/public/Tools/djson_macros.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-3801">
+          <caret column="46" selection-start-column="46" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/Game/guiBridge.js">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/Tools/r.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="579">
+          <caret line="480" column="11" selection-start-line="480" selection-start-column="11" selection-end-line="480" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/Tools/djson.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="24">
+          <caret line="3" column="6" selection-start-line="3" selection-start-column="6" selection-end-line="3" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/index.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="26" column="28" lean-forward="true" selection-start-line="26" selection-start-column="28" selection-end-line="26" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/public/Game/modules.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="563">
-          <caret line="396" column="12" selection-start-line="396" selection-start-column="12" selection-end-line="396" selection-end-column="12" />
+        <state relative-caret-position="-3825">
+          <caret line="17" selection-start-line="17" selection-end-line="17" />
         </state>
       </provider>
     </entry>

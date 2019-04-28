@@ -24,7 +24,7 @@ function GetSimpleGui()
 	timerEvents[0]             =()=>
 	{
 		let stuff=gameWindow.getGuiArchitectureInstance.apply(gameWindow, [gameWindow.config])
-		if(stuff!==oldStuff)//This
+		if(stuff!==oldStuff)
 		{
 			setInstance(stuff)
 			oldStuff=stuff

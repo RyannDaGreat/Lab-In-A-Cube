@@ -29,7 +29,7 @@ const djson=proxies.argumentCountChecker({
 		//	OLD VERSION FOR DOING NUMBERS: if(leaf.match(/^\ *\-?\.\d+\ *$/))//A number like .234 isn't valid JSON number but is valid JS number// return Number(leaf)
 		return leaf
 	},
-	parse_handwritten(lines)
+	parse_handwritten(lines,kwargs={})
 	{
 		//Removes trailing whitespace and empty lines (that just have whitespace) It's really just to help when we're actually writing them
 		console.assert(arguments.length===1, 'djson.parse_handwritten takes exactly one argument')
@@ -44,7 +44,7 @@ const djson=proxies.argumentCountChecker({
 			if(line)
 				out.push(line)
 		}
-		return djson.parse(out)
+		return djson.parse(out,kwargs)
 	},
 	applyDjsonDelta(o,d)//A simpler variant of deltas.apply that lets you rewrite deltas, making djson potentially very readable if written by hand
 	{
