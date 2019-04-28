@@ -133,14 +133,22 @@ function LeafModifier({schema})
 	return <Button
 			variant="contained" onClick={onClick}
 			size="small"
-				   >{schema.path+''}</Button>
+				   >{'State: '+schema.state+'\tConfig: '+schema.config/*schema.path+''*/}</Button>
 }
 
 let oldStuff=undefined
+setInterval(window.tryRefreshInstance,100)
+function tryRefreshInstance()
+{
+	if(window.refreshInstance)
+		window.refreshInstance()
+}
+window.refreshInstance=undefined
 function GetSimpleGui()
 {
 	const labels               =[]
 	let [instance, setInstance]=useState({})
+	window.refreshInstance=()=>setInstance(window.getGuiArchitectureInstance())
 	timerEvents[0]             =()=>
 	{
 		let stuff=window.gameWindow.getGuiArchitectureInstance.apply(window.gameWindow, [window.gameWindow.config])

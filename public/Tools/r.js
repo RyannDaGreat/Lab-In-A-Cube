@@ -217,7 +217,7 @@ function is_array(x)
 	console.assert(arguments.length===1,'Wrong number of arguments.')
 	return is_prototype_of(x,Array)
 }
-function is_string(x)
+function  is_string(x)
 {
 	console.assert(arguments.length===1,'Wrong number of arguments.')
 	return is_prototype_of(x,String)

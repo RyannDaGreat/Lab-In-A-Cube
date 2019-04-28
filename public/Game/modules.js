@@ -204,7 +204,7 @@ function getItemSchemas()
 	// assert.isPureObject(config.textures  )
 	var out=`
 
-mesh,boxItem
+mesh,boxItem,simpleBeaker
 	texture default:TEXTURES
 	geometry box:GEOMETRIES
 	parent scene:ITEMS
@@ -220,6 +220,10 @@ mesh,boxItem
 	transform
 		position,rotation	x,y,z 0
 		scale				x,y,z,overall 1
+		
+simpleBeaker	fluid
+	transform
+		scale	y 1
 
 overlay
 	size 30:0,
@@ -241,10 +245,9 @@ camera
 	transform	position,rotation	x,y,z 0
 	fov 40
 
-label
+sprite
 	transform
 		position	x,y,z 0
-		scale		x,y,z,overall 1
 	visible true
 	xray    true
 	parent scene:ITEMS
@@ -313,7 +316,7 @@ function parseItemLeafSchema(leaf)
 			min=min.trim()
 			max=max.trim()
 			out={type:'number',...(min?{min:Number(min)}:{}),
-								...(max?{max:Number(max)}:{})}
+				               ...(max?{max:Number(max)}:{})}
 		}
 		else if(typeof parsedBeforeColon==='string')
 		{
@@ -360,7 +363,7 @@ function getInterfacesGuiArchitecture(config)
 		assert.isString(leaf)
 
 		let leafArchitecture=parseItemLeafSchema(leaf)
-		if(leafArchitecture===undefined)
+		if( leafArchitecture===undefined)
 			console.error('There is no syntax defined for this leaf:',leaf,'at path:',path)
 		else
 			out.push({path,...leafArchitecture})
@@ -411,7 +414,7 @@ function getDeltasGuiSchema()
 			{
 				addLinesToConfigString('deltas\t'+path.join('\t')+' '+value,false)
 			}
-			return {...parseItemLeafSchema(target),path,set}
+			return {config:keyPath.getAndSquelch(config,['deltas',...path]),state:keyPath.getAndSquelch(state,path.slice(1)),...parseItemLeafSchema(target),path,set}
 		}
 		if(!is_object(target))
 			return target
