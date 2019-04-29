@@ -1,5 +1,6 @@
 let modules={
 	get boxItem(){return modules.mesh},//This is legacy from a few tests we did when I first put the engine together. If you don't need it you can delete it in the future.
+	get label(){return modules.sprite},//This is legacy from a few tests we did when I first put the engine together. If you don't need it you can delete it in the future.
 	mesh(ID)
 	{
 		//We don't require ID as an argument, because this method might be called simply to get its structure
@@ -210,8 +211,8 @@ mesh,boxItem,simpleBeaker
 	parent scene:ITEMS
 	visible true
 	material
-		mode  basic:basic,standard,phong
-		modes		basic,standard,phong
+		mode  standard:basic,standard,phong
+		modes          basic,standard,phong
 			color	r,g,b 1:0,1
 			opacity       1:0,1
 			transparent false
@@ -221,9 +222,14 @@ mesh,boxItem,simpleBeaker
 		position,rotation	x,y,z 0
 		scale				x,y,z,overall 1
 		
-simpleBeaker	fluid
-	transform
-		scale	y 1
+simpleBeaker
+	fluid
+		visible true
+		transform	scale	y 1
+		material	mode phong	modes	phong	wireframe false	color	r 0	g 0	b 1
+		geometry simpleBeakerFluid
+	material	mode phong	modes	phong	transparent true	opacity 0.5	depthWrite false
+	geometry simpleBeakerBeaker
 
 overlay
 	size 30:0,
@@ -235,17 +241,22 @@ light,lightItem
 	position	x,y,z 0
 
 scene
-	background	r,g,b .5:0,1
+	ambience
+				intensity     .1:0,
+				color	r,g,b  1:0,
+	background	color	r,g,b .1:0,1
 	transitions
-		drag	ITEMS	ITEMS	delta none:none,DELTAS	time 0:0,
-		enter,leave		ITEMS	delta none:none,DELTAS	time 0:0,
-		auto					delta none:none,DELTAS	time 0:0,
+		drag	ITEMS	ITEMS	delta none:none,DELTAS	time 0:0,	smooth 1:0,1
+		enter,leave		ITEMS	delta none:none,DELTAS	time 0:0,	smooth 1:0,1
+		auto					delta none:none,DELTAS	time 0:0,	smooth 1:0,1
 
 camera
-	transform	position,rotation	x,y,z 0
+	transform
+		position,rotation	x,y,z 0
+		position			z 10
 	fov 40
 
-sprite
+sprite,label
 	transform
 		position	x,y,z 0
 	visible true

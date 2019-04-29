@@ -24,6 +24,8 @@ sounds
 geometries
 	dog ./Assets/dog.obj
 	flask ./Assets/flask.obj
+	simpleBeakerFluid ./Assets/Models/SimpleBeaker/Fluid.obj
+	simpleBeakerBeaker ./Assets/Models/SimpleBeaker/Beaker.obj
 items
 	light1 lightItem	light2 lightItem	light3 lightItem	light4 lightItem
 	light5 lightItem	light6 lightItem	light7 lightItem	light8 lightItem
