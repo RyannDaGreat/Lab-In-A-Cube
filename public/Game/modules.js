@@ -1,6 +1,5 @@
 let modules={
 	get boxItem(){return modules.mesh},//This is legacy from a few tests we did when I first put the engine together. If you don't need it you can delete it in the future.
-	get label(){return modules.sprite},//This is legacy from a few tests we did when I first put the engine together. If you don't need it you can delete it in the future.
 	mesh(ID)
 	{
 		//We don't require ID as an argument, because this method might be called simply to get its structure
@@ -394,7 +393,7 @@ function getInterfacesGuiArchitecture(config)
 	//	 ...(etc)...]
 }
 
-
+window.refreshGuiSchema=()=>{}
 function getDeltasGuiSchema()
 {
 	//Needs to provide path information WITHOUT lagging...
@@ -424,6 +423,7 @@ function getDeltasGuiSchema()
 			function set(value)
 			{
 				addLinesToConfigString('deltas\t'+path.join('\t')+' '+value,false)
+				window.refreshGuiSchema()
 			}
 			return {config:keyPath.getAndSquelch(config,['deltas',...path]),state:keyPath.getAndSquelch(state,path.slice(1)),...parseItemLeafSchema(target),path,set}
 		}

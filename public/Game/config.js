@@ -329,10 +329,11 @@ function refreshConfigFromLocalStorage()
 		if(previousLoadedConfigString!==storedItem && !deltas.contains(config, newConfig))
 		{
 			playSound('./Assets/Sounds/ShortBells/E.mp3')//This got annoying, but it was here to
+			window.refreshGuiSchema()//Upon heari ng the bell, we try to refresh the gui schema in case anything changed
+			// window.refreshGuiSchema()
 			deltas.pour(config,newConfig)
 			deltas.pour(config,deltas.poured({deltas:{initial:deltas.poured(getDefaultInitialDelta(),getDeltaByIDWithInheritance('initial'))}},newConfig))
 			// deltas.pour(config,{deltas:{initial:getDefaultInitialDelta()}})
-
 			refreshStateFromConfig()
 			console.log(tween.delta)
 			// tween.time=1

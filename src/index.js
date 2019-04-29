@@ -212,6 +212,9 @@ function App()
 		window.gameWindow=x.contentWindow
 	}
 
+	const [schema,setSchema]=useState(window.getDeltasGuiSchema())
+	window.refreshGuiSchema=()=>setSchema(window.getDeltasGuiSchema())
+
 	let gameStyle={width: '100%', height: '100%', border: '0'}
 	// noinspection HtmlUnknownTarget
 	return <div style={{display: 'flex', flexDirection: 'horizontal', width: '25%', height: '100%'}}>
@@ -221,7 +224,7 @@ function App()
 			{/*<Button variant="contained" size="small" color="primary"> Redo </Button>*/}
 			<Button variant="contained" size="small" color="primary" onClick={addItemDialogs}> Add Item </Button>
 			<Button variant="contained" size="small" color="primary" onClick={addDeltaDialog}> Add Delta </Button>
-			<Schema schema={window.getDeltasGuiSchema()}></Schema>
+			<Schema schema={schema}></Schema>
 			<GetSimpleGui/>
 		</div>
 	</div>
