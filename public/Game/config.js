@@ -288,17 +288,39 @@ deltas	pour_5
 
 function getConfigStringFromLocalStorage()
 {
-	return localStorage.getItem('config')
+	if(window.setConfigDjsonInLocalStorage_canWait_pending)
+		return virtualConfigDjsonString
+	virtualConfigDjsonString=localStorage.getItem('config')
+	return virtualConfigDjsonString
 }
 
-
-function setConfigDjsonInLocalStorage(djsonString,setChanged=true)
+let virtualConfigDjsonString=''
+getConfigStringFromLocalStorage()
+window.setConfigDjsonInLocalStorage_canWait_pending=false
+function setConfigDjsonInLocalStorage(djsonString,kwargs={})
 {
-	assert.isString(djsonString)
-	localStorage.setItem('config',djsonString)
-	if(setChanged)
-		localStorage.setItem('configChanged','true')
-	refreshConfigFromLocalStorage()
+	const {setChanged=true,canWait=false,canWaitTime=100}=kwargs
+	virtualConfigDjsonString=djsonString
+	if(!canWait)
+	{
+		assert.isString(djsonString)
+		localStorage.setItem('config',djsonString)
+		if(setChanged)
+			localStorage.setItem('configChanged','true')
+		refreshConfigFromLocalStorage()
+	}
+	else
+	{
+		if(!window.setConfigDjsonInLocalStorage_canWait_pending)
+		{
+			window.setConfigDjsonInLocalStorage_canWait_pending=true//Since localStorage.setItem is synchronous, its slow when we type characters out fast and it saves every change.
+			setTimeout(function()
+			{
+				window.setConfigDjsonInLocalStorage_canWait_pending=false
+				setConfigDjsonInLocalStorage(virtualConfigDjsonString,{...kwargs,canWait:false})
+			},canWaitTime)
+		}
+	}
 }
 window.setConfigDjsonInLocalStorage=setConfigDjsonInLocalStorage
 
@@ -381,7 +403,7 @@ function addLinesToConfigString(lines,{reloadWholeDjson=true}={})
 	// That gives us a performance boost
 	assert.isString(lines)
 	assert.isString(machineWrittenDjsonTag)
-	setConfigDjsonInLocalStorage(getConfigStringFromLocalStorage()+'\n'+machineWrittenDjsonTag+"\n"+lines,reloadWholeDjson)
+	setConfigDjsonInLocalStorage(getConfigStringFromLocalStorage()+'\n'+machineWrittenDjsonTag+"\n"+lines,{setChanged:reloadWholeDjson,canWait:true})
 	if(reloadWholeDjson)
 	{
 		refreshConfigFromLocalStorage()
@@ -389,6 +411,7 @@ function addLinesToConfigString(lines,{reloadWholeDjson=true}={})
 	else
 	{
 		deltas.apply(config,djson.parse(lines))
+		refreshStateFromConfig()
 	}
 }
 

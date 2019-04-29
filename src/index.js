@@ -3,14 +3,17 @@ import Button from '@material-ui/core/Button'
 import DeleteIcon from '@material-ui/icons/Delete'
 import Fab from '@material-ui/core/Fab'
 import IconButton from '@material-ui/core/IconButton'
+import Input from '@material-ui/core/Input'
 import NavigationIcon from '@material-ui/icons/Navigation'
 import PropTypes from 'prop-types'
 import React from 'react'
 import ReactDOM from 'react-dom'
+import Select from 'react-select'
 import Split from 'react-split'
+import Switch from '@material-ui/core/Switch'
 import {useState} from 'react'
 import {withStyles} from '@material-ui/core/styles'
-import Select from 'react-select'
+
 
 function Multiplexer({schema})
 {
@@ -118,8 +121,10 @@ function Schema({schema})
 	}
 }
 
+
 function LeafModifier({schema})
 {
+	// const [used,setUsed]=useState(schema.config!==undefined)//Set this to true IFF we're using the value in the current delta
 	let onClick=function()
 	{
 		const value=prompt("Enter the new value:")
@@ -130,10 +135,31 @@ function LeafModifier({schema})
 			schema.set(value)
 		}
 	}
-	return <Button
+
+	const checked=schema.config!==undefined
+	console.log(JSON.stringify(schema.config))
+	// alert("ASOIJD")
+	const input=<Input
+        defaultValue={schema.config}
+        onChange={event=>{schema.set(event.target.value)}}
+        // className={classes.input}
+        inputProps={{
+          'aria-label': 'Description',
+        }}/>
+	return <div>
+	<Switch
+		checked={checked}
+		disabled={schema.path[0]==='initial'}
+		onChange={event=>{const checked=event.target.checked;if(checked)/*alert(schema.state+'  '+schema.config)*/;schema.set(checked?schema.default:null)}}//if(!checked){schema.set(undefined)}else{console.assert(checked);setUsed(checked)}}}
+		value="used"
+		color="primary"
+		/>
+	{checked?input : <div></div>}
+	<Button
 			variant="contained" onClick={onClick}
 			size="small"
 				   >{'State: '+schema.state+'\tConfig: '+schema.config/*schema.path+''*/}</Button>
+				   </div>
 }
 
 let oldStuff=undefined
@@ -208,17 +234,14 @@ function App()
 {
 	function setGameWindow(x)
 	{
-		// let w            =x.contentWindow
 		window.gameWindow=x.contentWindow
 	}
-
 	const [schema,setSchema]=useState(window.getDeltasGuiSchema())
 	window.refreshGuiSchema=()=>setSchema(window.getDeltasGuiSchema())
-
 	let gameStyle={width: '100%', height: '100%', border: '0'}
 	// noinspection HtmlUnknownTarget
 	return <div style={{display: 'flex', flexDirection: 'horizontal', width: '25%', height: '100%'}}>
-		<div style={{border: 10, backgroundColor: 'rgba(255,255,255,.1)', flexGrow: 4, display: 'flex', flexDirection: 'column', overflowY: 'scroll', pointerEvents: 'auto'}}>
+		<div style={{border: 10, backgroundColor: 'rgba(255,255,255,.3)', flexGrow: 4, display: 'flex', flexDirection: 'column', overflowY: 'scroll', pointerEvents: 'auto'}}>
 			<h1 style={{color: 'white'}}>Config</h1>
 			<Button style={{pointerEvents: 'auto'}} onClick={window.undoEditorChange}variant="contained" size="small" color="primary"> Undo </Button>
 			{/*<Button variant="contained" size="small" color="primary"> Redo </Button>*/}

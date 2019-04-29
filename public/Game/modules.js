@@ -422,10 +422,16 @@ function getDeltasGuiSchema()
 		{
 			function set(value)
 			{
-				addLinesToConfigString('deltas\t'+path.join('\t')+' '+value,false)
+				addLinesToConfigString('deltas\t'+path.join('\t')+' '+value,{reloadWholeDjson:true})
 				window.refreshGuiSchema()
 			}
-			return {config:keyPath.getAndSquelch(config,['deltas',...path]),state:keyPath.getAndSquelch(state,path.slice(1)),...parseItemLeafSchema(target),path,set}
+			return {
+				config:keyPath.getAndSquelch(config,['deltas',...path]),
+				state:keyPath.getAndSquelch(state,path.slice(1)),
+				...parseItemLeafSchema(target),
+				path,
+				set,
+			}
 		}
 		if(!is_object(target))
 			return target
