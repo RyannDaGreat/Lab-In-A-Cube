@@ -132,7 +132,7 @@ if(weAreInAnIframe()||window.editorMode)
 }
 
 
-const machineWrittenDjsonTag=' (Machine Written Transaction Tag)'//This is used to understand which lines are written by machines and which lines are written by humans. When using 'undo', we'll delete all lines form the bottom of the djson up until the point where we reach this line. This tag lets us both: 1. Not delete any hand-written code via the undo function and 2. Lets us
+const machineWrittenDjsonTag=' //'//This is used to understand which lines are written by machines and which lines are written by humans. When using 'undo', we'll delete all lines form the bottom of the djson up until the point where we reach this line. This tag lets us both: 1. Not delete any hand-written code via the undo function and 2. Lets us
 function addLinesToConfigString(lines,{reloadWholeDjson=true}={})
 {
 	// reloadWholeDjson=true is safe, but slower than when reloadWholeDjson=false
