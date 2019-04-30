@@ -21,7 +21,7 @@ window.saveConfigToServer=async function()
 		alert('Save SUCCEEDED!\nBelow is the link:\n'+savedURL)
 	}
 }
-window.loadConfigFromServer=async function(savedURL)
+window.loadConfigFromServer=async function(savedURL,{concat=false}={})
 {
 	if(!savedURL.startsWith('/saves/'))
 		savedURL='/saves/'+savedURL
@@ -33,7 +33,15 @@ window.loadConfigFromServer=async function(savedURL)
 	}
 	else
 	{
-		setConfigDjsonInLocalStorage(savedConfig)
+		if(concat)
+		{
+			console.log("WHAT")
+			addLinesToConfigString(savedConfig)
+		}
+		else
+		{
+			setConfigDjsonInLocalStorage(savedConfig)
+		}
 		alert('Load SUCCEEDED!\nBelow is the link:\n'+savedURL+'\n\nPlease refresh this page to see the changes')
 		refreshPage()
 	}

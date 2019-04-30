@@ -278,12 +278,13 @@ function doTimerEvents()
 }
 setInterval(doTimerEvents, 100)
 
-function handleLoadConfig()
+function handleLoadConfig(kwargs={})
 {
+	const {concat=false}=kwargs
 	const code=prompt('Please enter the 4 character code (case-sensitive) that you received when pressing "Save Config"')
 	if(typeof code==='string' && code.length===4)
 	{
-		window.loadConfigFromServer(code)
+		window.loadConfigFromServer(code,{concat})
 	}
 	else if(!code)
 	{
@@ -311,6 +312,7 @@ function App()
 			<h1 style={{color: 'white'}}>Config</h1>
 			<Button variant="contained" size="small" color="primary" onClick={()=>window.saveConfigToServer()}> Save Config </Button>
 			<Button variant="contained" size="small" color="primary" onClick={handleLoadConfig}> Load Config </Button>
+			<Button variant="contained" size="small" color="primary" onClick={()=>handleLoadConfig({concat:true})}> Append Config </Button>
 			<Button style={{pointerEvents: 'auto'}} onClick={window.undoEditorChange}variant="contained" size="small" color="primary"> Undo  </Button>
 			{/*<Button variant="contained" size="small" color="primary"> Redo </Button>*/}
 			<Button variant="contained" size="small" color="primary" onClick={addItemDialogs}> Add Item </Button>
