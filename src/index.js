@@ -121,10 +121,28 @@ function Schema({schema})
 	}
 }
 
+function TextInput({value,setValue})
+{
+	return <Input
+        value={value}
+        onChange={event=>{setValue(event.target.value)}}
+        // className={classes.input}
+        inputProps={{
+          'aria-label': 'Description',
+        }}/>
+}
+
+function BooleanInput({value,setValue})
+{
+	return <Switch
+		checked={Boolean(value)}
+		onChange={event=>setValue(event.target.checked)}
+		color="primary"
+		/>
+}
 
 function LeafModifier({schema})
 {
-	// const [used,setUsed]=useState(schema.config!==undefined)//Set this to true IFF we're using the value in the current delta
 	let onClick=function()
 	{
 		const value=prompt("Enter the new value:")
@@ -137,21 +155,22 @@ function LeafModifier({schema})
 	}
 
 	const checked=schema.config!==undefined
-	console.log(JSON.stringify(schema.config))
 	// alert("ASOIJD")
-	const input=<Input
-        value={schema.config}
-        onChange={event=>{schema.set(event.target.value)}}
-        // className={classes.input}
-        inputProps={{
-          'aria-label': 'Description',
-        }}/>
+	let input=<TextInput value={schema.config} setValue={schema.set}/>
+	if(schema.type==='string')
+	{
+		input=input//Default: text input
+	}
+	else if(schema.type='boolean')
+	{
+		input=<BooleanInput value={schema.config} setValue={schema.set}/>
+	}
+	console.assert(input!==undefined)
 	return <div>
 	<Switch
 		checked={checked}
 		disabled={schema.path[0]==='initial'}
 		onChange={event=>{const checked=event.target.checked;if(checked)/*alert(schema.state+'  '+schema.config)*/;schema.set(checked?schema.default:null)}}//if(!checked){schema.set(undefined)}else{console.assert(checked);setUsed(checked)}}}
-		value="used"
 		color="primary"
 		/>
 	{checked?input : <div></div>}

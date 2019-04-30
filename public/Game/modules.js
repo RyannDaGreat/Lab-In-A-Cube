@@ -448,7 +448,7 @@ function getDeltasGuiSchema()
 
 function undoEditorChange()
 {
-	let s=getConfigStringFromLocalStorage().split('\n')
+	let s=getConfigStringFromLocalStorage().split(machineWrittenDjsonTag+'\n')
 	// alert(JSON.stringify(s))
 	// if(!s.includes(machineWrittenDjsonTag))
 	// 	return//Nothing to undo
@@ -459,9 +459,8 @@ function undoEditorChange()
 	}
 	if(!flag)return//nothing to undo
 	s.pop()
-	s.pop()
 	// while(!s.pop()!==machineWrittenDjsonTag){/*alert(JSON.stringify(s))*/}
-	setConfigDjsonInLocalStorage(s.join('\n'))
+	setConfigDjsonInLocalStorage(s.join(machineWrittenDjsonTag+'\n'))
 }
 
 function getGuiItemsArchitectureInstance(config=djson.parse(localStorage.getItem('config')))
