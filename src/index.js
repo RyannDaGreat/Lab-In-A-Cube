@@ -144,6 +144,14 @@ function NumberInput({value,setValue,step=.1})
         />
 }
 
+function SelectInput({value,setValue,values=[]})
+{
+	return <Select value={{label: value}}
+				   onChange={x=>setValue(x.value)}
+				   options={values.map(key=>({value: key, label: key}))}
+	/>
+}
+
 function BooleanInput({value,setValue})
 {
 	return <Switch
@@ -181,10 +189,10 @@ function LeafModifier({schema})
 	{
 		input=<NumberInput value={schema.config} setValue={schema.set}/>
 	}
-	// else if(schema.type='select')
-	// {
-		// input=<NumberInput value={schema.config} setValue={schema.set}/>
-	// }
+	else if(schema.type='select')
+	{
+		input=<SelectInput value={schema.config} values={schema.values} setValue={schema.set}/>
+	}
 	console.assert(input!==undefined)
 	return <div>
 	<Switch
