@@ -470,6 +470,7 @@ function undoEditorChange()
 	console.log(s)
 	// while(!s.pop()!==machineWrittenDjsonTag){/*alert(JSON.stringify(s))*/}
 	setConfigDjsonInLocalStorage(s.join(machineWrittenDjsonTag+'\n'))
+	refreshPage()
 }
 
 function getGuiItemsArchitectureInstance(config=djson.parse(localStorage.getItem('config')))

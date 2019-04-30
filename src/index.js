@@ -84,7 +84,8 @@ function addItemDialogs()
 	if(!type)
 		return
 	alert("Success! Added item. Please refresh the page to see changes.")
-		window.addLinesToConfigString('items	'+name+' '+type)
+	window.addLinesToConfigString('items	'+name+' '+type)
+	window.refreshPage()
 }
 
 function addDeltaDialog()
@@ -103,10 +104,9 @@ function addDeltaDialog()
 	}
 	const d=deltaDialog()
 	if(!d)return
-	alert("Success! Added delta. Please refresh the page to see changes.")
+	alert("Success! Added delta. You will now see it in the top dropdown menu.")
 	window.addLinesToConfigString('deltas	'+d)
 	window.refreshGuiSchema()
-	window.refreshPage()
 }
 
 function Schema({schema})
