@@ -6,6 +6,19 @@ function load_config(url)
 			deltas.apply(config,djson.parse(response))
 		})
 }
+
+window.getMySaves=function()
+{
+	//Returns a list
+	return JSON.parse(localStorage.getItem('saves'))||[]
+}
+window.addToMySaves=function(code)
+{
+	assert.isString(code)
+	localStorage.setItem('saves',JSON.stringify(uniqueFromRight(getMySaves().concat([code]))))
+}
+
+
 window.saveConfigToServer=async function()
 {
 	console.assert(arguments.length===0,'Wrong number of arguments')
@@ -18,6 +31,7 @@ window.saveConfigToServer=async function()
 	}
 	else
 	{
+		addToMySaves(savedURL)
 		alert('Save SUCCEEDED!\nBelow is the link:\n'+savedURL)
 	}
 }
@@ -36,7 +50,7 @@ window.loadConfigFromServer=async function(savedURL,{concat=false}={})
 		if(concat)
 		{
 			console.log("WHAT")
-			addLinesToConfigString(savedConfig)
+			addLinesToConfigString(savedConfig,{simplify:true})
 		}
 		else
 		{
@@ -45,6 +59,26 @@ window.loadConfigFromServer=async function(savedURL,{concat=false}={})
 		alert('Load SUCCEEDED!\nBelow is the link:\n'+savedURL+'\n\nPlease refresh this page to see the changes')
 		refreshPage()
 	}
+}
+
+function machineWrittenDjsonTag_Split(djsonString)
+{
+	//TODO: Refactor this method into places it can be (less redundancy)
+	return djsonString.split(machineWrittenDjsonTag+'\n')
+}
+function machineWrittenDjsonTag_Join(list)
+{
+	return list.join(machineWrittenDjsonTag+'\n')
+}
+function simplifiedConcattedDjsons(djsonString)
+{
+	//Splits them along machine tag and removes duplicates
+	//(That way, concatting a file with itself would yield itself, not 2*itself)
+	//(This doesn't work for hand-written djsons though. That would be more of a git-like operation, which this doenst support (yet))
+	djsonString=machineWrittenDjsonTag_Split(djsonString)
+	djsonString=uniqueFromRight(djsonString)
+	djsonString=machineWrittenDjsonTag_Join(djsonString)
+	return djsonString
 }
 
 let defaultConfig=`preview	height 80	type djson	mode sublime	numbers true
@@ -173,7 +207,7 @@ if(weAreInAnIframe()||window.editorMode)
 
 
 const machineWrittenDjsonTag=' //'//This is used to understand which lines are written by machines and which lines are written by humans. When using 'undo', we'll delete all lines form the bottom of the djson up until the point where we reach this line. This tag lets us both: 1. Not delete any hand-written code via the undo function and 2. Lets us
-function addLinesToConfigString(lines,{reloadWholeDjson=true}={})
+function addLinesToConfigString(lines,{reloadWholeDjson=true,simplify=false}={})
 {
 	// reloadWholeDjson=true is safe, but slower than when reloadWholeDjson=false
 	// When reloadWholeDjson is true, we re-parse the whole djson (which might have macros, which might be slow).
@@ -197,7 +231,10 @@ function addLinesToConfigString(lines,{reloadWholeDjson=true}={})
 	if(oldlineslist.length>1 && sameObjectTreeStructure(parsedlastoldline,parsedLines))
 		oldlineslist.pop()
 	oldlineslist.push(lines)
-	setConfigDjsonInLocalStorage(oldlineslist.join(tag),{setChanged:reloadWholeDjson,canWait:false,refresh:false})
+	let newDjsonString=oldlineslist.join(tag)
+	if(simplify)
+		newDjsonString=simplifiedConcattedDjsons(newDjsonString)
+	setConfigDjsonInLocalStorage(newDjsonString,{setChanged:reloadWholeDjson,canWait:false,refresh:false})
 	// setConfigDjsonInLocalStorage(getConfigStringFromLocalStorage()+'\n'+machineWrittenDjsonTag+"\n"+lines,{setChanged:reloadWholeDjson,canWait:false,refresh:false})
 	if(0&&reloadWholeDjson)
 	{

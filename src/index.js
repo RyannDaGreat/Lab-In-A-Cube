@@ -264,6 +264,16 @@ function GetSimpleGui()
 	</table>
 }
 
+function handleNewLab()
+{
+	if(window.confirm('Are you sure you want to create a new lab (all progress will be lost)?'))
+	{
+		window.setConfigDjsonInLocalStorage('')
+		window.refreshPage()
+	}
+
+}
+
 window.gameWindow=undefined//Will be set to the 'window' element of the 'game.html' iframe
 const timerEvents=[()=>{}]//Calls each one of these on a timer
 function doTimerEvents()
@@ -297,6 +307,15 @@ function handleLoadConfig(kwargs={})
 	}
 }
 
+function viewMySaves()
+{
+	const saves=window.getMySaves()
+	if(!saves.length)
+		window.alert('You currently have no saved labs.')
+	else
+		window.alert("All of your saved file codes (bottom is most recent):"+'\n'+saves.join('\n'))
+}
+
 function App()
 {
 	function setGameWindow(x)
@@ -310,7 +329,9 @@ function App()
 	return <div style={{display: 'flex', flexDirection: 'horizontal', width: '25%', height: '100%'}}>
 		<div style={{border: 10, backgroundColor: 'rgba(255,255,255,.3)', flexGrow: 4, display: 'flex', flexDirection: 'column', overflowY: 'scroll', pointerEvents: 'auto'}}>
 			<h1 style={{color: 'white'}}>Config</h1>
+			<Button variant="contained" size="small" color="primary" onClick={handleNewLab}> New Config </Button>
 			<Button variant="contained" size="small" color="primary" onClick={()=>window.saveConfigToServer()}> Save Config </Button>
+			<Button variant="contained" size="small" color="primary" onClick={viewMySaves}> View Saved Configs </Button>
 			<Button variant="contained" size="small" color="primary" onClick={handleLoadConfig}> Load Config </Button>
 			<Button variant="contained" size="small" color="primary" onClick={()=>handleLoadConfig({concat:true})}> Append Config </Button>
 			<Button style={{pointerEvents: 'auto'}} onClick={window.undoEditorChange}variant="contained" size="small" color="primary"> Undo  </Button>

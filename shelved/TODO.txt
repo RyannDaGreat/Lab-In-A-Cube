@@ -1,10 +1,23 @@
+TODO: The HTML layout is terrible becuase we have 20394234 other TODO's on the list: all involving bringing threeJS into some variably sized component!! 
+
+TODO: Create a GUI-suite file which separates my messy engine code from the GUI code (gives it the gui schema etc). This will let rong be able to work on it in the future.
+
 TODO: Make a file that contains the current state of the program in DJSON format, which is just a list of keys (specifying delta names). This NATURALLY serves to create a simplified delta state.
 TODO: Undo and redo, and import, should use NAMED SCOPES, not just tags. THat way, we can undo a whole import.  
 NOTES: The Game is completely untethered from React: it has no idea react exists. None of it is written in JSX, and none of it needs to be transpiled.
 
 TODO: Some sort of DJSON simplification? If two people keep importing each other's changes, then the djson will grow exponentially. HOWEVER, djson is a wonderful way to merge peoples work together!!
+	After this is done....
+	TODO: Some REALLY HEAVY changes that will let you be able to do EVERYTHING you can do now but WITHOUT refreshing the page (which would make realtime collaboration perfectly feasable)
+	TODO: Would also need some naming scheme (let the users give ID's to labs)
 
 TODO: djson.stringify NEEDS TO BE FLAWLESS. (Perhaps add a strict mode which GUARENTEES readability)
+
+TODO: Let user make sounds with GUI
+
+TODO: Require ALL names to be unique. THIS IS BECAUSE we can use MACROS to rename variables to other variables!!!
+
+
 
 TODO: a flattened DJSON mode, and a compressed DJSON mode. 
 
