@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="135bb503-6ec1-462c-9f44-1d512427b351" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/public/Game/modules.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/Game/modules.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.js" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -17,12 +18,12 @@
     <favorites_list name="Lab-In-A-Cube" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/shelved/Configs/DemoLabPouring1">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="450">
-              <caret line="30" column="4" lean-forward="true" selection-start-line="30" selection-start-column="4" selection-end-line="30" selection-end-column="4" />
+              <caret line="30" column="4" selection-start-line="30" selection-start-column="4" selection-end-line="30" selection-end-column="4" />
             </state>
           </provider>
         </entry>
@@ -35,17 +36,17 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/public/Game/modules.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-3675">
-              <caret line="245" column="13" lean-forward="true" selection-start-line="245" selection-start-column="13" selection-end-line="245" selection-end-column="13" />
+            <state relative-caret-position="549">
+              <caret line="467" column="22" selection-start-line="467" selection-start-column="22" selection-end-line="467" selection-end-column="22" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/public/game.html">
+        <entry file="file://$PROJECT_DIR$/package.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret column="16" selection-start-column="16" selection-end-column="16" />
+            <state relative-caret-position="330">
+              <caret line="22" column="4" lean-forward="true" selection-start-line="22" selection-start-column="4" selection-end-line="22" selection-end-column="4" />
             </state>
           </provider>
         </entry>
@@ -53,7 +54,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/Game/engine.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="15">
+            <state relative-caret-position="855">
               <caret line="57" column="6" selection-start-line="57" selection-start-column="6" selection-end-line="57" selection-end-column="6" />
             </state>
           </provider>
@@ -62,8 +63,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/index.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-183">
-              <caret line="72" column="31" lean-forward="true" selection-start-line="72" selection-start-column="31" selection-end-line="72" selection-end-column="31" />
+            <state relative-caret-position="334">
+              <caret line="284" column="76" lean-forward="true" selection-start-line="284" selection-start-column="76" selection-end-line="284" selection-end-column="76" />
             </state>
           </provider>
         </entry>
@@ -80,7 +81,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/Tools/r.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="725">
+            <state relative-caret-position="628">
               <caret line="219" column="10" selection-start-line="219" selection-start-column="10" selection-end-line="219" selection-end-column="10" />
             </state>
           </provider>
@@ -98,8 +99,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/Game/config.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="261">
-              <caret line="299" column="1" selection-start-line="299" selection-start-column="1" selection-end-line="299" selection-end-column="1" />
+            <state relative-caret-position="219">
+              <caret line="397" column="6" selection-start-line="397" selection-start-column="6" selection-end-line="397" selection-end-column="6" />
             </state>
           </provider>
         </entry>
@@ -116,8 +117,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>config</find>
-      <find>window.</find>
       <find>editorMode</find>
       <find>getInterf</find>
       <find>con</find>
@@ -146,6 +145,8 @@
       <find>undo</find>
       <find>window.items</find>
       <find>chitect</find>
+      <find>number</find>
+      <find>UNDO</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -222,8 +223,8 @@
     <other-services-enabled>true</other-services-enabled>
     <auto-save>true</auto-save>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6" fullScreen="true">
-    <option name="width" value="714" />
+  <component name="ProjectFrameBounds" fullScreen="true">
+    <option name="width" value="1440" />
     <option name="height" value="900" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -469,11 +470,12 @@
       <workItem from="1556070112495" duration="8961000" />
       <workItem from="1556231023969" duration="526000" />
       <workItem from="1556407463111" duration="23894000" />
+      <workItem from="1556581155366" duration="375000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="104672000" />
+    <option name="totallyTimeSpent" value="105047000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -485,13 +487,13 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1440" height="900" extended-state="6" />
+    <frame x="0" y="0" width="1440" height="900" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="npm" order="0" sideWeight="0.33734939" side_tool="true" weight="0.14377682" />
       <window_info id="Structure" order="1" sideWeight="0.33734939" side_tool="true" weight="0.14377682" />
       <window_info id="Favorites" order="2" sideWeight="0.5192771" side_tool="true" weight="0.14377682" />
-      <window_info active="true" content_ui="combo" id="Project" order="3" sideWeight="0.4807229" visible="true" weight="0.3297568" />
+      <window_info active="true" content_ui="combo" id="Project" order="3" sideWeight="0.4807229" visible="true" weight="0.33404863" />
       <window_info anchor="bottom" id="Terminal" order="0" visible="true" weight="0.15060242" />
       <window_info anchor="bottom" id="Event Log" order="1" side_tool="true" weight="0.32891566" />
       <window_info anchor="bottom" id="Version Control" order="2" />
@@ -539,7 +541,6 @@
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/public/Game/modules.js</url>
           <line>248</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="1" />
         </line-breakpoint>
       </breakpoints>
@@ -578,13 +579,6 @@
     <entry file="file://$PROJECT_DIR$/config.js" />
     <entry file="file://$PROJECT_DIR$/public/favicon.ico" />
     <entry file="file://$PROJECT_DIR$/public/TODO.txt" />
-    <entry file="file://$PROJECT_DIR$/package.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="22" column="17" selection-start-line="22" selection-start-column="17" selection-end-line="22" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/logo.svg" />
     <entry file="file://$PROJECT_DIR$/public/Configs/BinaryDemo.djson" />
     <entry file="file://$PROJECT_DIR$/public/Configs/BinaryCombinationDemo.djson" />
@@ -702,9 +696,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/Game/guiBridge.js">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/public/Game/guiBridge.js" />
     <entry file="file://$PROJECT_DIR$/public/Game/attributes.js">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -757,10 +749,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/Game/config.js">
+    <entry file="file://$PROJECT_DIR$/public/game.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="261">
-          <caret line="299" column="1" selection-start-line="299" selection-start-column="1" selection-end-line="299" selection-end-column="1" />
+        <state>
+          <caret column="16" selection-start-column="16" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/Game/engine.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="855">
+          <caret line="57" column="6" selection-start-line="57" selection-start-column="6" selection-end-line="57" selection-end-column="6" />
         </state>
       </provider>
     </entry>
@@ -771,19 +770,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/shelved/Configs/BinaryDemo.djson">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/game.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="16" selection-start-column="16" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/public/Tools/r.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="725">
+        <state relative-caret-position="628">
           <caret line="219" column="10" selection-start-line="219" selection-start-column="10" selection-end-line="219" selection-end-column="10" />
         </state>
       </provider>
@@ -795,31 +784,41 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/index.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-183">
-          <caret line="72" column="31" lean-forward="true" selection-start-line="72" selection-start-column="31" selection-end-line="72" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/shelved/Configs/DemoLabPouring1">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="450">
-          <caret line="30" column="4" lean-forward="true" selection-start-line="30" selection-start-column="4" selection-end-line="30" selection-end-column="4" />
+          <caret line="30" column="4" selection-start-line="30" selection-start-column="4" selection-end-line="30" selection-end-column="4" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/Game/engine.js">
+    <entry file="file://$PROJECT_DIR$/shelved/Configs/BinaryDemo.djson">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/package.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="57" column="6" selection-start-line="57" selection-start-column="6" selection-end-line="57" selection-end-column="6" />
+        <state relative-caret-position="330">
+          <caret line="22" column="4" lean-forward="true" selection-start-line="22" selection-start-column="4" selection-end-line="22" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/index.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="334">
+          <caret line="284" column="76" lean-forward="true" selection-start-line="284" selection-start-column="76" selection-end-line="284" selection-end-column="76" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/Game/config.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="219">
+          <caret line="397" column="6" selection-start-line="397" selection-start-column="6" selection-end-line="397" selection-end-column="6" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/public/Game/modules.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-3675">
-          <caret line="245" column="13" lean-forward="true" selection-start-line="245" selection-start-column="13" selection-end-line="245" selection-end-column="13" />
+        <state relative-caret-position="549">
+          <caret line="467" column="22" selection-start-line="467" selection-start-column="22" selection-end-line="467" selection-end-column="22" />
         </state>
       </provider>
     </entry>

@@ -11,6 +11,7 @@ import ReactDOM from 'react-dom'
 import Select from 'react-select'
 import Split from 'react-split'
 import Switch from '@material-ui/core/Switch'
+import TextField from '@material-ui/core/TextField'
 import {useState} from 'react'
 import {withStyles} from '@material-ui/core/styles'
 
@@ -131,6 +132,17 @@ function TextInput({value,setValue})
           'aria-label': 'Description',
         }}/>
 }
+function NumberInput({value,setValue,step=.1})
+{
+	return <TextField
+	type="number"
+        value={value}
+
+     inputProps={{ /*min: "0", max: "10",*/ step: step }}
+        onChange={event=>{setValue(event.target.value)}}
+        // className={classes.input}
+        />
+}
 
 function BooleanInput({value,setValue})
 {
@@ -161,10 +173,18 @@ function LeafModifier({schema})
 	{
 		input=input//Default: text input
 	}
-	else if(schema.type='boolean')
+	else if(schema.type==='boolean')
 	{
 		input=<BooleanInput value={schema.config} setValue={schema.set}/>
 	}
+	else if(schema.type==='number')
+	{
+		input=<NumberInput value={schema.config} setValue={schema.set}/>
+	}
+	// else if(schema.type='select')
+	// {
+		// input=<NumberInput value={schema.config} setValue={schema.set}/>
+	// }
 	console.assert(input!==undefined)
 	return <div>
 	<Switch

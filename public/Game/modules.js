@@ -452,13 +452,21 @@ function undoEditorChange()
 	// alert(JSON.stringify(s))
 	// if(!s.includes(machineWrittenDjsonTag))
 	// 	return//Nothing to undo
-	let flag=false
-	for(const line of s)
+	// let flag=false
+	// for(const line of s)
+	// {
+	// 	flag|=line===machineWrittenDjsonTag
+	// }
+	// if(!flag)return//nothing to undo
+	if(s.length<2)
 	{
-		flag|=line===machineWrittenDjsonTag
+		return//Nothing to undo
 	}
-	if(!flag)return//nothing to undo
+	console.log("BEFORE")
+	console.log(s)
 	s.pop()
+	console.log("AFTER")
+	console.log(s)
 	// while(!s.pop()!==machineWrittenDjsonTag){/*alert(JSON.stringify(s))*/}
 	setConfigDjsonInLocalStorage(s.join(machineWrittenDjsonTag+'\n'))
 }
