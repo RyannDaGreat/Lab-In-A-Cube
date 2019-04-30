@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="135bb503-6ec1-462c-9f44-1d512427b351" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/public/Game/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/Game/config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/Game/modules.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/Game/modules.js" afterDir="false" />
-    </list>
+    <list default="true" id="135bb503-6ec1-462c-9f44-1d512427b351" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
     <ignored path="$PROJECT_DIR$/tmp/" />
@@ -28,11 +25,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/public/Game/engine.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="226">
-              <caret line="638" column="4" selection-start-line="638" selection-start-column="4" selection-end-line="638" selection-end-column="4" />
+            <state relative-caret-position="4374">
+              <caret line="638" column="22" selection-start-line="638" selection-start-column="22" selection-end-line="638" selection-end-column="22" />
             </state>
           </provider>
         </entry>
@@ -96,11 +93,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/Game/config.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-662">
-              <caret line="134" column="33" selection-start-line="134" selection-start-column="33" selection-end-line="134" selection-end-column="33" />
+            <state relative-caret-position="-77">
+              <caret line="173" column="9" selection-start-line="173" selection-start-column="9" selection-end-line="173" selection-end-column="9" />
             </state>
           </provider>
         </entry>
@@ -145,8 +142,8 @@
       <find>values</find>
       <find>'(</find>
       <find>modes</find>
-      <find>refresh</find>
       <find>tag</find>
+      <find>refresh</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -210,10 +207,10 @@
         <option value="$PROJECT_DIR$/public/Tools/djson_macros.js" />
         <option value="$PROJECT_DIR$/public/index.html" />
         <option value="$PROJECT_DIR$/public/Tools/r.js" />
-        <option value="$PROJECT_DIR$/public/Game/engine.js" />
         <option value="$PROJECT_DIR$/src/index.js" />
         <option value="$PROJECT_DIR$/public/Game/modules.js" />
         <option value="$PROJECT_DIR$/public/Game/config.js" />
+        <option value="$PROJECT_DIR$/public/Game/engine.js" />
       </list>
     </option>
   </component>
@@ -470,12 +467,12 @@
       <workItem from="1556070112495" duration="8961000" />
       <workItem from="1556231023969" duration="526000" />
       <workItem from="1556407463111" duration="23894000" />
-      <workItem from="1556581155366" duration="4287000" />
+      <workItem from="1556581155366" duration="4782000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="108959000" />
+    <option name="totallyTimeSpent" value="109454000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -493,8 +490,8 @@
       <window_info id="npm" order="0" sideWeight="0.33734939" side_tool="true" weight="0.14377682" />
       <window_info id="Structure" order="1" sideWeight="0.33734939" side_tool="true" weight="0.14377682" />
       <window_info id="Favorites" order="2" sideWeight="0.5192771" side_tool="true" weight="0.14377682" />
-      <window_info active="true" content_ui="combo" id="Project" order="3" sideWeight="0.4807229" visible="true" weight="0.33404863" />
-      <window_info anchor="bottom" id="Terminal" order="0" visible="true" weight="0.15060242" />
+      <window_info content_ui="combo" id="Project" order="3" sideWeight="0.4807229" visible="true" weight="0.33404863" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="0" visible="true" weight="0.15060242" />
       <window_info anchor="bottom" id="Event Log" order="1" side_tool="true" weight="0.32891566" />
       <window_info anchor="bottom" id="Version Control" order="2" />
       <window_info anchor="bottom" id="Docker" order="3" show_stripe_button="false" />
@@ -762,16 +759,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/Tools/objectTree.js">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/Tools/assert.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="6" selection-start-column="6" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/index.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="453">
@@ -800,20 +787,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/Game/engine.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="226">
-          <caret line="638" column="4" selection-start-line="638" selection-start-column="4" selection-end-line="638" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/Tools/gloves.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="419">
-          <caret line="34" column="17" selection-start-line="34" selection-start-column="17" selection-end-line="34" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/public/Game/modules.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="210">
@@ -823,8 +796,32 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/public/Game/config.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-662">
-          <caret line="134" column="33" selection-start-line="134" selection-start-column="33" selection-end-line="134" selection-end-column="33" />
+        <state relative-caret-position="-77">
+          <caret line="173" column="9" selection-start-line="173" selection-start-column="9" selection-end-line="173" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/Tools/assert.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="6" selection-start-column="6" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/Tools/objectTree.js">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/Tools/gloves.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="419">
+          <caret line="34" column="17" selection-start-line="34" selection-start-column="17" selection-end-line="34" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/Game/engine.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4374">
+          <caret line="638" column="22" selection-start-line="638" selection-start-column="22" selection-end-line="638" selection-end-column="22" />
         </state>
       </provider>
     </entry>
