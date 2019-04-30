@@ -316,7 +316,6 @@ function App()
 			<Button variant="contained" size="small" color="primary" onClick={addItemDialogs}> Add Item </Button>
 			<Button variant="contained" size="small" color="primary" onClick={addDeltaDialog}> Add Delta </Button>
 			<Schema schema={schema}></Schema>
-			<GetSimpleGui/>
 		</div>
 	</div>
 }
