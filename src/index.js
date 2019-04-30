@@ -22,7 +22,6 @@ function Multiplexer({schema})
 	if(!schema)
 		return <div></div>
 	const options                            =Object.keys(schema).map(key=>({value: key, label: key}))
-
 	return <div>
 		<Select value={{label: selectedOption}}
 				onChange={x=>setSelectedOption(x.value)}
@@ -106,6 +105,7 @@ function addDeltaDialog()
 	if(!d)return
 	alert("Success! Added delta. Please refresh the page to see changes.")
 	window.addLinesToConfigString('deltas	'+d)
+	window.refreshGuiSchema()
 }
 
 function Schema({schema})
@@ -198,7 +198,7 @@ function LeafModifier({schema})
 	<Switch
 		checked={checked}
 		disabled={schema.path[0]==='initial'}
-		onChange={event=>{const checked=event.target.checked;if(checked)/*alert(schema.state+'  '+schema.config)*/;schema.set(checked?schema.default:null)}}//if(!checked){schema.set(undefined)}else{console.assert(checked);setUsed(checked)}}}
+		onChange={event=>{const checked=event.target.checked;if(checked)/*alert(schema.state+'  '+schema.config)*/;schema.set(checked?schema.state:null)}}//if(!checked){schema.set(undefined)}else{console.assert(checked);setUsed(checked)}}}
 		color="primary"
 		/>
 	{checked?input : <div></div>}

@@ -205,13 +205,13 @@ function getItemSchemas()
 	var out=`
 
 mesh,boxItem,simpleBeaker
-	texture default:TEXTURES
-	geometry box:GEOMETRIES
+	texture default:TEXTURES,default
+	geometry box:GEOMETRIES,box,cube,sphere
 	parent scene:ITEMS
 	visible true
 	material
-		mode  standard:basic,standard,phong
-		modes          basic,standard,phong
+		mode   standard:basic,standard,phong
+		modes			basic,standard,phong
 			color	r,g,b 1:0,1
 			opacity       1:0,1
 			transparent false

@@ -635,6 +635,7 @@ function setStateFromDeltaIDSpaceSplitString(deltaIdsSeparatedBySpaces)
 }
 function refreshStateFromConfig()
 {
+	// reloadAssetsFromConfig()
 	setStateFromDeltaIDArray(getSimplifiedStateDeltaStack())
 	// printDeltaStack()
 }
