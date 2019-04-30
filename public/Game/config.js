@@ -299,7 +299,7 @@ getConfigStringFromLocalStorage()
 window.setConfigDjsonInLocalStorage_canWait_pending=false
 function setConfigDjsonInLocalStorage(djsonString,kwargs={})
 {
-	const {setChanged=true,canWait=false,canWaitTime=100}=kwargs
+	const {setChanged=true,canWait=false,canWaitTime=1000,refresh=true}=kwargs
 	virtualConfigDjsonString=djsonString
 	if(!canWait)
 	{
@@ -307,7 +307,8 @@ function setConfigDjsonInLocalStorage(djsonString,kwargs={})
 		localStorage.setItem('config',djsonString)
 		if(setChanged)
 			localStorage.setItem('configChanged','true')
-		refreshConfigFromLocalStorage()
+		if(refresh)
+			refreshConfigFromLocalStorage()
 	}
 	else
 	{
@@ -351,12 +352,12 @@ function refreshConfigFromLocalStorage()
 		if(previousLoadedConfigString!==storedItem && !deltas.contains(config, newConfig))
 		{
 			playSound('./Assets/Sounds/ShortBells/E.mp3')//This got annoying, but it was here to
-			window.refreshGuiSchema()//Upon heari ng the bell, we try to refresh the gui schema in case anything changed
 			// window.refreshGuiSchema()
 			deltas.pour(config,newConfig)
 			deltas.pour(config,deltas.poured({deltas:{initial:deltas.poured(getDefaultInitialDelta(),getDeltaByIDWithInheritance('initial'))}},newConfig))
 			// deltas.pour(config,{deltas:{initial:getDefaultInitialDelta()}})
 			refreshStateFromConfig()
+			window.refreshGuiSchema()//Upon heari ng the bell, we try to refresh the gui schema in case anything changed
 			console.log(tween.delta)
 			// tween.time=1
 		}
@@ -403,15 +404,33 @@ function addLinesToConfigString(lines,{reloadWholeDjson=true}={})
 	// That gives us a performance boost
 	assert.isString(lines)
 	assert.isString(machineWrittenDjsonTag)
-	setConfigDjsonInLocalStorage(getConfigStringFromLocalStorage()+'\n'+machineWrittenDjsonTag+"\n"+lines,{setChanged:reloadWholeDjson,canWait:true})
-	if(reloadWholeDjson)
+	//THIS MESSY CHUNK OF POORLY NAMED VARIABLES SERVES A PURPOSE
+	// (though I was in a rush while coding it.)
+	// Basically, this section is responsibly for not just adding a line to the end of a config string,
+	// but also if the same part of the config is being edited twice (I.E. perhaps we're typing out some text for 
+	// overlay	text and because it saves on every keystroke we get a big amount of transactions. We don't want them all piling up in the djson file,
+	// so this just overwrites the last thing written.)
+
+	const parsedLines=djson.parse(lines)
+	const oldlines=getConfigStringFromLocalStorage()
+	const tag='\n'+machineWrittenDjsonTag+'\n'
+	const oldlineslist=oldlines.split(tag)
+	const lastoldline=oldlineslist[oldlineslist.length-1]
+	const parsedlastoldline=djson.parse(lastoldline)
+	if(oldlineslist.length>1 && sameObjectTreeStructure(parsedlastoldline,parsedLines))
+		oldlineslist.pop()
+	oldlineslist.push(lines)
+	setConfigDjsonInLocalStorage(oldlineslist.join(tag),{setChanged:reloadWholeDjson,canWait:false,refresh:false})
+	// setConfigDjsonInLocalStorage(getConfigStringFromLocalStorage()+'\n'+machineWrittenDjsonTag+"\n"+lines,{setChanged:reloadWholeDjson,canWait:false,refresh:false})
+	if(0&&reloadWholeDjson)
 	{
 		refreshConfigFromLocalStorage()
 	}
 	else
 	{
-		deltas.apply(config,djson.parse(lines))
+		deltas.apply(config,parsedLines)
 		refreshStateFromConfig()
+		requestRender()
 	}
 }
 

@@ -479,3 +479,31 @@ function transformObjectTreeLeaves(objectTree,leafTransform)
 		else
 			objectTree[index]=leafTransform(value)
 }
+function sameObjectTreeStructure(a,b)
+{
+	//sameObjectTreeStructure({a:6,b:{a:3,c:4}},{a:3,b:{c:4,a:45}}) is true
+	//sameObjectTreeStructure({a:6,b:{a:3,c:4}},{a:3,b:{c:4,}}) is false
+	if(is_object(a)!==is_object(b))
+	{
+		return false
+	}
+	const are_objects=is_object(a)
+	if(!are_objects)
+		return true
+	for(const key in a)
+	{
+		if(!(key in b))
+			return false
+	}
+	for(const key in b)
+	{
+		if(!(key in a))
+			return false
+	}
+	for(const key in a)
+	{
+		if(!sameObjectTreeStructure(a[key],b[key]))
+			return false
+	}
+	return true
+}

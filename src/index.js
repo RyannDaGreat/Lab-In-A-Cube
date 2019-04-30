@@ -140,7 +140,7 @@ function LeafModifier({schema})
 	console.log(JSON.stringify(schema.config))
 	// alert("ASOIJD")
 	const input=<Input
-        defaultValue={schema.config}
+        value={schema.config}
         onChange={event=>{schema.set(event.target.value)}}
         // className={classes.input}
         inputProps={{
