@@ -6,9 +6,40 @@ function load_config(url)
 			deltas.apply(config,djson.parse(response))
 		})
 }
+window.saveConfigToServer=async function()
+{
+	console.assert(arguments.length===0,'Wrong number of arguments')
+	const toSave=getConfigStringFromLocalStorage()
+	//Returns a URL used to get back to the saved file
+	const savedURL=await doFetch('',toSave)
+	if(typeof savedURL==='number')//Probably returned 404
+	{
+		alert('Save FAILED! Error status: '+savedURL)
+	}
+	else
+	{
+		alert('Save SUCCEEDED!\nBelow is the link:\n'+savedURL)
+	}
+}
+window.loadConfigFromServer=async function(savedURL)
+{
+	if(!savedURL.startsWith('/saves/'))
+		savedURL='/saves/'+savedURL
+	console.assert(arguments.length===1,'Wrong number of arguments')
+	const savedConfig=await doFetch(savedURL)
+	if(typeof savedConfig==='number')//Probably returned 404
+	{
+		alert('Load FAILED! Error status: '+savedURL)
+	}
+	else
+	{
+		setConfigDjsonInLocalStorage(savedConfig)
+		alert('Load SUCCEEDED!\nBelow is the link:\n'+savedURL+'\n\nPlease refresh this page to see the changes')
+		refreshPage()
+	}
+}
 
-let defaultConfig=`
-preview	height 80	type djson	mode sublime	numbers true
+let defaultConfig=`preview	height 80	type djson	mode sublime	numbers true
 geometries	simpleBeakerFluid ./Assets/Models/SimpleBeaker/Fluid.obj
 geometries	simpleBeakerBeaker ./Assets/Models/SimpleBeaker/Beaker.obj
 geometries	dog ./Assets/dog.obj
@@ -19,6 +50,7 @@ textures	blank ./Assets/blank.png
 sounds	woof ./Assets/Sounds/Woof.mp3
 sounds	nyan ./Assets/Sounds/Nyan.mp3
 sounds	sadness ./Assets/Sounds/Sadviolin.mp3
+
 items	pointLight light
 deltas	initial	pointLight	position	z 10	y 10
 `
@@ -101,7 +133,7 @@ function refreshConfigFromLocalStorage()
 		previousLoadedConfigString=storedItem
 		localStorage.setItem('readOnlyConfig',JSON.stringify(config))//Hack because this is an iframe. Sadness. Needs to communicate to the gui. JSONs are faster to read and write than djson, so this is why it's read-only.
 	}
-	Object.defineProperty(config.deltas,'none',{ value:{}, enumerable: false })//dont iterate over none (which would put it in menus)
+	if(!('none' in config.deltas))Object.defineProperty(config.deltas,'none',{ value:{}, enumerable: false })//dont iterate over none (which would put it in menus)
 	requestRender()//Aand the game begins...
 }
 

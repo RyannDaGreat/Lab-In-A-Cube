@@ -1,4 +1,24 @@
 //All generalizable functions that don't really fit anywhere else, but that I'd like to reuse for other projects in the future...
+function refreshPage()
+{
+	location.reload();
+}
+async function doFetch(url,body=undefined)
+{
+	//Extremely biased function to suit my simple needs
+	//Is a get request by default, unless you specify a body (then it becomes a post)
+	//Returns text if 200 else
+	console.assert(arguments.length>0)
+	//ALWAYS returns a string (NOT an object) (via a promise, so you have to use await to get it)
+	//Example usages:
+	//  await doFetch('/getNumlike',{method:'GET'})
+	//  JSON.parse(await doFetch('/user/info'))
+	//  j=JSON.parse(await doFetch('/user/info'))
+	// j.content.email
+	const response = await fetch(url,{method:body===undefined?'GET':'POST',body})
+	const status=response.status
+	return await status===200?response.text():status
+}
 function weAreInAnIframe()
 {
 	console.assert(arguments.length===0,'Wrong number of arguments.')

@@ -106,6 +106,7 @@ function addDeltaDialog()
 	alert("Success! Added delta. Please refresh the page to see changes.")
 	window.addLinesToConfigString('deltas	'+d)
 	window.refreshGuiSchema()
+	window.refreshPage()
 }
 
 function Schema({schema})
@@ -189,7 +190,7 @@ function LeafModifier({schema})
 	{
 		input=<NumberInput value={schema.config} setValue={schema.set}/>
 	}
-	else if(schema.type='select')
+	else if(schema.type==='select')
 	{
 		input=<SelectInput value={schema.config} values={schema.values} setValue={schema.set}/>
 	}
@@ -277,6 +278,24 @@ function doTimerEvents()
 }
 setInterval(doTimerEvents, 100)
 
+function handleLoadConfig()
+{
+	const code=prompt('Please enter the 4 character code (case-sensitive) that you received when pressing "Save Config"')
+	if(typeof code==='string' && code.length===4)
+	{
+		window.loadConfigFromServer(code)
+	}
+	else if(!code)
+	{
+		alert('Loading config from server cancelled.')
+	}
+	else
+	{
+		alert('Please enter a four character code (you entered '+JSON.stringify(code)+', which has '+code.length+' characters)')
+		handleLoadConfig()
+	}
+}
+
 function App()
 {
 	function setGameWindow(x)
@@ -290,7 +309,9 @@ function App()
 	return <div style={{display: 'flex', flexDirection: 'horizontal', width: '25%', height: '100%'}}>
 		<div style={{border: 10, backgroundColor: 'rgba(255,255,255,.3)', flexGrow: 4, display: 'flex', flexDirection: 'column', overflowY: 'scroll', pointerEvents: 'auto'}}>
 			<h1 style={{color: 'white'}}>Config</h1>
-			<Button style={{pointerEvents: 'auto'}} onClick={window.undoEditorChange}variant="contained" size="small" color="primary"> Undo </Button>
+			<Button variant="contained" size="small" color="primary" onClick={()=>window.saveConfigToServer()}> Save Config </Button>
+			<Button variant="contained" size="small" color="primary" onClick={handleLoadConfig}> Load Config </Button>
+			<Button style={{pointerEvents: 'auto'}} onClick={window.undoEditorChange}variant="contained" size="small" color="primary"> Undo  </Button>
 			{/*<Button variant="contained" size="small" color="primary"> Redo </Button>*/}
 			<Button variant="contained" size="small" color="primary" onClick={addItemDialogs}> Add Item </Button>
 			<Button variant="contained" size="small" color="primary" onClick={addDeltaDialog}> Add Delta </Button>

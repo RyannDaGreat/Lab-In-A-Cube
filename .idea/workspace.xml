@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="135bb503-6ec1-462c-9f44-1d512427b351" name="Default Changelist" comment="" />
+    <list default="true" id="135bb503-6ec1-462c-9f44-1d512427b351" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/public/Game/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/Game/config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/Tools/r.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/Tools/r.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.js" afterDir="false" />
+    </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
     <ignored path="$PROJECT_DIR$/tmp/" />
@@ -17,60 +21,55 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/public/Game/modules.js">
+        <entry file="file://$PROJECT_DIR$/public/game.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="210">
-              <caret line="451" column="62" lean-forward="true" selection-start-line="451" selection-start-column="62" selection-end-line="451" selection-end-column="62" />
+            <state>
+              <caret column="16" selection-start-column="16" selection-end-column="16" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/public/Game/engine.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4374">
-              <caret line="638" column="22" selection-start-line="638" selection-start-column="22" selection-end-line="638" selection-end-column="22" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/public/Tools/gloves.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="419">
-              <caret line="34" column="17" selection-start-line="34" selection-start-column="17" selection-end-line="34" selection-end-column="17" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/public/Tools/objectTree.js">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/public/Tools/assert.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret column="6" selection-start-column="6" selection-end-column="6" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/index.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="453">
-              <caret line="197" column="11" selection-start-line="197" selection-start-column="5" selection-end-line="197" selection-end-column="11" />
+            <state relative-caret-position="504">
+              <caret line="313" column="76" selection-start-line="313" selection-start-column="76" selection-end-line="313" selection-end-column="76" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/public/Tools/djson.js">
+        <entry file="file://$PROJECT_DIR$/build/Game/config.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="375">
-              <caret line="25" column="29" selection-start-line="25" selection-start-column="29" selection-end-line="25" selection-end-column="29" />
+            <state relative-caret-position="2670">
+              <caret line="178" column="40" selection-start-line="178" selection-start-column="40" selection-end-line="178" selection-end-column="40" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/build/Tools/r.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="15">
+              <caret line="1" column="9" selection-start-line="1" selection-start-column="9" selection-end-line="1" selection-end-column="9" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/build/Game/modules.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="115">
+              <caret line="449" column="9" selection-start-line="449" selection-start-column="9" selection-end-line="449" selection-end-column="9" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/public/Tools/r.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="211">
+              <caret line="16" selection-start-line="16" selection-end-line="16" />
             </state>
           </provider>
         </entry>
@@ -78,8 +77,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/Tools/djson_macros.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3090">
-              <caret line="206" column="21" lean-forward="true" selection-start-line="206" selection-start-column="21" selection-end-line="206" selection-end-column="21" />
+            <state relative-caret-position="-826">
+              <caret line="206" column="21" selection-start-line="206" selection-start-column="21" selection-end-line="206" selection-end-column="21" />
             </state>
           </provider>
         </entry>
@@ -96,8 +95,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/Game/config.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-77">
-              <caret line="173" column="9" selection-start-line="173" selection-start-column="9" selection-end-line="173" selection-end-column="9" />
+            <state relative-caret-position="233">
+              <caret line="166" column="154" selection-start-line="166" selection-start-column="150" selection-end-line="166" selection-end-column="154" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/build/static/js/main.8ee315e7.chunk.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
+              <caret column="5791" selection-start-column="5791" selection-end-column="5791" />
             </state>
           </provider>
         </entry>
@@ -114,10 +122,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>localsto</find>
-      <find>gameWind</find>
-      <find>root</find>
-      <find>iframe</find>
       <find>window</find>
       <find>getDeltasGuiSchema</find>
       <find>addLines</find>
@@ -131,12 +135,10 @@
       <find>add delta</find>
       <find>index.js</find>
       <find>dict</find>
-      <find>undo</find>
       <find>window.items</find>
       <find>chitect</find>
       <find>number</find>
       <find>schema</find>
-      <find>UNDO</find>
       <find>geometries</find>
       <find>window.refreshGuiSchema</find>
       <find>values</find>
@@ -144,6 +146,12 @@
       <find>modes</find>
       <find>tag</find>
       <find>refresh</find>
+      <find>code</find>
+      <find>UNDO</find>
+      <find>refreshPage</find>
+      <find>saveCon</find>
+      <find>'undo'</find>
+      <find>undo</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -206,11 +214,13 @@
         <option value="$PROJECT_DIR$/public/Tools/djson.js" />
         <option value="$PROJECT_DIR$/public/Tools/djson_macros.js" />
         <option value="$PROJECT_DIR$/public/index.html" />
-        <option value="$PROJECT_DIR$/public/Tools/r.js" />
-        <option value="$PROJECT_DIR$/src/index.js" />
         <option value="$PROJECT_DIR$/public/Game/modules.js" />
-        <option value="$PROJECT_DIR$/public/Game/config.js" />
         <option value="$PROJECT_DIR$/public/Game/engine.js" />
+        <option value="$PROJECT_DIR$/public/Tools/r.js" />
+        <option value="$PROJECT_DIR$/build/Tools/r.js" />
+        <option value="$PROJECT_DIR$/public/Game/config.js" />
+        <option value="$PROJECT_DIR$/src/index.js" />
+        <option value="$PROJECT_DIR$/build/Game/modules.js" />
       </list>
     </option>
   </component>
@@ -345,55 +355,6 @@
             <path>
               <item name="Lab-In-A-Cube" type="b2602c69:ProjectViewProjectNode" />
               <item name="Lab-In-A-Cube" type="462c0819:PsiDirectoryNode" />
-              <item name="shelved" type="462c0819:PsiDirectoryNode" />
-              <item name="Configs" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Lab-In-A-Cube" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Lab-In-A-Cube" type="462c0819:PsiDirectoryNode" />
-              <item name="shelved" type="462c0819:PsiDirectoryNode" />
-              <item name="Docs" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Lab-In-A-Cube" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Lab-In-A-Cube" type="462c0819:PsiDirectoryNode" />
-              <item name="shelved" type="462c0819:PsiDirectoryNode" />
-              <item name="Docs" type="462c0819:PsiDirectoryNode" />
-              <item name="Notes" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Lab-In-A-Cube" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Lab-In-A-Cube" type="462c0819:PsiDirectoryNode" />
-              <item name="shelved" type="462c0819:PsiDirectoryNode" />
-              <item name="Experiments" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Lab-In-A-Cube" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Lab-In-A-Cube" type="462c0819:PsiDirectoryNode" />
-              <item name="shelved" type="462c0819:PsiDirectoryNode" />
-              <item name="Experiments" type="462c0819:PsiDirectoryNode" />
-              <item name="CubemapTest" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Lab-In-A-Cube" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Lab-In-A-Cube" type="462c0819:PsiDirectoryNode" />
-              <item name="shelved" type="462c0819:PsiDirectoryNode" />
-              <item name="Experiments" type="462c0819:PsiDirectoryNode" />
-              <item name="CubemapTest" type="462c0819:PsiDirectoryNode" />
-              <item name="Cubemaps" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Lab-In-A-Cube" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Lab-In-A-Cube" type="462c0819:PsiDirectoryNode" />
-              <item name="shelved" type="462c0819:PsiDirectoryNode" />
-              <item name="Experiments" type="462c0819:PsiDirectoryNode" />
-              <item name="CubemapTest" type="462c0819:PsiDirectoryNode" />
-              <item name="Cubemaps" type="462c0819:PsiDirectoryNode" />
-              <item name="Street" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Lab-In-A-Cube" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Lab-In-A-Cube" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
@@ -467,12 +428,12 @@
       <workItem from="1556070112495" duration="8961000" />
       <workItem from="1556231023969" duration="526000" />
       <workItem from="1556407463111" duration="23894000" />
-      <workItem from="1556581155366" duration="4782000" />
+      <workItem from="1556581155366" duration="8758000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="109454000" />
+    <option name="totallyTimeSpent" value="113430000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -491,7 +452,7 @@
       <window_info id="Structure" order="1" sideWeight="0.33734939" side_tool="true" weight="0.14377682" />
       <window_info id="Favorites" order="2" sideWeight="0.5192771" side_tool="true" weight="0.14377682" />
       <window_info content_ui="combo" id="Project" order="3" sideWeight="0.4807229" visible="true" weight="0.33404863" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="0" visible="true" weight="0.15060242" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="0" visible="true" weight="0.23975904" />
       <window_info anchor="bottom" id="Event Log" order="1" side_tool="true" weight="0.32891566" />
       <window_info anchor="bottom" id="Version Control" order="2" />
       <window_info anchor="bottom" id="Docker" order="3" show_stripe_button="false" />
@@ -707,24 +668,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/game.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="16" selection-start-column="16" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/shelved/Configs/DemoLabPouring1">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="450">
           <caret line="30" column="4" selection-start-line="30" selection-start-column="4" selection-end-line="30" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/Tools/r.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="628">
-          <caret line="219" column="10" selection-start-line="219" selection-start-column="10" selection-end-line="219" selection-end-column="10" />
         </state>
       </provider>
     </entry>
@@ -759,13 +706,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/index.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="453">
-          <caret line="197" column="11" selection-start-line="197" selection-start-column="5" selection-end-line="197" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/public/Tools/djson.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="375">
@@ -773,31 +713,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/Tools/djson_macros.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3090">
-          <caret line="206" column="21" lean-forward="true" selection-start-line="206" selection-start-column="21" selection-end-line="206" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/Tools/keyPath.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="435">
-          <caret line="29" column="20" selection-start-line="29" selection-start-column="20" selection-end-line="29" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/public/Game/modules.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="210">
-          <caret line="451" column="62" lean-forward="true" selection-start-line="451" selection-start-column="62" selection-end-line="451" selection-end-column="62" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/Game/config.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-77">
-          <caret line="173" column="9" selection-start-line="173" selection-start-column="9" selection-end-line="173" selection-end-column="9" />
+          <caret line="451" column="62" selection-start-line="451" selection-start-column="62" selection-end-line="451" selection-end-column="62" />
         </state>
       </provider>
     </entry>
@@ -808,8 +727,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/Tools/objectTree.js">
-      <provider selected="true" editor-type-id="text-editor" />
+    <entry file="file://$PROJECT_DIR$/public/Game/engine.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-4275">
+          <caret line="376" column="9" selection-start-line="376" selection-start-column="9" selection-end-line="376" selection-end-column="9" />
+        </state>
+      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/public/Tools/gloves.js">
       <provider selected="true" editor-type-id="text-editor">
@@ -818,10 +741,76 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/Game/engine.js">
+    <entry file="file://$PROJECT_DIR$/public/Tools/objectTree.js">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build/static/js/main.8ee315e7.chunk.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4374">
-          <caret line="638" column="22" selection-start-line="638" selection-start-column="22" selection-end-line="638" selection-end-column="22" />
+        <state>
+          <caret column="5791" selection-start-column="5791" selection-end-column="5791" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/Game/config.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="233">
+          <caret line="166" column="154" selection-start-line="166" selection-start-column="150" selection-end-line="166" selection-end-column="154" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/Tools/keyPath.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="435">
+          <caret line="29" column="20" selection-start-line="29" selection-start-column="20" selection-end-line="29" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/Tools/djson_macros.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-826">
+          <caret line="206" column="21" selection-start-line="206" selection-start-column="21" selection-end-line="206" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/Tools/r.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="211">
+          <caret line="16" selection-start-line="16" selection-end-line="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build/Tools/r.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="1" column="9" selection-start-line="1" selection-start-column="9" selection-end-line="1" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build/Game/config.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2670">
+          <caret line="178" column="40" selection-start-line="178" selection-start-column="40" selection-end-line="178" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/game.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="16" selection-start-column="16" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build/Game/modules.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="115">
+          <caret line="449" column="9" selection-start-line="449" selection-start-column="9" selection-end-line="449" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/index.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="504">
+          <caret line="313" column="76" selection-start-line="313" selection-start-column="76" selection-end-line="313" selection-end-column="76" />
         </state>
       </provider>
     </entry>
