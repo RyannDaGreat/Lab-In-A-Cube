@@ -1,0 +1,35 @@
+preview	nogam 	height 100	type json	mode sublime	numbers
+deltas	resetFlaskPositions	flask~n		transform	position	x fx	y fy	z fz
+items	beaker~n,flask~n mesh
+deltas	initial	inherit resetFlaskPositions
+deltas	initial	flask~n,beaker~m	transform	scale	overall .1
+deltas	initial	flask~n,beaker~m	material	mode basic
+deltas	initial	beaker~m,flask~n	geometry cube	material	modes	basic	wireframe true
+deltas	initial	beaker~m	transform	position	x bx	y by	z bz
+deltas	initial	camera		transform	position	z 300	y 100	x 0
+deltas	initial	camera		transform	rotation	x -30
+deltas	initial	flask~n	material	modes	basic	color	r 1	g 1	b 1
+deltas	initial	scene	transitions	auto	delta	none
+deltas	initial	scene	transitions	enter null
+deltas	initial	scene	transitions	drag	flask~n	flask~n	delta clickFlask~n	time .1
+deltas	disableBeakerClick	scene	transitions	drag	beaker~m null
+deltas	pour~n~m	flask~n		transform	position	x bx	y by~+50	z bz
+deltas	pour~n~m	scene	transitions	auto	delta initial	time .5
+deltas	pour~n~m	inherit disableBeakerClick	 <--- This is a REALLY good example of inheritance; does it mean macros cant replace it?
+deltas	clickFlask~n	inherit resetFlaskPositions
+deltas	clickFlask~n	scene	transitions	enter	beaker~m	delta peek~n~m	time .1
+deltas	clickFlask~n	scene	transitions	drag	beaker~m	beaker~m	delta pour~n~m	time .3
+deltas	peek~n~m	flask~n		transform	position	x bx	y by~+100	z bz
+~
+	@	n i	m j	bx j~00	by -50	bz 0	fx i~00	fy 0	fz -100
+	~
+		@	i n
+		@	j n
+		~
+			@	n -2
+			@	n -1
+			@	n 0
+			@	n 1
+			@	n 2
+ //
+deltas	initial	camera	fov 81.4

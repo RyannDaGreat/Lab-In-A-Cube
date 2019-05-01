@@ -16,6 +16,48 @@ import {useState} from 'react'
 import {withStyles} from '@material-ui/core/styles'
 
 
+
+			//ALL FROM https://material-ui.com/css-in-js/basics/
+			// Like https://github.com/brunobertolini/styled-by
+			const styledBy = (property, mapping) => props => mapping[props[property]];
+
+			const styles = {
+			  root: {
+			    background: styledBy('color', {
+			      red: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
+			      blue: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+			    }),
+			    border: 0,
+			    borderRadius: 3,
+			    boxShadow: styledBy('color', {
+			      red: '0 3px 5px 2px rgba(255, 105, 135, .3)',
+			      blue: '0 3px 5px 2px rgba(33, 203, 243, .3)',
+			    }),
+			    color: 'white',
+			    height: 48,
+			    padding: '0 30px',
+			  },
+			};
+
+			function MyButtonRaw(props) {
+			  const { classes, color, ...other } = props;
+			  return <Button className={classes.root} {...other} />;
+			}
+
+			MyButtonRaw.propTypes = {
+			  classes: PropTypes.object.isRequired,
+			  color: PropTypes.string.isRequired,
+			};
+
+			const MyButton = withStyles(styles)(MyButtonRaw);
+
+
+
+
+
+
+
+
 function Multiplexer({schema})
 {
 	const [selectedOption, setSelectedOption]=useState(null)
@@ -23,11 +65,22 @@ function Multiplexer({schema})
 		return <div></div>
 	const options                            =Object.keys(schema).map(key=>({value: key, label: key}))
 	return <div>
-		<Select value={{label: selectedOption}}
+		<Select style={{width:'100%'}} value={{label: selectedOption}}
 				onChange={x=>setSelectedOption(x.value)}
 				options={options}
 		/>
-		<Schema schema={schema[selectedOption]}/>
+		<div style={{width:'100%'}}>
+		<table style={{width:'100%'}}>
+		<tr style={{width:'100%'}}>
+		<td style={{width:'10px'}}>
+		{}
+		</td>
+		<td style={{width:'100%'}}>
+			<Schema schema={schema[selectedOption]}/>
+			</td>
+			</tr>
+			</table>
+		</div>
 	</div>
 }
 
@@ -195,19 +248,21 @@ function LeafModifier({schema})
 		input=<SelectInput value={schema.config} values={schema.values} setValue={schema.set}/>
 	}
 	console.assert(input!==undefined)
-	return <div>
+	return <div style={{padding:20,paddingTop:10,backgroundColor:'rgba(255,255,255,.5)',borderRadius:30,alignContent: 'center'}}>
 	<Switch
 		checked={checked}
 		disabled={schema.path[0]==='initial'}
 		onChange={event=>{const checked=event.target.checked;if(checked)/*alert(schema.state+'  '+schema.config)*/;schema.set(checked?schema.state:null)}}//if(!checked){schema.set(undefined)}else{console.assert(checked);setUsed(checked)}}}
 		color="primary"
-		/>
+		/>{checked?"(In delta)":"(Not in delta)"}<br/>
 	{checked?input : <div></div>}
-	<Button
-			variant="contained" onClick={onClick}
-			size="small"
-				   >{'State: '+schema.state+'\tConfig: '+schema.config/*schema.path+''*/}</Button>
+	
 				   </div>
+
+		//		   <Button
+		//	variant="contained" onClick={onClick}
+		//	size="small"
+		//		   >{'State: '+schema.state+'\tConfig: '+schema.config/*schema.path+''*/}</Button>
 }
 
 let oldStuff=undefined
@@ -322,23 +377,25 @@ function App()
 	{
 		window.gameWindow=x.contentWindow
 	}
+	//Lab
 	const [schema,setSchema]=useState(window.getDeltasGuiSchema())
 	window.refreshGuiSchema=()=>setSchema(window.getDeltasGuiSchema())
 	let gameStyle={width: '100%', height: '100%', border: '0'}
 	// noinspection HtmlUnknownTarget
 	return <div style={{display: 'flex', flexDirection: 'horizontal', width: '25%', height: '100%'}}>
-		<div style={{border: 10, backgroundColor: 'rgba(255,255,255,.3)', flexGrow: 4, display: 'flex', flexDirection: 'column', overflowY: 'scroll', pointerEvents: 'auto'}}>
-			<h1 style={{color: 'white'}}>Config</h1>
-			<Button variant="contained" size="small" color="primary" onClick={handleNewLab}> New Config </Button>
-			<Button variant="contained" size="small" color="primary" onClick={()=>window.saveConfigToServer()}> Save Config </Button>
-			<Button variant="contained" size="small" color="primary" onClick={viewMySaves}> View Saved Configs </Button>
-			<Button variant="contained" size="small" color="primary" onClick={handleLoadConfig}> Load Config </Button>
-			<Button variant="contained" size="small" color="primary" onClick={()=>handleLoadConfig({concat:true})}> Append Config </Button>
-			<Button style={{pointerEvents: 'auto'}} onClick={window.undoEditorChange}variant="contained" size="small" color="primary"> Undo  </Button>
-			{/*<Button variant="contained" size="small" color="primary"> Redo </Button>*/}
-			<Button variant="contained" size="small" color="primary" onClick={addItemDialogs}> Add Item </Button>
-			<Button variant="contained" size="small" color="primary" onClick={addDeltaDialog}> Add Delta </Button>
-			<Schema schema={schema}></Schema>
+		<div style={{padding:10,border: 10, backgroundColor: 'rgba(255,255,255,.3)', flexGrow: 4, display: 'flex', flexDirection: 'column', overflowY: 'scroll', pointerEvents: 'auto'}}>
+			<h1 style={{color: 'white',textAlign:'center'}}>Lab<sup>3</sup></h1>
+			<br/>
+			<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="secondary" onClick={handleNewLab}> New Lab </Button>
+			<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="secondary" onClick={()=>window.saveConfigToServer()}> Save Lab </Button>
+			<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="secondary" onClick={viewMySaves}> View Saved Labs </Button>
+			<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="secondary" onClick={handleLoadConfig}> Load Lab </Button>
+			<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="secondary" onClick={()=>handleLoadConfig({concat:true})}> Append Lab </Button>
+			<Button style={{margin:1,fontWeight: 'bold'}}	variant="contained" size="small" color="primary"	  onClick={window.undoEditorChange}variant="contained" size="small" color="primary"> Undo  </Button>
+			<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="primary" onClick={addItemDialogs}> Add Item </Button>
+			<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="primary" onClick={addDeltaDialog}> Add Delta </Button>
+			<br/>
+			<div style={{width:'100%'}}><Schema schema={schema}></Schema></div>
 		</div>
 	</div>
 }

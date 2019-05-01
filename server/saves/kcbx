@@ -1,0 +1,108 @@
+preview	height 50	type state	mode sublime	numbers
+
+sounds
+	bug ./Assets/Sounds/ShortBells/Bug.mp3
+	e ./Assets/Sounds/ShortBells/E.mp3
+
+items
+	beaker simpleBeaker
+	label sprite
+	more mesh
+	moreLabel sprite
+
+geometries
+	simpleBeakerFluid ./Assets/Models/SimpleBeaker/Fluid.obj
+	simpleBeakerBeaker ./Assets/Models/SimpleBeaker/Beaker.obj
+
+deltas	initial
+	
+	inherit reset_more
+	
+	overlay	text Click "Pour" until you reach your desired liquid height
+	
+	camera
+		transform	position	z 10	y 7
+		transform	rotation	x -35
+		fov 40
+	
+	scene
+		ambience	intensity 0
+		transitions	drag	beaker	beaker	delta unfill	time 1
+	
+	beaker
+		geometry simpleBeakerBeaker
+		 depthWrite was set to false by the advice of https://stackoverflow.com/questions/11165345/three-js-webgl-transparent-planes-hiding-other-planes-behind-them
+		material	mode phong	modes	phong	transparent true	opacity 0.5	depthWrite false
+		transform	rotation	x 0	y 0	z 0
+		visible true
+	
+	beaker	fluid
+		geometry simpleBeakerFluid
+		visible false
+		transform	scale	y 0
+		material	mode phong	modes	phong	color	r 0	g 0	b 1
+	
+	label	parent beaker	xray true	visible true	text (Empty)	size .8
+		transform	position	x 0	y -2	z 0
+	
+	scene	transitions	drag	more	more	delta more1	time .3
+	
+	moreLabel	parent more	text Pour	size .9
+
+deltas	reset_more	more
+	transform
+		position	x -4
+		scale	overall 1
+	material	mode standard	modes	standard	color	r .5	g 1	b 0
+	geometry sphere
+
+deltas
+	unfill
+		scene	transitions	auto	delta unfill_1	time 1
+		beaker	transform	rotation	x 180
+	
+	unfill_1
+		sound bug
+		scene	transitions	auto	delta initial	time 1
+		beaker	fluid	transform	scale	y .0
+
+deltas
+	~moreN
+		more~N
+			sound e
+			scene	transitions	drag	more	more	delta more~M
+			more
+				transform	scale	overall .9
+				material	mode standard	modes	standard	color	r 0	g .5	b 1
+			scene	transitions	auto	delta reset_more	time .1
+			beaker	fluid	visible true	transform	scale	y N~*.1
+			label	text Level: ~N~ml
+		~
+			0	N 0		M 1
+			1	N 1		M 2
+			2	N 2		M 3
+			3	N 3		M 4
+			4	N 4		M 5
+			5	N 5		M 6
+			6	N 6		M 7
+			7	N 7		M 8
+			8	N 8		M 9
+			9	N 9		M 10
+			10	N 10
+deltas	more10
+	overlay	text Game Over
+	moreLabel	text (Full)
+	scene	transitions	drag	more	more	delta none
+
+ Lighting:
+items	light1 light	light2 light	light3 light	light4 light
+items	light5 light	light6 light	light7 light	light8 light
+deltas	initial
+	light1	intensity .3	position	x -10000	y -10000	z -10000
+	light2	intensity .3	position	x -10000	y -10000	z  10000
+	light3	intensity .3	position	x -10000	y  10000	z -10000
+	light4	intensity .3	position	x -10000	y  10000	z  10000
+	light5	intensity .3	position	x  10000	y -10000	z -10000
+	light6	intensity .3	position	x  10000	y -10000	z  10000
+	light7	intensity .3	position	x  10000	y  10000	z -10000
+	light8	intensity .3	position	x  10000	y  10000	z  10000
