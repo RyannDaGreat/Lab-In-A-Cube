@@ -3,7 +3,9 @@
 {
 	margin:0;
 	user-select:none;
+font-family: Quicksand;
 }
+
 body 
 {
 	overscroll-behavior-y: none;
