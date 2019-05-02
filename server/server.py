@@ -18,7 +18,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         prefix='.' if self.path.startswith('/saves') else '../build'
         try:out=text_file_to_string(prefix+self.path)
-        except Exception as e:out=b'';print("ERROR: "+str(e))#print_stack_trace(e)
+        except Exception as e:out=b'../build/index.html';print("ERROR: "+str(e))#print_stack_trace(e)
         self.send_response(200 if out else 404)
     # file=open(file_path,"r")
         self.end_headers()
@@ -40,7 +40,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         self.wfile.write(response.getvalue())
 
 
-httpd = HTTPServer(('localhost', 8015), SimpleHTTPRequestHandler)
+httpd = HTTPServer(('localhost', 80), SimpleHTTPRequestHandler)
 httpd.serve_forever()
 
 # from http.server import HTTPServer, BaseHTTPRequestHandler
