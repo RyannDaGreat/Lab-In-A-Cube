@@ -387,6 +387,9 @@ function handleEditCode()
 	}
 }
 
+//PART OF TODO TO MAKE LABS LOADABLE VIA URL
+// if(window.location.pathname.length=5)//In other words, if we have some 5 letter code
+
 const __weAreInAnIframe__=window.location !== window.parent.location
 let editCodeButton=<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="link" onClick={handleEditCode}> Edit Djson Code </Button>
 
