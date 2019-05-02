@@ -371,6 +371,25 @@ function viewMySaves()
 		window.alert("All of your saved file codes (bottom is most recent):"+'\n'+saves.join('\n'))
 }
 
+
+function handleEditCode()
+{
+	if(!__weAreInAnIframe__)//We are in an iframe
+	{
+		if(window.confirm('Are you sure you want to go to the code editor? (This option exists for mainly devs, such as Ryan Jenny and Rong)'))
+		{
+			window.goToUrl('../Editor/index.html')
+		}
+	}
+	else
+	{
+		alert('Allready in the code editor.')
+	}
+}
+
+const __weAreInAnIframe__=window.location !== window.parent.location
+let editCodeButton=<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="link" onClick={handleEditCode}> Edit Djson Code </Button>
+
 function App()
 {
 	function setGameWindow(x)
@@ -386,11 +405,12 @@ function App()
 		<div style={{padding:10,border: 10, backgroundColor: 'rgba(255,255,255,.3)', flexGrow: 4, display: 'flex', flexDirection: 'column', overflowY: 'scroll', pointerEvents: 'auto'}}>
 			<h1 style={{color: 'white',textAlign:'center'}}>Lab<sup>3</sup></h1>
 			<br/>
+			 {editCodeButton}
 			<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="secondary" onClick={handleNewLab}> New Lab </Button>
 			<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="secondary" onClick={()=>window.saveConfigToServer()}> Save Lab </Button>
 			<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="secondary" onClick={viewMySaves}> View Saved Labs </Button>
 			<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="secondary" onClick={handleLoadConfig}> Load Lab </Button>
-			<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="secondary" onClick={()=>handleLoadConfig({concat:true})}> Append Lab </Button>
+			<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="secondary" onClick={()=>handleLoadConfig({concat:true})}> Combine Labs </Button>
 			<Button style={{margin:1,fontWeight: 'bold'}}	variant="contained" size="small" color="primary"	  onClick={window.undoEditorChange}variant="contained" size="small" color="primary"> Undo  </Button>
 			<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="primary" onClick={addItemDialogs}> Add Item </Button>
 			<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="primary" onClick={addDeltaDialog}> Add Delta </Button>

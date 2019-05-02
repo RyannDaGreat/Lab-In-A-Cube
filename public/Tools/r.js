@@ -1,7 +1,13 @@
 //All generalizable functions that don't really fit anywhere else, but that I'd like to reuse for other projects in the future...
 function refreshPage()
 {
+	console.assert(arguments.length===0,'Wrong number of arguments.')
 	location.reload();
+}
+function goToUrl(url)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	location.assign(url)
 }
 async function doFetch(url,body=undefined)
 {
@@ -24,10 +30,20 @@ function weAreInAnIframe()
 	console.assert(arguments.length===0,'Wrong number of arguments.')
 	 return window.location !== window.parent.location
 }
-function playSound(url)
+const __playSoundElement=new Audio
+function playSound(url,{newElement=false}={})
 {
+	//New element lets you play multiple sounds at once; but it might be worse for ios safari (which requires a user click to play sounds)
 	console.assert(arguments.length===1,'Wrong number of arguments.')
-	new Audio(url).play()
+	if(newElement)
+	{
+		new Audio(url).play()
+	}
+	else
+	{
+		__playSoundElement.src=url
+		__playSoundElement.play()
+	}
 }
 function uniqueFromRight(array)
 {
