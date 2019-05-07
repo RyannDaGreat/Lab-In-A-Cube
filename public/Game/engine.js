@@ -14,10 +14,6 @@ const camera = new THREE.PerspectiveCamera(75,10,1,999999)
 camera.fov=75
 // camera.position.z = 0
 
-engineModules={
-	//These modules cannot be instantiated from a djson file. There's only one of each of them. But we're using funcitons to keep some variables private.
-}
-
 const overlay=document.getElementById('overlay')
 
 let textures={default:null}
@@ -54,6 +50,12 @@ const geometries={
 }
 
 const sounds={}
+
+
+const sky = new THREE.Sky()
+sky.scale.setScalar( 450000 )//I want to turn this into a TRUE background if possible....I don't know how though so I'll leave it be...
+scene.add( sky )
+
 
 const items={
 	//Reserved item names:

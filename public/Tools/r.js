@@ -532,6 +532,8 @@ function transposed(object)
 				out[key2]={[key1]:value2}
 	return out
 }
+
+//TODO: Move Object-tree functions in to objectTree.js
 function transformObjectTreeLeaves(objectTree,leafTransform)
 {
 	//Mutates objectTree in-place using leafTransform and returns undefined
@@ -544,10 +546,53 @@ function transformObjectTreeLeaves(objectTree,leafTransform)
 		else
 			objectTree[index]=leafTransform(value)
 }
+function flattenedObjectTreePaths(objectTree,{includeLeaves=true}={})
+{
+	//Retuns a list of list of strings followed by a value
+	//EXAMPLES:
+	// flattenedObjectTreePaths({a:5,c:{b:4}})             --->   [['a',5],['c','b',4]]
+	// flattenedObjectTreePaths({a:5})                     --->   [['a',5]]
+	// flattenedObjectTreePaths({a:5,b:6,c:{d:7,e:[8]}})                         --->   [['a',5],['b',6],['c','d',7],['c','e',[8]]]
+	// flattenedObjectTreePaths({a:5,b:6,c:{d:7,e:[8]}},{includeLeaves:false})   --->   [['a'],  ['b'],  ['c','d'],  ['c','e']    ]
+	// 
+	//Notes: If includeLeaves is false, then you can safely deduce that all lists in the output list will contain only strings
+	const paths=[]
+	function helper(objectTree,path=[])
+	{
+		for(const [index,value] of Object.entries(objectTree))
+		{
+			if(!is_object(value))
+			{
+				const newPath=[index]
+				if(includeLeaves)
+					newPath.push(value)
+				paths.push(path.concat(newPath))
+			}
+			else
+			{
+				helper(value,path.concat([index]))
+			}
+		}
+	}
+	helper(objectTree)
+	return paths
+}
 function sameObjectTreeStructure(a,b)
 {
+	//We just care about keys to objects here, not the values of leaves
 	//sameObjectTreeStructure({a:6,b:{a:3,c:4}},{a:3,b:{c:4,a:45}}) is true
 	//sameObjectTreeStructure({a:6,b:{a:3,c:4}},{a:3,b:{c:4,}}) is false
+	//sameObjectTreeStructure({a:6,b:8,c:{}},{a:3,b:4,c:{d:5}}) is false
+	//sameObjectTreeStructure({a:6,b:8,c:{}},{a:3,b:4,c:{}}) is true
+	//sameObjectTreeStructure({a:6,b:8},{a:3,b:4}) is true
+	//sameObjectTreeStructure({a:6},{a:3,b:4}) is false
+	//sameObjectTreeStructure({a:6},{a:3}) is true
+	//sameObjectTreeStructure({a:6},{b:3}) is false
+	//sameObjectTreeStructure({b:6},{b:3}) is true
+	//sameObjectTreeStructure({b:6},{}) is false
+	//sameObjectTreeStructure({},{}) is true
+	//sameObjectTreeStructure({},5) is false
+	//sameObjectTreeStructure(6,5) is true
 	if(is_object(a)!==is_object(b))
 	{
 		return false
