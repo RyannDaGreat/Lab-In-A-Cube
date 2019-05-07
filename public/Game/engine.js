@@ -653,8 +653,11 @@ let prevWidth =undefined//When undefined will force to render even if batterysav
 let prevHeight=undefined
 let batterySavingMode=true//Only render frames when tween.delta changes. (Fire/stuff wont work if this is turned on but that's OK because i think not-having my laptop die is more important)
 let renderRequested  =false//NOT a config item
-function requestRender()
+let doRefreshStateFromConfigRequested=false
+function requestRender({doRefreshStateFromConfig=false}={})
 {
+	if(doRefreshStateFromConfig)
+		doRefreshStateFromConfigRequested=true//This function is laggy so it's deferred until render-time
 	if(!renderRequested)
 		requestAnimationFrame(render)
 	renderRequested=true//This funciton exists so we don't call requestAnimationFrame(render) needlessly many times
@@ -662,6 +665,11 @@ function requestRender()
 
 function render()
 {
+	if(doRefreshStateFromConfigRequested)
+	{
+		refreshStateFromConfig()
+		doRefreshStateFromConfigRequested=false
+	}
 	renderRequested=false//REset this so requestRender() can be called again
 	const currentState=tween.delta
 	if(!batterySavingMode||currentState!==prevState||window.innerHeight!==prevHeight||window.innerWidth!==prevWidth)//To save battery life, only animate the frames when we have some change in the deltas.

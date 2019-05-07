@@ -84,6 +84,19 @@ let proxies={
 			}
 		}
 		return new Proxy(object,handler)
-	}
+	},
+	copyOnWrite(object)
+	{
+		//Very quickly create a shallow copy of an object
+		//Not sure how useful this is though, tbh
+		const copy=Object.create(object)
+		const handler={
+			getPrototypeOf(target) 
+			{
+				return Object.getPrototypeOf(object)
+			}
+		}
+		return new Proxy(copy,handler)
+	},
 }
 proxies=proxies.argumentCountChecker(proxies)

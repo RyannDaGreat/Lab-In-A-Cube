@@ -204,6 +204,9 @@ function setParent(threeObject,itemID)
 	parent=itemID
 }
 
+
+var _getItemSchemas_cache_hash=""//This did make a significant increase in performance
+var _getItemSchemas_cache=""
 function getItemSchemas()
 {
 	//This wasn't the original way I had planned to write the gui, but this was is just waaaayyy too pretty for me not to (I love it too much to get rid of it)
@@ -211,7 +214,16 @@ function getItemSchemas()
 	// assert.isPureObject(config.items     )
 	// assert.isPureObject(config.geometries)
 	// assert.isPureObject(config.textures  )
-	var out=`
+	const items     =Object.keys(config.items     ||{}).join(',')
+	const deltas    =Object.keys(config.deltas    ||{}).join(',')
+	const geometries=Object.keys(config.geometries||{}).join(',')
+	const textures  =Object.keys(config.textures  ||{}).join(',')
+	const hash=JSON.stringify([items,deltas,geometries,textures])
+	if(hash!==_getItemSchemas_cache_hash)
+	{
+		console.log("REHASHING")
+		_getItemSchemas_cache_hash=hash
+		var out=`
 
 mesh,boxItem,simpleBeaker
 	texture default:TEXTURES,default
@@ -273,11 +285,13 @@ sprite,label
 	text Label
 	size 1
 `
-	out=out.replace(/ITEMS/g     ,Object.keys(config.items     ||{}).join(','))
-	out=out.replace(/DELTAS/g    ,Object.keys(config.deltas    ||{}).join(','))
- 	out=out.replace(/GEOMETRIES/g,Object.keys(config.geometries||{}).join(','))
- 	out=out.replace(/TEXTURES/g  ,Object.keys(config.textures  ||{}).join(','))
-	return djson.parse(out,{leaf_parser:x=>x.trim()})
+		out=out.replace(/ITEMS/g     ,items     )
+		out=out.replace(/DELTAS/g    ,deltas    )
+	 	out=out.replace(/GEOMETRIES/g,geometries)
+	 	out=out.replace(/TEXTURES/g  ,textures  )
+		_getItemSchemas_cache=djson.parse(out,{leaf_parser:x=>x.trim()})
+	}
+	return _getItemSchemas_cache
 }
 
 function parseItemLeafSchema(leaf)
@@ -431,8 +445,8 @@ function getDeltasGuiSchema()
 		{
 			function set(value)
 			{
-				addLinesToConfigString('deltas\t'+path.join('\t')+' '+value,{reloadWholeDjson:true})
-				window.refreshGuiSchema()
+				addLinesToConfigString('deltas\t'+path.join('\t')+' '+value,{reloadWholeDjson:false})
+				setTimeout(window.refreshGuiSchema,100)
 			}
 			return {
 				config:keyPath.getAndSquelch(config,['deltas',...path]),
@@ -538,7 +552,7 @@ function getGuiArchitectureInstance(config=JSON.parse(localStorage.getItem('read
 
 function getDefaultInitialDelta()
 {
-	const interfaces=getItemSchemas(config)
+	const interfaces=deltas.copied(getItemSchemas(config))
 	function leafTransform(leaf)
 	{
 		if(is_string(leaf))
