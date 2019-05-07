@@ -26,7 +26,15 @@ let modules={
 				modes:materials,
 			}},
 			get texture(){return texture},
-			set texture(value){texture=value;mesh.material.map=textures[texture]||textures.default},
+			set texture(value)
+			{
+				texture=value;
+				const map=textures[texture]||textures.default
+				for(const material of Object.values(materials))
+				{
+					material.map=map
+				}
+			},
 			get geometry(){return geometry},
 			set geometry(value)
 			{
