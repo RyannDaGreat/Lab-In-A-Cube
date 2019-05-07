@@ -8,7 +8,7 @@ window.addToMySaves=function(code)
 	assert.isString(code)
 	localStorage.setItem('saves',JSON.stringify(uniqueFromRight(getMySaves().concat([code]))))
 }
-window.saveConfigToServer=async function({alerts:true})
+window.saveConfigToServer=async function({alerts:true}={})
 {
 	console.assert(arguments.length===0,'Wrong number of arguments')
 	const toSave=getConfigStringFromLocalStorage()
@@ -262,7 +262,7 @@ function reloadAssetsFromConfig()
 				{
 					items[itemName]=modules[itemType](itemName)//Load all the items
 					console.assert(is_object(items[itemName]), 'A mistake was made in the code for the module '+repr(itemType)+
-						', detected while creting item '+repr(itemName)+
+						', detected while creating item '+repr(itemName)+
 						'. All items are supposed to be pure objects, because thats the way deltas apply changes (to pure object trees).'+
 						'Please note that this is NOT a config error, this is a javascript error: blame the programmer of the '+repr(itemType)+' module.'+
 						'\nFor debugging purposes, heres a the object returned by the module: items['+repr(itemName)+']===', items[itemName])
