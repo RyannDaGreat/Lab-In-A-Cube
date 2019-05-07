@@ -1,0 +1,14 @@
+
+preview	height 80	type djson	mode sublime	numbers true
+geometries	simpleBeakerFluid ./Assets/Models/SimpleBeaker/Fluid.obj
+geometries	simpleBeakerBeaker ./Assets/Models/SimpleBeaker/Beaker.obj
+geometries	dog ./Assets/dog.obj
+geometries	flask ./Assets/flask.obj
+textures	dog ./Assets/dog.jpg
+textures	weird ./Assets/weird.jpg
+textures	blank ./Assets/blank.png
+sounds	woof ./Assets/Sounds/Woof.mp3
+sounds	nyan ./Assets/Sounds/Nyan.mp3
+sounds	sadness ./Assets/Sounds/Sadviolin.mp3
+items	pointLight light
+deltas	initial	pointLight	position	z 10	y 10

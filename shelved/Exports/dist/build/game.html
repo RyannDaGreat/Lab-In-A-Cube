@@ -1,0 +1,38 @@
+<html lang='en'>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<link rel="icon" type="image/png" href="Assets/favicon.png">
+
+	<body style='display:flex;flex-direction:horizontal;width:100%;height:100%'>
+		<div style='flex-grow:1'>
+			<div id=renderer>
+			</div>
+			<div id=overlay>
+				Loading...
+				<!-- This should be overwritten to a blank string in config once enough has loaded -->
+				<!-- The value of this is set from 'items	overlay	text Loading...' -->
+			</div>
+		</div>
+		<div id='root' style='flex-grow:1'></div>
+	</body>
+
+	<!-- The order of the imports below is somewhat important -->
+	<script src="Three/three.js"></script>
+	<script src="Three/objloader.js"></script>
+
+	<script src="Tools/r.js"></script>
+	<script src="Tools/proxies.js"></script>
+	<script src="Tools/assert.js"></script>
+	<script src="Tools/djson_macros.js"></script>
+	<script src="Tools/djson.js"></script>
+	<script src="Tools/deltas.js"></script>
+	<script src="Tools/gloves.js"></script>
+	<script src="Tools/keyPath.js"></script>
+
+	<script src="Game/attributes.js"></script>
+	<script src="Game/modules.js"></script>
+
+	<!-- Order of these three is currently very important -->
+	<script src="Game/loader.js"></script>
+	<script src="Game/engine.js"></script>
+	<script src="Game/config.js"></script>
+</html>

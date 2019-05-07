@@ -1,0 +1,9 @@
+This folder isn't really for development; rather it's to put the deployable version into. 
+This folder isn't meant for development because much of it might be out of date (I might have changed some of the server code without uploading changes here)
+
+Currently my website URL is:
+http://oneoverzero.pythonanywhere.com/Editor/index.html
+
+and
+
+http://oneoverzero.pythonanywhere.com/index.html

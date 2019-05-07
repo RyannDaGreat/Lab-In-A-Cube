@@ -16,48 +16,6 @@ import {useState} from 'react'
 import {withStyles} from '@material-ui/core/styles'
 
 
-
-			//ALL FROM https://material-ui.com/css-in-js/basics/
-			// Like https://github.com/brunobertolini/styled-by
-			const styledBy = (property, mapping) => props => mapping[props[property]];
-
-			const styles = {
-			  root: {
-			    background: styledBy('color', {
-			      red: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
-			      blue: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
-			    }),
-			    border: 0,
-			    borderRadius: 3,
-			    boxShadow: styledBy('color', {
-			      red: '0 3px 5px 2px rgba(255, 105, 135, .3)',
-			      blue: '0 3px 5px 2px rgba(33, 203, 243, .3)',
-			    }),
-			    color: 'white',
-			    height: 48,
-			    padding: '0 30px',
-			  },
-			};
-
-			function MyButtonRaw(props) {
-			  const { classes, color, ...other } = props;
-			  return <Button className={classes.root} {...other} />;
-			}
-
-			MyButtonRaw.propTypes = {
-			  classes: PropTypes.object.isRequired,
-			  color: PropTypes.string.isRequired,
-			};
-
-			const MyButton = withStyles(styles)(MyButtonRaw);
-
-
-
-
-
-
-
-
 function Multiplexer({schema})
 {
 	const [selectedOption, setSelectedOption]=useState(null)
@@ -383,7 +341,15 @@ function handleEditCode()
 	}
 	else
 	{
-		alert('Allready in the code editor.')
+		alert('You\'re already in the code editor.')
+	}
+}
+
+function handleHideEditorGui()
+{
+	if(window.confirm('Are you sure you want to hide to the editor gui? (This will bring you to game.html)'))
+	{
+		window.goToUrl('../game.html')
 	}
 }
 
@@ -392,6 +358,10 @@ function handleEditCode()
 
 const __weAreInAnIframe__=window.location !== window.parent.location
 let editCodeButton=<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="link" onClick={handleEditCode}> Edit Djson Code </Button>
+
+
+
+let hideEditorGui=<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="link" onClick={handleHideEditorGui}> Hide Editor Gui </Button>
 
 function App()
 {
@@ -409,6 +379,7 @@ function App()
 			<h1 style={{color: 'white',textAlign:'center'}}>Lab<sup>3</sup></h1>
 			<br/>
 			 {editCodeButton}
+			 {hideEditorGui}
 			<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="secondary" onClick={handleNewLab}> New Lab </Button>
 			<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="secondary" onClick={()=>window.saveConfigToServer()}> Save Lab </Button>
 			<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="secondary" onClick={viewMySaves}> View Saved Labs </Button>

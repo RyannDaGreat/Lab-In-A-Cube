@@ -1,0 +1,30 @@
+from http.server import HTTPServer, BaseHTTPRequestHandler
+from rp import *
+from io import BytesIO
+import json
+
+class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        fansi_print()
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(text_file_to_string('../build'+self.path).encode())#Giant security hole. Don't care. Use a VM. User could prefix path with '/../../../..' and get anywhere on computer.
+
+    def do_POST(self):
+        content_length = int(self.headers['Content-Length'])
+        body = self.rfile.read(content_length)
+        self.send_response(200)
+        self.end_headers()
+        response = BytesIO()
+        filename=str(hash(body))
+        open('saves/'+filename,'w')
+        response.write(str(hash(body)).encode())
+        # response.write(b'This is POST request. ')
+        # response.write(b'Received: ')
+        # response.write(body)
+        self.wfile.write(response.getvalue())
+
+
+httpd = HTTPServer(('localhost', 8011), SimpleHTTPRequestHandler)
+httpd.serve_forever()
+

@@ -1,4 +1,33 @@
 //All generalizable functions that don't really fit anywhere else, but that I'd like to reuse for other projects in the future...
+function timeout(millis=0) 
+{
+	//This is an async function, even though it doesn't look like one.
+	//This is like sleep, except async.
+	//By default, we wait for 0 milliseconds because this function might just be used to let
+	//	other functions execute for a while (in the same way sleep(0) might be used to allow
+	//	better multi-threading)
+	//Example usage:
+	//	console.log('Hello')
+	//	await timeout(1000)
+	//	console.log('World')
+	return new Promise(resolve => setTimeout(resolve, millis));
+}
+async function waitUntil(condition,value)
+{
+	//'condition' is a non-async boolean function that accepts no arguments
+	//'value' is a non-async function that takes no arguments and returns anything.
+	//'waitUntil' is an async function that will return the value() after condition() is truthy
+	//Example:
+	//	l=[]
+	//	condition=()=>l.length!==0
+	//	console.log(await waitUntil(condition,()=>l[0]))
+	//	//Then wait a few seconds in the console. Whenever you're ready, do...
+	//	l.push("Hello World!")
+	//	And then "Hello World!" should immediately print into the console.
+	while(!condition())
+		await timeout()
+	return value()
+}
 function refreshPage()
 {
 	console.assert(arguments.length===0,'Wrong number of arguments.')

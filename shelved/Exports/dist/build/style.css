@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css?family=Quicksand');
+*
+{
+	margin:0;
+	user-select:none;
+font-family: Quicksand;
+}
+
+body 
+{
+	overscroll-behavior-y: none;
+	overscroll-behavior-x: none;
+	margin: 0;
+	padding: 0;
+	background-color: black;
+}
+#overlay
+{
+	text-align:center;
+	color: white;
+	font-family: Quicksand,sans-serif;
+	font-size: 30px;
+	pointer-events: none;
+	position: absolute;
+	text-shadow: 0 0 7px #000000, 0 0 5px #000000;
+	/* top:80%; */
+	bottom: 5%;
+	left: 5%;
+	right: 5%;
+	user-select: none;
+	vertical-align:bottom;
+
+}
