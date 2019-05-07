@@ -14,10 +14,6 @@ const camera = new THREE.PerspectiveCamera(75,10,1,999999)
 camera.fov=75
 // camera.position.z = 0
 
-engineModules={
-	//These modules cannot be instantiated from a djson file. There's only one of each of them. But we're using funcitons to keep some variables private.
-}
-
 const overlay=document.getElementById('overlay')
 
 let textures={default:null}
@@ -55,6 +51,12 @@ const geometries={
 
 const sounds={}
 
+
+const sky = new THREE.Sky()
+sky.scale.setScalar( 450000 )//I want to turn this into a TRUE background if possible....I don't know how though so I'll leave it be...
+scene.add( sky )
+
+
 const items={
 	//Reserved item names:
 	get sound(){},
@@ -90,6 +92,19 @@ const items={
 		get fov(){return camera.fov},
 		set fov(value){camera.fov=value},
 	},
+	//Todo: maybe consider turning sky into a module that can be created...along with camera and scne etc
+	sky:proxies.flattenedInterface(sky,djson.parse(`~scope
+													visible visible
+													material	uniforms
+														luminance		value luminance
+														turbidity		value turbidity
+														rayleigh		value rayleigh
+														mieCoefficient	value mieCoefficient
+														mieDirectionalG	value mieDirectionalG
+														sunPosition		value
+															x sunX
+															y sunY
+															z sunZ`)),
 	scene:
 	{
 		threeObject:scene,
@@ -653,8 +668,11 @@ let prevWidth =undefined//When undefined will force to render even if batterysav
 let prevHeight=undefined
 let batterySavingMode=true//Only render frames when tween.delta changes. (Fire/stuff wont work if this is turned on but that's OK because i think not-having my laptop die is more important)
 let renderRequested  =false//NOT a config item
-function requestRender()
+let doRefreshStateFromConfigRequested=false
+function requestRender({doRefreshStateFromConfig=false}={})
 {
+	if(doRefreshStateFromConfig)
+		doRefreshStateFromConfigRequested=true//This function is laggy so it's deferred until render-time
 	if(!renderRequested)
 		requestAnimationFrame(render)
 	renderRequested=true//This funciton exists so we don't call requestAnimationFrame(render) needlessly many times
@@ -662,6 +680,11 @@ function requestRender()
 
 function render()
 {
+	if(doRefreshStateFromConfigRequested)
+	{
+		refreshStateFromConfig()
+		doRefreshStateFromConfigRequested=false
+	}
 	renderRequested=false//REset this so requestRender() can be called again
 	const currentState=tween.delta
 	if(!batterySavingMode||currentState!==prevState||window.innerHeight!==prevHeight||window.innerWidth!==prevWidth)//To save battery life, only animate the frames when we have some change in the deltas.

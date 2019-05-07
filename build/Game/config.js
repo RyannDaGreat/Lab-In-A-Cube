@@ -243,8 +243,8 @@ function addLinesToConfigString(lines,{reloadWholeDjson=true,simplify=false}={})
 	else
 	{
 		deltas.apply(config,parsedLines)
-		refreshStateFromConfig()
-		requestRender()
+		// refreshStateFromConfig()
+		requestRender({doRefreshStateFromConfig:true})
 	}
 }
 

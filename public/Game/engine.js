@@ -13,6 +13,9 @@ scene.add(ambientLight)
 const camera = new THREE.PerspectiveCamera(75,10,1,999999)
 camera.fov=75
 // camera.position.z = 0
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
+
 
 const overlay=document.getElementById('overlay')
 
@@ -92,6 +95,19 @@ const items={
 		get fov(){return camera.fov},
 		set fov(value){camera.fov=value},
 	},
+	//Todo: maybe consider turning sky into a module that can be created...along with camera and scne etc
+	sky:proxies.flattenedInterface(sky,djson.parse(`~scope
+													visible visible
+													material	uniforms
+														luminance		value luminance
+														turbidity		value turbidity
+														rayleigh		value rayleigh
+														mieCoefficient	value mieCoefficient
+														mieDirectionalG	value mieDirectionalG
+														sunPosition		value
+															x sunX
+															y sunY
+															z sunZ`)),
 	scene:
 	{
 		threeObject:scene,

@@ -2,7 +2,7 @@ let proxies={
 	filterEnumerables(object,filter)
 	{
 		//There will either be less or equal number of enumerables on the result
-		console.assert(Object.getPrototypeOf(object)===Object.prototype)
+		console.assert(object&&Object.getPrototypeOf(object)===Object.prototype)
 		const handler={
 			ownKeys(target)
 			{
@@ -21,7 +21,7 @@ let proxies={
 	typeAdder(object,f=(key,value)=>value)
 	{
 		//Use for LIAC: Meant to eventually replace the way assets in objects such as 'textures' and 'geometries' are loaded (instead of being loaded with a for loop once upon refreshing the page, this would let them be more dynamic) [[Progress postponed to code GUI instead of finishing the engine
-		console.assert(Object.getPrototypeOf(object)===Object.prototype)
+		console.assert(object&&Object.getPrototypeOf(object)===Object.prototype)
 		const handler={
 			set(target,key,value)
 			{
@@ -37,7 +37,7 @@ let proxies={
 		//	o=proxies.tryGetter({a:0},()=>"Cheese")
 		//	console.log(o.q)//Error; prints "Cheese"
 		//	console.log(o.a)//No error; prints 0
-		console.assert(Object.getPrototypeOf(object)===Object.prototype)
+		console.assert(object&&Object.getPrototypeOf(object)===Object.prototype)
 		const handler={
 			get(target,key)
 			{
@@ -84,6 +84,59 @@ let proxies={
 			}
 		}
 		return new Proxy(object,handler)
+	},
+	copyOnWrite(object)
+	{
+		//Very quickly create a shallow copy of an object
+		//Not sure how useful this is though, tbh
+		const copy=Object.create(object)
+		const handler={
+			getPrototypeOf(target) 
+			{
+				return Object.getPrototypeOf(object)
+			}
+		}
+		return new Proxy(copy,handler)
+	},
+	flattenedInterface(object,structure)
+	{
+		//This is used to create easy bindings to an object.
+		//Though not technically a proxy (it performs better than one, beacause defineProperty is faster than proxies), it acts like one so it belongs in proxies.js
+		//Returns a list of getters and setters that read-from/write-to 'object'
+		//This exists to let us not type out path names over and over again
+		//Pro-tip: Structure is really nice to define when using DJSON
+		//You cannot mutate structure after calling this function and expect meaningful changes (without lots of work, that would be very inefficient)
+		//EXAMPLE:
+		// o={a:0,b:{c:1,d:2}}
+		// fi=proxies.flattenedInterface(o,{a:'A',b:{c:'C',d:'D'}})
+		// JSON.stringify(fi)   --->   {A:0,C:1,D:2} //Using the flattened interface to get values in o
+		// fi.A=3 //Using the flattened interface to set a value in o
+		// console.log(o.a)   --->   3
+		console.assert(object&&Object.getPrototypeOf(object)===Object.prototype)
+		const paths=flattenedObjectTreePaths(structure)
+		const out={}
+		for(const path of paths)
+		{
+			console.assert(path.length>=2,'path.length is less than 2. It should have at least two strings in it. This shouldnt be possible with a valid structure input, given the way flattenedObjectTreePaths works with includeLeaves=true: path=',path)
+			const outKey=path.pop()//Assume that the values are the keys we want to show in the flattened interface
+			assert.isString(outKey,"This is an assumption about our input structure (all leaves should be strings because they're all keys of the flattened output")
+			const interfacedKey=path.pop()
+			assert.isString(interfacedKey,'If this fails, then either flattenedObjectTreePaths or flattenedInterface is broken (interfacedKey should be guarenteed to be a string). interfacedKey=',interfacedKey)
+			const container=keyPath.get(object,path)//The thing containing interfacedKey. Explanation: X.slice(0,-1) means all but the last element of X (in python, would be X[:-1])
+			Object.defineProperty(out,outKey, 
+			{
+				get()
+				{
+					return container[interfacedKey]
+				},
+				set(value)
+				{
+					container[interfacedKey]=value
+				},
+				enumerable:true,
+			})
+		}
+		return out
 	}
 }
 proxies=proxies.argumentCountChecker(proxies)

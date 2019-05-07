@@ -1,3 +1,6 @@
+NOTE: All this code was written with tabs equal to 4 spaces.
+
+TODO: Add merge tools (some names would be meant to be merged etc)
 TODO: Serparate engine from renderer
 TODO: Make labs loadable by vising some URL with the code attached to them (I.E. we dont' have to use the 'Load Lab' button)
 TODO: The HTML layout is terrible becuase we have 20394234 other TODO's on the list: all involving bringing threeJS into some variably sized component!! 

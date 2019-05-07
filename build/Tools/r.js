@@ -1,7 +1,42 @@
 //All generalizable functions that don't really fit anywhere else, but that I'd like to reuse for other projects in the future...
+function timeout(millis=0) 
+{
+	//This is an async function, even though it doesn't look like one.
+	//This is like sleep, except async.
+	//By default, we wait for 0 milliseconds because this function might just be used to let
+	//	other functions execute for a while (in the same way sleep(0) might be used to allow
+	//	better multi-threading)
+	//Example usage:
+	//	console.log('Hello')
+	//	await timeout(1000)
+	//	console.log('World')
+	return new Promise(resolve => setTimeout(resolve, millis));
+}
+async function waitUntil(condition,value)
+{
+	//'condition' is a non-async boolean function that accepts no arguments
+	//'value' is a non-async function that takes no arguments and returns anything.
+	//'waitUntil' is an async function that will return the value() after condition() is truthy
+	//Example:
+	//	l=[]
+	//	condition=()=>l.length!==0
+	//	console.log(await waitUntil(condition,()=>l[0]))
+	//	//Then wait a few seconds in the console. Whenever you're ready, do...
+	//	l.push("Hello World!")
+	//	And then "Hello World!" should immediately print into the console.
+	while(!condition())
+		await timeout()
+	return value()
+}
 function refreshPage()
 {
+	console.assert(arguments.length===0,'Wrong number of arguments.')
 	location.reload();
+}
+function goToUrl(url)
+{
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+	location.assign(url)
 }
 async function doFetch(url,body=undefined)
 {
@@ -24,10 +59,20 @@ function weAreInAnIframe()
 	console.assert(arguments.length===0,'Wrong number of arguments.')
 	 return window.location !== window.parent.location
 }
-function playSound(url)
+const __playSoundElement=new Audio
+function playSound(url,{newElement=false}={})
 {
+	//New element lets you play multiple sounds at once; but it might be worse for ios safari (which requires a user click to play sounds)
 	console.assert(arguments.length===1,'Wrong number of arguments.')
-	new Audio(url).play()
+	if(newElement)
+	{
+		new Audio(url).play()
+	}
+	else
+	{
+		__playSoundElement.src=url
+		__playSoundElement.play()
+	}
 }
 function uniqueFromRight(array)
 {
@@ -389,12 +434,14 @@ function parsedSimpleMathFromString(string)
 }
 function closestPowerOfTwo(n)
 {
+	console.assert(arguments.length===1,'Wrong number of arguments.')
 	//Round neither up nor down, but instead gets the closest
 	//From: https://bocoup.com/blog/find-the-closest-power-of-2-with-javascript
 	return Math.pow( 2, Math.round( Math.log( n ) / Math.log( 2 ) ) ); 
 }
 function equalsShallow(a,b)
 {
+	console.assert(arguments.length===2,'Wrong number of arguments.')
 	//By default, this is a SHALLOW equality check
 	//(This avoids possible infinite loops) (it is possible, with memoization, to create a deep equality checker that can handle such infinite loops. I'll make that another day.)
 	if(a===b||!a||!b||typeof a!=='object'||typeof b!=='object')return a===b
@@ -404,6 +451,7 @@ function equalsShallow(a,b)
 }
 function containsValueShallow(o,x,equal=equalsShallow)
 {
+	console.assert(arguments.length>=2,'Wrong number of arguments.')
 	for(const value of o)
 		if(equalsShallow(x,value))
 			return true
@@ -411,6 +459,7 @@ function containsValueShallow(o,x,equal=equalsShallow)
 }
 function dictProduct(dicts)
 {
+	console.assert(arguments.length===1,'Wrong number of arguments.')
 	//Takes a set of (dicts of variable length) and returns a set of (dicts of uniform length)
 	//Equivalent to returning every permutation of delta-concatenations of these dicts (which has >n! complexity)
 	//(Result will be that every dict has same length)
@@ -478,6 +527,8 @@ function dictProduct(dicts)
 function transposed(object)
 {
 	//transposed({x:{a:1,b:2,c:3},y:{a:4,b:5,c:6}})   --->   {a:{x:1,y:4},b:{x:2,y:5},c:{x:3,y:6}}
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+
 	const out={}
 	for(const [key1,value1] of Object.entries(object))
 		for(const [key2,value2] of Object.entries(value1))
@@ -487,9 +538,12 @@ function transposed(object)
 				out[key2]={[key1]:value2}
 	return out
 }
+
+//TODO: Move Object-tree functions in to objectTree.js
 function transformObjectTreeLeaves(objectTree,leafTransform)
 {
 	//Mutates objectTree in-place using leafTransform and returns undefined
+	console.assert(arguments.length===2,'Wrong number of arguments.')
 	assert.rightArgumentLength(arguments)
 	assert.isFunction(leafTransform)
 	assert.isPureObject(objectTree)
@@ -499,10 +553,56 @@ function transformObjectTreeLeaves(objectTree,leafTransform)
 		else
 			objectTree[index]=leafTransform(value)
 }
+function flattenedObjectTreePaths(objectTree,{includeLeaves=true}={})
+{
+	//Retuns a list of list of strings followed by a value
+	//EXAMPLES:
+	// flattenedObjectTreePaths({a:5,c:{b:4}})             --->   [['a',5],['c','b',4]]
+	// flattenedObjectTreePaths({a:5})                     --->   [['a',5]]
+	// flattenedObjectTreePaths({a:5,b:6,c:{d:7,e:[8]}})                         --->   [['a',5],['b',6],['c','d',7],['c','e',[8]]]
+	// flattenedObjectTreePaths({a:5,b:6,c:{d:7,e:[8]}},{includeLeaves:false})   --->   [['a'],  ['b'],  ['c','d'],  ['c','e']    ]
+	// 
+	//Notes: If includeLeaves is false, then you can safely deduce that all lists in the output list will contain only strings
+	assert.isPureObject(objectTree)
+	console.assert(arguments.length>=1,'Wrong number of arguments.')
+	const paths=[]
+	function helper(objectTree,path=[])
+	{
+		for(const [index,value] of Object.entries(objectTree))
+		{
+			if(!is_object(value))
+			{
+				const newPath=[index]
+				if(includeLeaves)
+					newPath.push(value)
+				paths.push(path.concat(newPath))
+			}
+			else
+			{
+				helper(value,path.concat([index]))
+			}
+		}
+	}
+	helper(objectTree)
+	return paths
+}
 function sameObjectTreeStructure(a,b)
 {
+	//We just care about keys to objects here, not the values of leaves
 	//sameObjectTreeStructure({a:6,b:{a:3,c:4}},{a:3,b:{c:4,a:45}}) is true
 	//sameObjectTreeStructure({a:6,b:{a:3,c:4}},{a:3,b:{c:4,}}) is false
+	//sameObjectTreeStructure({a:6,b:8,c:{}},{a:3,b:4,c:{d:5}}) is false
+	//sameObjectTreeStructure({a:6,b:8,c:{}},{a:3,b:4,c:{}}) is true
+	//sameObjectTreeStructure({a:6,b:8},{a:3,b:4}) is true
+	//sameObjectTreeStructure({a:6},{a:3,b:4}) is false
+	//sameObjectTreeStructure({a:6},{a:3}) is true
+	//sameObjectTreeStructure({a:6},{b:3}) is false
+	//sameObjectTreeStructure({b:6},{b:3}) is true
+	//sameObjectTreeStructure({b:6},{}) is false
+	//sameObjectTreeStructure({},{}) is true
+	//sameObjectTreeStructure({},5) is false
+	//sameObjectTreeStructure(6,5) is true
+	console.assert(arguments.length===2,'Wrong number of arguments.')
 	if(is_object(a)!==is_object(b))
 	{
 		return false
@@ -526,4 +626,12 @@ function sameObjectTreeStructure(a,b)
 			return false
 	}
 	return true
+}
+function reflexiveDict(array)
+{
+	// reflexiveDict(['A',1,[]])   --->   {'A':'A','1':1,'[]':[]}
+	out={}
+	for(const item of array)
+		out[item]=item
+	return out
 }

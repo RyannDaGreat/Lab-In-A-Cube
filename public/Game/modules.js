@@ -54,9 +54,13 @@ let modules={
 					mesh.parent=item.threeObject//MAKE SOME ASSERTIONS HERE
 				parent=itemID//Even if we did error, we're going to pretend we succedded to we don't spam the console (it would try setting that parent again and agian every frame otherwise)
 			},
-			get parent() {return parent },
-			set visible(x){mesh.visible=x},
-			get visible(){return mesh.visible},
+			get parent       ( ){return parent              },
+			set visible      (x){       mesh.visible      =x},
+			get visible      ( ){return mesh.visible        },
+			set castShadow   (x){       mesh.castShadow   =x},
+			get castShadow   ( ){return mesh.castShadow     },
+			set receiveShadow(x){       mesh.receiveShadow=x},
+			get receiveShadow( ){return mesh.receiveShadow  },
 		}
 		mesh.userData.item=item//This is to let click events access this item's ID, which have to originate in the threeObject
 		return item
@@ -66,14 +70,34 @@ let modules={
 	{
 		const light = new THREE.PointLight(0xffffff,1,100)
 		scene.add(light)
+		// axesHelper=new THREE.AxesHelper( 1 )
+		// axesHelper.parent=light
+		// scene.add(axesHelper)
+		let parent='scene'
 		const item= {
 			ID:ID,
 			threeObject:light,
 			position:attributes.position(light),
-			get intensity(){return light.intensity;},
-			set intensity(value){light.intensity=value},
-			set visible(x){light.visible=x},
-			get visible( ){return light.visible},
+			get intensity ( ){return light     .intensity     },
+			set intensity (x){       light     .intensity   =x},
+			get visible   ( ){return light     .visible       },
+			set visible   (x){       light     .visible     =x},
+			get castShadow( ){return light     .castShadow    },
+			set castShadow(x){       light     .castShadow  =x},
+			// get showHelper( ){return axesHelper.visible       },
+			// set showHelper(x){       axesHelper.visible     =x},
+			set parent(itemID)
+			{
+				if(parent===itemID)return
+				const item=items[itemID]
+				if(item===undefined)
+					console.error(repr(itemID),'is not a valid parent! (Failed to set parent of '+repr(ID)+')')
+				else
+					light.parent=item.threeObject//MAKE SOME ASSERTIONS HERE
+				parent=itemID//Even if we did error, we're going to pretend we succedded to we don't spam the console (it would try setting that parent again and agian every frame otherwise)
+			},
+			get parent       ( ){return parent              },
+
 		}
 		light.userData.item=item
 		return item
@@ -188,6 +212,22 @@ let modules={
 		sprite.userData.item=item
 		return item
 	},
+	empty(ID)
+	{
+		let empty=new THREE.AxesHelper( 1 )
+		scene.add(empty)
+		const item={
+			ID:ID,
+			threeObject:empty,
+			get size( ){return empty.size  },//Just the draw size, how big it LOOKS (doesn't affect transform)
+			set size(x){       empty.size=x},
+			transform:attributes.transform(empty),
+			set visible(x){empty.visible=x},
+			get visible(){return empty.visible},
+
+		}
+		return item
+	},
 }
 modules=proxies.argumentCountChecker(modules)
 modules=proxies.tryGetter(modules,()=>modules.mesh)
@@ -228,7 +268,7 @@ function getItemSchemas()
 mesh,boxItem,simpleBeaker
 	texture default:TEXTURES,default
 	geometry box:GEOMETRIES,box,cube,sphere
-	parent scene:ITEMS
+	parent scene:ITEMS,scene
 	visible true
 	material
 		mode   standard:basic,standard,phong
@@ -238,15 +278,20 @@ mesh,boxItem,simpleBeaker
 			transparent false
 			depthWrite  true
 			wireframe   false
+			roughness .5:0,1
+			metalness .5:0,1
+			emissive	r 0	g 0	b 0
 	transform
 		position,rotation	x,y,z 0
 		scale				x,y,z,overall 1
+	receiveShadow false
+	castShadow false
 		
 simpleBeaker
 	fluid
 		visible true
 		transform	scale	y 1
-		material	mode phong	modes	phong	wireframe false	color	r 0	g 0	b 1
+		material	mode phong	modes	phong	wireframe false	roughness 0:0,1	color	r 0	g 0	b 1
 		geometry simpleBeakerFluid
 	material	mode phong	modes	phong	transparent true	opacity 0.5	depthWrite false
 	geometry simpleBeakerBeaker
@@ -259,6 +304,9 @@ light,lightItem
 	intensity 1
 	visible true
 	position	x,y,z 0
+	castShadow false
+	 showHelper false
+	parent scene:ITEMS,scene
 
 scene
 	ambience
@@ -281,9 +329,26 @@ sprite,label
 		position	x,y,z 0
 	visible true
 	xray    true
-	parent scene:ITEMS
+	parent scene:ITEMS,scene
 	text Label
 	size 1
+
+empty
+	size 1
+	transform
+		position,rotation	x,y,z 0
+		scale				x,y,z,overall 1
+	visible true
+sky
+	visible true
+	luminance 1
+	turbidity 2
+	rayleigh 1
+	mieCoefficient 0.005
+	mieDirectionalG 0.8
+	sunX 1
+	sunY 1
+	sunZ -2
 `
 		out=out.replace(/ITEMS/g     ,items     )
 		out=out.replace(/DELTAS/g    ,deltas    )
@@ -293,6 +358,7 @@ sprite,label
 	}
 	return _getItemSchemas_cache
 }
+const reservedItemIds='camera scene overlay sky'.split(' ')
 
 function parseItemLeafSchema(leaf)
 {
@@ -415,7 +481,6 @@ function getInterfacesGuiArchitecture(config)
 	//	 {"path":["mesh","material","modes","basic","opacity"],"type":"number","min":0,"max":1},
 	//	 ...(etc)...]
 }
-
 window.refreshGuiSchema=()=>{}
 function getDeltasGuiSchema()
 {
@@ -434,7 +499,7 @@ function getDeltasGuiSchema()
 	const itemSchemas=getItemSchemas()
 	// for(const itemSchema of Object.values(itemSchemas))
 	// 	Object.setPrototypeOf(itemSchema,null)//This is how we can infer that we're looking at a leaf: it's prototype is NOT object, but is instead null
-	const items={...config.items,scene:'scene',camera:'camera',overlay:'overlay'}
+	const items={...config.items,...reflexiveDict(reservedItemIds)}
 	const itemsSchema={}
 	const deltasSchema={}
 	for(const [itemId,itemType] of Object.entries(items)) itemsSchema[ itemId]=itemSchemas[itemType]
@@ -446,7 +511,7 @@ function getDeltasGuiSchema()
 			function set(value)
 			{
 				addLinesToConfigString('deltas\t'+path.join('\t')+' '+value,{reloadWholeDjson:false})
-				setTimeout(window.refreshGuiSchema,100)
+				setTimeout(window.refreshGuiSchema,100)//TODO: Figure out of this line really DOES improve performance or whether we should get RID of it!
 			}
 			return {
 				config:keyPath.getAndSquelch(config,['deltas',...path]),
@@ -562,7 +627,7 @@ function getDefaultInitialDelta()
 	transformObjectTreeLeaves(interfaces,leafTransform)
 	assert.isPureObject(config.items)
 	out={}
-	for(const index of 'camera scene overlay'.split(' '))
+	for(const index of reservedItemIds)
 	{
 		out[index]=interfaces[index]
 	}

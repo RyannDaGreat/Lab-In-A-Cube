@@ -2,6 +2,7 @@ const deltas=proxies.argumentCountChecker({//Idk if it's safe to call this delta
 	none:null,//Sometimes you might want to use undefined instead, or some Symbol. But it probably shouldn't change more than once per project...
 	copied(d)
 	{
+		console.log()
 		console.assert(arguments.length===1, 'deltas.copied error: wrong number of arguments')
 		//Copies an object tree
 		if(!d||Object.getPrototypeOf(d)!==Object.prototype)

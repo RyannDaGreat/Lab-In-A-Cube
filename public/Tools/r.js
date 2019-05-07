@@ -434,12 +434,14 @@ function parsedSimpleMathFromString(string)
 }
 function closestPowerOfTwo(n)
 {
+	console.assert(arguments.length===1,'Wrong number of arguments.')
 	//Round neither up nor down, but instead gets the closest
 	//From: https://bocoup.com/blog/find-the-closest-power-of-2-with-javascript
 	return Math.pow( 2, Math.round( Math.log( n ) / Math.log( 2 ) ) ); 
 }
 function equalsShallow(a,b)
 {
+	console.assert(arguments.length===2,'Wrong number of arguments.')
 	//By default, this is a SHALLOW equality check
 	//(This avoids possible infinite loops) (it is possible, with memoization, to create a deep equality checker that can handle such infinite loops. I'll make that another day.)
 	if(a===b||!a||!b||typeof a!=='object'||typeof b!=='object')return a===b
@@ -449,6 +451,7 @@ function equalsShallow(a,b)
 }
 function containsValueShallow(o,x,equal=equalsShallow)
 {
+	console.assert(arguments.length>=2,'Wrong number of arguments.')
 	for(const value of o)
 		if(equalsShallow(x,value))
 			return true
@@ -456,6 +459,7 @@ function containsValueShallow(o,x,equal=equalsShallow)
 }
 function dictProduct(dicts)
 {
+	console.assert(arguments.length===1,'Wrong number of arguments.')
 	//Takes a set of (dicts of variable length) and returns a set of (dicts of uniform length)
 	//Equivalent to returning every permutation of delta-concatenations of these dicts (which has >n! complexity)
 	//(Result will be that every dict has same length)
@@ -523,6 +527,8 @@ function dictProduct(dicts)
 function transposed(object)
 {
 	//transposed({x:{a:1,b:2,c:3},y:{a:4,b:5,c:6}})   --->   {a:{x:1,y:4},b:{x:2,y:5},c:{x:3,y:6}}
+	console.assert(arguments.length===1,'Wrong number of arguments.')
+
 	const out={}
 	for(const [key1,value1] of Object.entries(object))
 		for(const [key2,value2] of Object.entries(value1))
@@ -537,6 +543,7 @@ function transposed(object)
 function transformObjectTreeLeaves(objectTree,leafTransform)
 {
 	//Mutates objectTree in-place using leafTransform and returns undefined
+	console.assert(arguments.length===2,'Wrong number of arguments.')
 	assert.rightArgumentLength(arguments)
 	assert.isFunction(leafTransform)
 	assert.isPureObject(objectTree)
@@ -556,6 +563,8 @@ function flattenedObjectTreePaths(objectTree,{includeLeaves=true}={})
 	// flattenedObjectTreePaths({a:5,b:6,c:{d:7,e:[8]}},{includeLeaves:false})   --->   [['a'],  ['b'],  ['c','d'],  ['c','e']    ]
 	// 
 	//Notes: If includeLeaves is false, then you can safely deduce that all lists in the output list will contain only strings
+	assert.isPureObject(objectTree)
+	console.assert(arguments.length>=1,'Wrong number of arguments.')
 	const paths=[]
 	function helper(objectTree,path=[])
 	{
@@ -593,6 +602,7 @@ function sameObjectTreeStructure(a,b)
 	//sameObjectTreeStructure({},{}) is true
 	//sameObjectTreeStructure({},5) is false
 	//sameObjectTreeStructure(6,5) is true
+	console.assert(arguments.length===2,'Wrong number of arguments.')
 	if(is_object(a)!==is_object(b))
 	{
 		return false
@@ -616,4 +626,12 @@ function sameObjectTreeStructure(a,b)
 			return false
 	}
 	return true
+}
+function reflexiveDict(array)
+{
+	// reflexiveDict(['A',1,[]])   --->   {'A':'A','1':1,'[]':[]}
+	out={}
+	for(const item of array)
+		out[item]=item
+	return out
 }

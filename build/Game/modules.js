@@ -26,7 +26,15 @@ let modules={
 				modes:materials,
 			}},
 			get texture(){return texture},
-			set texture(value){texture=value;mesh.material.map=textures[texture]||textures.default},
+			set texture(value)
+			{
+				texture=value;
+				const map=textures[texture]||textures.default
+				for(const material of Object.values(materials))
+				{
+					material.map=map
+				}
+			},
 			get geometry(){return geometry},
 			set geometry(value)
 			{
@@ -196,6 +204,9 @@ function setParent(threeObject,itemID)
 	parent=itemID
 }
 
+
+var _getItemSchemas_cache_hash=""//This did make a significant increase in performance
+var _getItemSchemas_cache=""
 function getItemSchemas()
 {
 	//This wasn't the original way I had planned to write the gui, but this was is just waaaayyy too pretty for me not to (I love it too much to get rid of it)
@@ -203,7 +214,16 @@ function getItemSchemas()
 	// assert.isPureObject(config.items     )
 	// assert.isPureObject(config.geometries)
 	// assert.isPureObject(config.textures  )
-	var out=`
+	const items     =Object.keys(config.items     ||{}).join(',')
+	const deltas    =Object.keys(config.deltas    ||{}).join(',')
+	const geometries=Object.keys(config.geometries||{}).join(',')
+	const textures  =Object.keys(config.textures  ||{}).join(',')
+	const hash=JSON.stringify([items,deltas,geometries,textures])
+	if(hash!==_getItemSchemas_cache_hash)
+	{
+		console.log("REHASHING")
+		_getItemSchemas_cache_hash=hash
+		var out=`
 
 mesh,boxItem,simpleBeaker
 	texture default:TEXTURES,default
@@ -218,6 +238,9 @@ mesh,boxItem,simpleBeaker
 			transparent false
 			depthWrite  true
 			wireframe   false
+			roughness .5:0,1
+			metalness .5:0,1
+			emissive	r 0	g 0	b 0
 	transform
 		position,rotation	x,y,z 0
 		scale				x,y,z,overall 1
@@ -226,7 +249,7 @@ simpleBeaker
 	fluid
 		visible true
 		transform	scale	y 1
-		material	mode phong	modes	phong	wireframe false	color	r 0	g 0	b 1
+		material	mode phong	modes	phong	wireframe false	roughness 0:0,1	color	r 0	g 0	b 1
 		geometry simpleBeakerFluid
 	material	mode phong	modes	phong	transparent true	opacity 0.5	depthWrite false
 	geometry simpleBeakerBeaker
@@ -264,13 +287,27 @@ sprite,label
 	parent scene:ITEMS
 	text Label
 	size 1
+
+sky
+	visible true
+	luminance 1
+	turbidity 2
+	rayleigh 1
+	mieCoefficient 0.005
+	mieDirectionalG 0.8
+	sunX 1
+	sunY 1
+	sunZ -2
 `
-	out=out.replace(/ITEMS/g     ,Object.keys(config.items     ||{}).join(','))
-	out=out.replace(/DELTAS/g    ,Object.keys(config.deltas    ||{}).join(','))
- 	out=out.replace(/GEOMETRIES/g,Object.keys(config.geometries||{}).join(','))
- 	out=out.replace(/TEXTURES/g  ,Object.keys(config.textures  ||{}).join(','))
-	return djson.parse(out,{leaf_parser:x=>x.trim()})
+		out=out.replace(/ITEMS/g     ,items     )
+		out=out.replace(/DELTAS/g    ,deltas    )
+	 	out=out.replace(/GEOMETRIES/g,geometries)
+	 	out=out.replace(/TEXTURES/g  ,textures  )
+		_getItemSchemas_cache=djson.parse(out,{leaf_parser:x=>x.trim()})
+	}
+	return _getItemSchemas_cache
 }
+const reservedItemIds='camera scene overlay sky'.split(' ')
 
 function parseItemLeafSchema(leaf)
 {
@@ -393,7 +430,6 @@ function getInterfacesGuiArchitecture(config)
 	//	 {"path":["mesh","material","modes","basic","opacity"],"type":"number","min":0,"max":1},
 	//	 ...(etc)...]
 }
-
 window.refreshGuiSchema=()=>{}
 function getDeltasGuiSchema()
 {
@@ -412,7 +448,7 @@ function getDeltasGuiSchema()
 	const itemSchemas=getItemSchemas()
 	// for(const itemSchema of Object.values(itemSchemas))
 	// 	Object.setPrototypeOf(itemSchema,null)//This is how we can infer that we're looking at a leaf: it's prototype is NOT object, but is instead null
-	const items={...config.items,scene:'scene',camera:'camera',overlay:'overlay'}
+	const items={...config.items,...reflexiveDict(reservedItemIds)}
 	const itemsSchema={}
 	const deltasSchema={}
 	for(const [itemId,itemType] of Object.entries(items)) itemsSchema[ itemId]=itemSchemas[itemType]
@@ -423,8 +459,8 @@ function getDeltasGuiSchema()
 		{
 			function set(value)
 			{
-				addLinesToConfigString('deltas\t'+path.join('\t')+' '+value,{reloadWholeDjson:true})
-				window.refreshGuiSchema()
+				addLinesToConfigString('deltas\t'+path.join('\t')+' '+value,{reloadWholeDjson:false})
+				setTimeout(window.refreshGuiSchema,100)//TODO: Figure out of this line really DOES improve performance or whether we should get RID of it!
 			}
 			return {
 				config:keyPath.getAndSquelch(config,['deltas',...path]),
@@ -530,7 +566,7 @@ function getGuiArchitectureInstance(config=JSON.parse(localStorage.getItem('read
 
 function getDefaultInitialDelta()
 {
-	const interfaces=getItemSchemas(config)
+	const interfaces=deltas.copied(getItemSchemas(config))
 	function leafTransform(leaf)
 	{
 		if(is_string(leaf))
@@ -540,7 +576,7 @@ function getDefaultInitialDelta()
 	transformObjectTreeLeaves(interfaces,leafTransform)
 	assert.isPureObject(config.items)
 	out={}
-	for(const index of 'camera scene overlay'.split(' '))
+	for(const index of reservedItemIds)
 	{
 		out[index]=interfaces[index]
 	}
