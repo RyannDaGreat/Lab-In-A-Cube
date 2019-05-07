@@ -357,11 +357,8 @@ function handleHideEditorGui()
 // if(window.location.pathname.length=5)//In other words, if we have some 5 letter code
 
 const __weAreInAnIframe__=window.location !== window.parent.location
-let editCodeButton=<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" onClick={handleEditCode}> Edit Djson Code </Button>
-
-
-
-let hideEditorGui=<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small"  onClick={handleHideEditorGui}> Hide Editor Gui </Button>
+let editCodeButton=<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small"  onClick={handleEditCode     }> Edit Djson Code </Button>
+let hideEditorGui =<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small"  onClick={handleHideEditorGui}> Hide Editor Gui </Button>
 
 function App()
 {
