@@ -1,4 +1,21 @@
 //All generalizable functions that don't really fit anywhere else, but that I'd like to reuse for other projects in the future...
+function getUrlParameters(location=window.location)
+{
+	//Get the arguments of a URL in object form
+	//EXAMPLE:
+	//	Let's say the URL in the browser's URL bar is "www.google.com/?A=1&B=2"
+	//	Then, getUrlParameters()   --->   {A:'1',B:'2'}
+	const searchParams = new URLSearchParams(location.search)
+	const params = {}
+	for (let key of searchParams.keys()) 
+		params[key] = searchParams.get(key)
+	return params
+}
+function getUrlWithoutArguments(location=window.location)
+{
+	// /how-to-get-the-url-without-any-parameters-in-javascript
+	return location.protocol + '//' + location.host + location.pathname
+}
 function timeout(millis=0) 
 {
 	//This is an async function, even though it doesn't look like one.
@@ -24,6 +41,9 @@ async function waitUntil(condition,value)
 	//	//Then wait a few seconds in the console. Whenever you're ready, do...
 	//	l.push("Hello World!")
 	//	And then "Hello World!" should immediately print into the console.
+	console.assert(arguments.length===2,'Wrong number of arguments.')
+	assert.isFunction(condition)
+	assert.isFunction(value)
 	while(!condition())
 		await timeout()
 	return value()

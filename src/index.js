@@ -329,7 +329,6 @@ function viewMySaves()
 		window.alert("All of your saved file codes (bottom is most recent):"+'\n'+saves.join('\n'))
 }
 
-
 function handleEditCode()
 {
 	if(!__weAreInAnIframe__)//We are in an iframe
@@ -350,6 +349,22 @@ function handleHideEditorGui()
 	if(window.confirm('Are you sure you want to hide to the editor gui? (This will bring you to game.html)'))
 	{
 		window.goToUrl('../game.html')
+	}
+}
+
+async function handleShareLink()
+{
+	//THIS FUNCTIONALITY IS INCOMPLETE. I HAVE TO WORK ON OTHER CLASSES AND STUFF. 
+	//TODO: Finish this functionality (quite possibly involves more than just this function)
+	const saveId=await window.saveConfigToServer({alert:false})
+	if(saveId)
+	{
+		const linkUrl=getUrlWithoutArguments()+'/?load='+saveId
+		alert(linkUrl)
+	}
+	else
+	{
+		alert("Failed to share link because failed to save lab!")
 	}
 }
 
@@ -377,12 +392,15 @@ function App()
 			<br/>
 			 {editCodeButton}
 			 {hideEditorGui}
-			<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="secondary" onClick={handleNewLab}> New Lab </Button>
-			<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="secondary" onClick={()=>window.saveConfigToServer()}> Save Lab </Button>
-			<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="secondary" onClick={viewMySaves}> View Saved Labs </Button>
+			{/*<div style={{display:'flex',flexDirection:'vertical'}}>*/}
+				<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="secondary" onClick={handleNewLab}> New Lab </Button>
+				<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="secondary" onClick={()=>window.saveConfigToServer()}> Save Lab </Button>
+				<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="secondary" onClick={viewMySaves}> View Saved Labs </Button>
+			{/*</div>*/}
 			<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="secondary" onClick={handleLoadConfig}> Load Lab </Button>
 			<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="secondary" onClick={()=>handleLoadConfig({concat:true})}> Combine Labs </Button>
-			<Button style={{margin:1,fontWeight: 'bold'}}	variant="contained" size="small" color="primary"	  onClick={window.undoEditorChange}variant="contained" size="small" color="primary"> Undo  </Button>
+			<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="secondary" onClick={handleShareLink}> Share Link </Button>
+			<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="primary"  onClick={window.undoEditorChange}variant="contained" size="small" color="primary"> Undo  </Button>
 			<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="primary" onClick={addItemDialogs}> Add Item </Button>
 			<Button style={{margin:1,fontWeight: 'bold'}} variant="contained" size="small" color="primary" onClick={addDeltaDialog}> Add Delta </Button>
 			<br/>

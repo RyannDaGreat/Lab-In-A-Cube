@@ -1,12 +1,3 @@
-function load_config(url)
-{
-	getRequest(url,response=>
-		{
-			console.log(response)
-			deltas.apply(config,djson.parse(response))
-		})
-}
-
 window.getMySaves=function()
 {
 	//Returns a list
@@ -17,9 +8,7 @@ window.addToMySaves=function(code)
 	assert.isString(code)
 	localStorage.setItem('saves',JSON.stringify(uniqueFromRight(getMySaves().concat([code]))))
 }
-
-
-window.saveConfigToServer=async function()
+window.saveConfigToServer=async function({alerts:true})
 {
 	console.assert(arguments.length===0,'Wrong number of arguments')
 	const toSave=getConfigStringFromLocalStorage()
@@ -27,12 +16,16 @@ window.saveConfigToServer=async function()
 	const savedURL=await doFetch('',toSave)
 	if(typeof savedURL==='number')//Probably returned 404
 	{
-		alert('Save FAILED! Error status: '+savedURL)
+		if(alerts)
+			alert('Save FAILED! Error status: '+savedURL)
+		return undefined
 	}
 	else
 	{
+		if(alerts)
+			alert('Save SUCCEEDED!\nBelow is the link:\n'+savedURL)
 		addToMySaves(savedURL)
-		alert('Save SUCCEEDED!\nBelow is the link:\n'+savedURL)
+		return savedURL
 	}
 }
 window.loadConfigFromServer=async function(savedURL,{concat=false}={})
@@ -135,7 +128,6 @@ function setConfigDjsonInLocalStorage(djsonString,kwargs={})
 	}
 }
 window.setConfigDjsonInLocalStorage=setConfigDjsonInLocalStorage
-
 
 let previousLoadedConfigString
 function refreshConfigFromLocalStorage()
@@ -285,10 +277,22 @@ function reloadAssetsFromConfig()
 
 reloadAssetsFromConfig()
 requestTween({
-
 				 overlay:
 				 {
 					 text: ''
 				 }
 			 })
 requestTweenByID('initial')
+
+
+const loadLabIdFromUrl=getUrlParameters().load
+if(loadLabIdFromUrl!==undefined&&localStorage.getItem('loadedLabId')!==loadLabIdFromUrl)
+{
+	localStorage.setItem('loadedLabId',loadLabIdFromUrl)//So we don't endlessly reresh the page
+	window.loadConfigFromServer('/saves/'+loadLabIdFromUrl)
+}
+else if(loadLabIdFromUrl!==undefined)
+{
+	localStorage.removeItem('loadedLabId')//Let us load something from the URL again in the future
+}
+
