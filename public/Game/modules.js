@@ -76,6 +76,7 @@ let modules={
 		let parent='scene'
 		const item= {
 			ID:ID,
+			color:light.color,
 			threeObject:light,
 			position:attributes.position(light),
 			get intensity ( ){return light     .intensity     },
@@ -216,7 +217,19 @@ let modules={
 	{
 		let empty=new THREE.AxesHelper( 1 )
 		scene.add(empty)
+		let parent='scene'
 		const item={
+			set parent(itemID)
+			{
+				if(parent===itemID)return
+				const item=items[itemID]
+				if(item===undefined)
+					console.error(repr(itemID),'is not a valid parent! (Failed to set parent of '+repr(ID)+')')
+				else
+					mesh.parent=item.threeObject//MAKE SOME ASSERTIONS HERE
+				parent=itemID//Even if we did error, we're going to pretend we succedded to we don't spam the console (it would try setting that parent again and agian every frame otherwise)
+			},
+			get parent       ( ){return parent              },
 			ID:ID,
 			threeObject:empty,
 			get size( ){return empty.size  },//Just the draw size, how big it LOOKS (doesn't affect transform)
@@ -302,6 +315,7 @@ overlay
 
 light,lightItem
 	intensity 1
+	color	r 1	g 1	b 1
 	visible true
 	position	x,y,z 0
 	castShadow false
@@ -339,6 +353,8 @@ empty
 		position,rotation	x,y,z 0
 		scale				x,y,z,overall 1
 	visible true
+	parent scene:ITEMS,scene
+
 sky
 	visible true
 	luminance 1
