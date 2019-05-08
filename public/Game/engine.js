@@ -4,11 +4,11 @@ renderer.setPixelRatio(window.devicePixelRatio)
 document.getElementById('renderer').appendChild(renderer.domElement)
 window.onresize=requestRender//Re-render when we resize the window
 
-const scene = new THREE.Scene()
-scene.background=new THREE.Color(.1,.1,.1)
+
+const sky = new THREE.Sky()
+sky.scale.setScalar( 450000 )//I want to turn this into a TRUE background if possible....I don't know how though so I'll leave it be...
 
 const ambientLight=new THREE.AmbientLight( 0x404040 )
-scene.add(ambientLight)
 
 const camera = new THREE.PerspectiveCamera(75,10,1,999999)
 camera.fov=75
@@ -16,6 +16,20 @@ camera.fov=75
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
 
+let items={}
+const sounds={}
+let scene=undefined
+function refreshScene()
+{
+	scene = new THREE.Scene()
+	scene.add( sky )
+	scene.add(ambientLight)
+	scene.background=new THREE.Color(.1,.1,.1)
+	refreshItems()
+	
+
+}
+refreshScene()
 
 const overlay=document.getElementById('overlay')
 
@@ -52,81 +66,77 @@ const geometries={
 	sphere: new THREE.IcosahedronGeometry(1, 3),
 }
 
-const sounds={}
 
-
-const sky = new THREE.Sky()
-sky.scale.setScalar( 450000 )//I want to turn this into a TRUE background if possible....I don't know how though so I'll leave it be...
-scene.add( sky )
-
-
-const items={
-	//Reserved item names:
-	get sound(){},
-	get inherit(){},
-	get condition(){},
-	overlay:
-	{
-		// NO threeObject, this is a DOM element
-		get element()
+function refreshItems()
+{
+		items={
+		//Reserved item names:
+		get sound(){},
+		get inherit(){},
+		get condition(){},
+		overlay:
 		{
-			return overlay
+			// NO threeObject, this is a DOM element
+			get element()
+			{
+				return overlay
+			},
+			get text()
+			{
+				return overlay.innerText
+			},
+			set text(value)
+			{
+				overlay.innerText=value
+			},
+			set size(value)
+			{
+				//Set size in pixels
+				assert.isNumber(value)
+				console.assert(value>0,'Font sizes must be greater than 0pt')
+				overlay.style['fontSize']=value+'px'
+			},
 		},
-		get text()
+		camera:
 		{
-			return overlay.innerText
+			threeObject:camera,
+			transform:attributes.transform(camera),
+			get fov(){return camera.fov},
+			set fov(value){camera.fov=value},
 		},
-		set text(value)
+		//Todo: maybe consider turning sky into a module that can be created...along with camera and scne etc
+		sky:proxies.flattenedInterface(sky,djson.parse(`~scope
+														visible visible
+														material	uniforms
+															luminance		value luminance
+															turbidity		value turbidity
+															rayleigh		value rayleigh
+															mieCoefficient	value mieCoefficient
+															mieDirectionalG	value mieDirectionalG
+															sunPosition		value
+																x sunX
+																y sunY
+																z sunZ`)),
+		scene:
 		{
-			overlay.innerText=value
+			threeObject:scene,
+			transitions:
+			{
+				smooth:1,
+			},
+			get scene(){return scene},
+			background:
+			{
+				color:attributes.rgb(scene.background),
+			},
+			ambience:
+			{
+				color:attributes.rgb(ambientLight.color),
+				get intensity(){return ambientLight.intensity},
+				set intensity(value){ambientLight.intensity=value},
+			},
 		},
-		set size(value)
-		{
-			//Set size in pixels
-			assert.isNumber(value)
-			console.assert(value>0,'Font sizes must be greater than 0pt')
-			overlay.style['fontSize']=value+'px'
-		},
-	},
-	camera:
-	{
-		threeObject:camera,
-		transform:attributes.transform(camera),
-		get fov(){return camera.fov},
-		set fov(value){camera.fov=value},
-	},
-	//Todo: maybe consider turning sky into a module that can be created...along with camera and scne etc
-	sky:proxies.flattenedInterface(sky,djson.parse(`~scope
-													visible visible
-													material	uniforms
-														luminance		value luminance
-														turbidity		value turbidity
-														rayleigh		value rayleigh
-														mieCoefficient	value mieCoefficient
-														mieDirectionalG	value mieDirectionalG
-														sunPosition		value
-															x sunX
-															y sunY
-															z sunZ`)),
-	scene:
-	{
-		threeObject:scene,
-		transitions:
-		{
-			smooth:1,
-		},
-		get scene(){return scene},
-		background:
-		{
-			color:attributes.rgb(scene.background),
-		},
-		ambience:
-		{
-			color:attributes.rgb(ambientLight.color),
-			get intensity(){return ambientLight.intensity},
-			set intensity(value){ambientLight.intensity=value},
-		},
-	},
+	}
 }
 
 let mouse_x,mouse_y,mouse_in_renderer=false//THese are updated periodically.
@@ -667,9 +677,9 @@ function printDeltaStack()
 
 //This section is to save battery life (my laptop's battery is terrible, so I'm optimizing this site for energy consumption as well) (only render when the items' state changes)
 let prevState =undefined//For further efficiency; we don't need to comparre strings every frame
-let prevWidth =undefined//When undefined will force to render even if batterysavingmode is true
+let prevWidth =undefined//When undefined will force to render even if window.batterysavingmode is true
 let prevHeight=undefined
-let batterySavingMode=true//Only render frames when tween.delta changes. (Fire/stuff wont work if this is turned on but that's OK because i think not-having my laptop die is more important)
+window.batterySavingMode=true//Only render frames when tween.delta changes. (Fire/stuff wont work if this is turned on but that's OK because i think not-having my laptop die is more important)
 let renderRequested  =false//NOT a config item
 let doRefreshStateFromConfigRequested=false
 function requestRender({doRefreshStateFromConfig=false}={})
@@ -690,7 +700,7 @@ function render()
 	}
 	renderRequested=false//REset this so requestRender() can be called again
 	const currentState=tween.delta
-	if(!batterySavingMode||currentState!==prevState||window.innerHeight!==prevHeight||window.innerWidth!==prevWidth)//To save battery life, only animate the frames when we have some change in the deltas.
+	if(!window.batterySavingMode||currentState!==prevState||window.innerHeight!==prevHeight||window.innerWidth!==prevWidth)//To save battery life, only animate the frames when we have some change in the deltas.
 	{
 		deltas.pour(items,currentState)
 		if(autoIsPending(currentState))
@@ -706,7 +716,7 @@ function render()
 		camera.aspect=prevWidth/prevHeight
 		camera.updateProjectionMatrix()//Lets you update camera FOV and aspect ratio
 		renderer.setSize(prevWidth,prevHeight)
-		renderer.render(scene, camera)
+		try{renderer.render(scene, camera)}catch{}//I don't understand why this failed....something about 'value' being undefined during render....no idea how to debug that...
 		if(JSON.stringify(currentState)!==JSON.stringify(prevState)||tween.time)//If tween recycled a state (and didn't bother calculating a new one), it means
 			//The ||tween.time is because we need to be able to wait-out timed deltas even if they don't change anything (as it might turn out; for ex emptying an empty flask)  (its purpose is very subtle, but very real; please dont remove it)
 		{

@@ -170,5 +170,38 @@ const deltas=proxies.argumentCountChecker({//Idk if it's safe to call this delta
 	{
 		//Simply dont ever delete anything...Symbol() is anonymous unless we have seriously messy proxy shenanigans (which I wont ever make) (But the point remains that even that could be avoided if none was passed as a parameter instead, thus confining its scope and making it thread safe)
 		return deltas.withNoneAs(Symbol(),func,...args)
-	}
+	},
+	diff(x, y,{skip_deletion=false}={})
+	{
+		//WARNING: THIS FUNCTION IS OLD AND CRANKY AND NEEDS TONS OF INTEGRATION TESTING
+		// (this was made long before the delta engine)
+		//Is a pure function
+		//Returns an object that maps the changes from x to y
+		//!deltas.diff(x,y) double-implies ( x===y and deltas.diff(x,y)==={} )
+		//EXAMPLES:
+		// console.log(JSON.stringify(deltas.diff({a:4,b:{b:5,c:6}}, {b:{b:6,c:6}})))//{"b":{"b":6}}
+		// console.log(JSON.stringify(deltas.diff(2, 3)))//3
+		// console.log(JSON.stringify(deltas.diff({2:3}, {2:3})))//{}
+		// console.log(JSON.stringify(deltas.diff(2, 2)))//undefined
+		if(!is_object(x)||!is_object(y))
+			return x!==y?y:deltas.none//Base case
+		var out={}
+		for(const key in {...x,...y})
+			if(key in x)
+				if(key in y)
+				{
+					const d=deltas.diff(x[key], y[key])
+					if(d===deltas.none)
+						continue
+					const _=Object.getPrototypeOf(d)===Object.prototype
+					if(!_||_&&Object.keys(d).length)//Assume d is not {}
+						out[key]=d
+				}
+				else if(!skip_deletion)
+					out[key]=deltas.none
+			else
+				out[key]=y[key]
+		return out
+	},
+	
 })

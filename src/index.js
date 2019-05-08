@@ -96,7 +96,8 @@ function addItemDialogs()
 		return
 	alert("Success! Added item. Please refresh the page to see changes.")
 	window.addLinesToConfigString('items	'+name+' '+type)
-	window.refreshPage()
+	// window.refreshPage()
+	window.quickRefresh()
 }
 
 function addDeltaDialog()
@@ -359,7 +360,7 @@ async function handleShareLink()
 	const saveId=await window.saveConfigToServer({alert:false})
 	if(saveId)
 	{
-		const linkUrl=getUrlWithoutArguments()+'/?load='+saveId
+		const linkUrl=window.getUrlWithoutArguments()+'/?load='+saveId
 		alert(linkUrl)
 	}
 	else
